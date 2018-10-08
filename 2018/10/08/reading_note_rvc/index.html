@@ -457,6 +457,7 @@
 <li>Further Reading: The Handbook of Robotics (Siciliano and Khatib 2016)</li>
 </ul>
 </blockquote>
+<a id="more"></a>
 <p><strong>一个非常重要的问题</strong>：Matlab Robotics Toolbox中函数的参数涉及角度时使用的单位默认是弧度rad，但是在使用时发现实际情况是度deg，该问题的主要原因是调用的函数可能与MATLAB自带工具箱Phased Array System Toolbox中的函数重名导致的，比如rotx函数。所以可将该工具箱卸载来解决该问题。该问题可以参考<a href="https://petercorke.com/wordpress/toolboxes/faq" target="_blank" rel="noopener">Matlab Robotics Toolbox的官网</a>,其中有介绍“Toolbox is using degrees not radians”问题。</p>
 <p>部分符号说明：<br><img src="./pics/2_0.png" alt="pic2_0"></p>
 <h1 id="2-1-Working-in-Two-Dimensions-2D"><a href="#2-1-Working-in-Two-Dimensions-2D" class="headerlink" title="2.1 Working in Two Dimensions (2D)"></a>2.1 Working in Two Dimensions (2D)</h1><h2 id="2-1-1-Orientation-in-2-Dimensions"><a href="#2-1-1-Orientation-in-2-Dimensions" class="headerlink" title="2.1.1 Orientation in 2-Dimensions"></a>2.1.1 Orientation in 2-Dimensions</h2><h3 id="2-1-1-1-Orthonormal-Rotation-Matrix-正交旋转矩阵"><a href="#2-1-1-1-Orthonormal-Rotation-Matrix-正交旋转矩阵" class="headerlink" title="2.1.1.1 Orthonormal Rotation Matrix 正交旋转矩阵"></a>2.1.1.1 Orthonormal Rotation Matrix 正交旋转矩阵</h3><p>Y坐标系相对于X坐标系的正交旋转矩阵为：<br>$$ ^{X}R_{Y}(\theta) =<br>    \begin{pmatrix}<br>    cos(\theta)&amp; -sin(\theta)\<br>    sin(\theta)&amp; cos(\theta)<br>    \end{pmatrix}<br>$$</p>
