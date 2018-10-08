@@ -410,7 +410,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  14,003 字
+                  12,779 字
                 </span>
               
 
@@ -426,7 +426,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  64 分钟
+                  57 分钟
                 </span>
               
             </div>
@@ -460,10 +460,52 @@
 <a id="more"></a>
 <p><strong>一个非常重要的问题</strong>：Matlab Robotics Toolbox中函数的参数涉及角度时使用的单位默认是弧度rad，但是在使用时发现实际情况是度deg，该问题的主要原因是调用的函数可能与MATLAB自带工具箱Phased Array System Toolbox中的函数重名导致的，比如rotx函数。所以可将该工具箱卸载来解决该问题。该问题可以参考<a href="https://petercorke.com/wordpress/toolboxes/faq" target="_blank" rel="noopener">Matlab Robotics Toolbox的官网</a>,其中有介绍“Toolbox is using degrees not radians”问题。</p>
 <p>部分符号说明：<br><img src="./pics/2_0.png" alt="pic2_0"></p>
-<h1 id="2-1-Working-in-Two-Dimensions-2D"><a href="#2-1-Working-in-Two-Dimensions-2D" class="headerlink" title="2.1 Working in Two Dimensions (2D)"></a>2.1 Working in Two Dimensions (2D)</h1><h2 id="2-1-1-Orientation-in-2-Dimensions"><a href="#2-1-1-Orientation-in-2-Dimensions" class="headerlink" title="2.1.1 Orientation in 2-Dimensions"></a>2.1.1 Orientation in 2-Dimensions</h2><h3 id="2-1-1-1-Orthonormal-Rotation-Matrix-正交旋转矩阵"><a href="#2-1-1-1-Orthonormal-Rotation-Matrix-正交旋转矩阵" class="headerlink" title="2.1.1.1 Orthonormal Rotation Matrix 正交旋转矩阵"></a>2.1.1.1 Orthonormal Rotation Matrix 正交旋转矩阵</h3><p>Y坐标系相对于X坐标系的正交旋转矩阵为：<br>$$ ^{X}R_{Y}(\theta) =<br>    \begin{pmatrix}<br>    cos(\theta)&amp; -sin(\theta)\<br>    sin(\theta)&amp; cos(\theta)<br>    \end{pmatrix}<br>$$</p>
-<h3 id="2-1-1-2-Matrix-Exponential-矩阵指数"><a href="#2-1-1-2-Matrix-Exponential-矩阵指数" class="headerlink" title="2.1.1.2 Matrix Exponential 矩阵指数"></a>2.1.1.2 Matrix Exponential 矩阵指数</h3><p>矩阵指数存在的性质：<br>R = rot2($\theta$) 正交旋转矩阵<br>S = logm(R)<br>R = expm(S) 矩阵指数<br>S = skew($\theta$)<br>$\theta$ = vex(S)</p>
-<h2 id="2-1-2-Pose-in-2-Dimensions"><a href="#2-1-2-Pose-in-2-Dimensions" class="headerlink" title="2.1.2 Pose in 2-Dimensions"></a>2.1.2 Pose in 2-Dimensions</h2><h3 id="2-1-2-1-Homogeneous-Transformation-Matrix-齐次变换矩阵"><a href="#2-1-2-1-Homogeneous-Transformation-Matrix-齐次变换矩阵" class="headerlink" title="2.1.2.1 Homogeneous Transformation Matrix 齐次变换矩阵"></a>2.1.2.1 Homogeneous Transformation Matrix 齐次变换矩阵</h3><p>从B坐标系到A坐标系的变换：<br>$$<br>    \begin{pmatrix}<br>    ^{A}x&amp; \<br>    ^{A}y&amp; \<br>    1&amp;<br>    \end{pmatrix}<br>    =<br>    \begin{pmatrix}<br>    ^{A}R_{B}&amp; t\<br>    0_{1\times2}&amp; 1<br>    \end{pmatrix}<br>    \begin{pmatrix}<br>    ^{B}x&amp; \<br>    ^{B}y&amp; \<br>    1&amp;<br>    \end{pmatrix}<br>$$<br>其中t=(x,y)。<br>引入齐次坐标，则上述变换可写为:<br>$$<br>^{A}\tilde{p} =<br>    \begin{pmatrix}<br>    ^{A}R_{B}&amp; t\<br>    0_{1\times2}&amp; 1<br>    \end{pmatrix} \,<br>    ^{B}\tilde{p} = \,<br>    ^{A}T_{B}\,^{B}\tilde{p}<br>$$<br>其中$^{A}T_{B}$是齐次变换矩阵。T的值为：<br>$$<br>T = \begin{pmatrix}<br>    cos(\theta)&amp; -sin(\theta)&amp; x\<br>    sin(\theta)&amp; cos(\theta)&amp; y \<br>    0&amp; 0&amp; 1<br>    \end{pmatrix}<br>$$<br>T的性质：<br>$$<br>T^{-1} = \begin{pmatrix}<br>    R&amp; t\<br>    0_{1\times2}&amp; 1<br>    \end{pmatrix}^{-1} =<br>    \begin{pmatrix}<br>    R^{T}&amp; -R^{T}t\<br>    0_{1\times2}&amp; 1<br>    \end{pmatrix}<br>$$</p>
-<p>MATLAB相关命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">T1 = transl2(1, 2) * trot2(30, &apos;deg&apos;)</span><br><span class="line">plotvol([0 5 0 5]);</span><br><span class="line">trplot2(T1, &apos;frame&apos;, &apos;1&apos;, &apos;color&apos;, &apos;b&apos;)</span><br><span class="line">T2 = transl2(2, 1)</span><br><span class="line">T3 = T1*T2</span><br><span class="line">trplot2(T2, &apos;frame&apos;, &apos;2&apos;, &apos;color&apos;, &apos;r&apos;);</span><br><span class="line">trplot2(T3, &apos;frame&apos;, &apos;3&apos;, &apos;color&apos;, &apos;g&apos;);</span><br><span class="line"></span><br><span class="line">T4 = T2*T1</span><br><span class="line">trplot2(T4, &apos;frame&apos;, &apos;4&apos;, &apos;color&apos;, &apos;c&apos;);</span><br></pre></td></tr></table></figure></p>
+<h1 id="2-1-Working-in-Two-Dimensions-2D"><a href="#2-1-Working-in-Two-Dimensions-2D" class="headerlink" title="2.1 Working in Two Dimensions (2D)"></a>2.1 Working in Two Dimensions (2D)</h1><h2 id="2-1-1-Orientation-in-2-Dimensions"><a href="#2-1-1-Orientation-in-2-Dimensions" class="headerlink" title="2.1.1 Orientation in 2-Dimensions"></a>2.1.1 Orientation in 2-Dimensions</h2><h3 id="2-1-1-1-Orthonormal-Rotation-Matrix-正交旋转矩阵"><a href="#2-1-1-1-Orthonormal-Rotation-Matrix-正交旋转矩阵" class="headerlink" title="2.1.1.1 Orthonormal Rotation Matrix 正交旋转矩阵"></a>2.1.1.1 Orthonormal Rotation Matrix 正交旋转矩阵</h3><p>Y坐标系相对于X坐标系的正交旋转矩阵为：</p>
+<script type="math/tex; mode=display">^{X}R_{Y}(\theta) = 
+    \begin{pmatrix}
+    cos(\theta)& -sin(\theta)\\ 
+    sin(\theta)& cos(\theta)
+    \end{pmatrix}</script><h3 id="2-1-1-2-Matrix-Exponential-矩阵指数"><a href="#2-1-1-2-Matrix-Exponential-矩阵指数" class="headerlink" title="2.1.1.2 Matrix Exponential 矩阵指数"></a>2.1.1.2 Matrix Exponential 矩阵指数</h3><p>矩阵指数存在的性质：<br>R = rot2($\theta$) 正交旋转矩阵<br>S = logm(R)<br>R = expm(S) 矩阵指数<br>S = skew($\theta$)<br>$\theta$ = vex(S)</p>
+<h2 id="2-1-2-Pose-in-2-Dimensions"><a href="#2-1-2-Pose-in-2-Dimensions" class="headerlink" title="2.1.2 Pose in 2-Dimensions"></a>2.1.2 Pose in 2-Dimensions</h2><h3 id="2-1-2-1-Homogeneous-Transformation-Matrix-齐次变换矩阵"><a href="#2-1-2-1-Homogeneous-Transformation-Matrix-齐次变换矩阵" class="headerlink" title="2.1.2.1 Homogeneous Transformation Matrix 齐次变换矩阵"></a>2.1.2.1 Homogeneous Transformation Matrix 齐次变换矩阵</h3><p>从B坐标系到A坐标系的变换：</p>
+<script type="math/tex; mode=display">
+    \begin{pmatrix}
+    ^{A}x& \\ 
+    ^{A}y& \\
+    1&
+    \end{pmatrix}  
+    = 
+    \begin{pmatrix}
+    ^{A}R_{B}& t\\ 
+    0_{1\times2}& 1
+    \end{pmatrix}  
+    \begin{pmatrix}
+    ^{B}x& \\ 
+    ^{B}y& \\
+    1&
+    \end{pmatrix}</script><p>其中t=(x,y)。<br>引入齐次坐标，则上述变换可写为:</p>
+<script type="math/tex; mode=display">
+^{A}\tilde{p} = 
+    \begin{pmatrix}
+    ^{A}R_{B}& t\\ 
+    0_{1\times2}& 1
+    \end{pmatrix} \,
+    ^{B}\tilde{p} = \,
+    ^{A}T_{B}\,^{B}\tilde{p}</script><p>其中$^{A}T_{B}$是齐次变换矩阵。T的值为：  </p>
+<script type="math/tex; mode=display">
+T = \begin{pmatrix}
+    cos(\theta)& -sin(\theta)& x\\ 
+    sin(\theta)& cos(\theta)& y \\
+    0& 0& 1
+    \end{pmatrix}</script><p>T的性质：</p>
+<script type="math/tex; mode=display">
+T^{-1} = \begin{pmatrix}
+    R& t\\ 
+    0_{1\times2}& 1
+    \end{pmatrix}^{-1} = 
+    \begin{pmatrix}
+    R^{T}& -R^{T}t\\ 
+    0_{1\times2}& 1
+    \end{pmatrix}</script><p>MATLAB相关命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">T1 = transl2(1, 2) * trot2(30, &apos;deg&apos;)</span><br><span class="line">plotvol([0 5 0 5]);</span><br><span class="line">trplot2(T1, &apos;frame&apos;, &apos;1&apos;, &apos;color&apos;, &apos;b&apos;)</span><br><span class="line">T2 = transl2(2, 1)</span><br><span class="line">T3 = T1*T2</span><br><span class="line">trplot2(T2, &apos;frame&apos;, &apos;2&apos;, &apos;color&apos;, &apos;r&apos;);</span><br><span class="line">trplot2(T3, &apos;frame&apos;, &apos;3&apos;, &apos;color&apos;, &apos;g&apos;);</span><br><span class="line"></span><br><span class="line">T4 = T2*T1</span><br><span class="line">trplot2(T4, &apos;frame&apos;, &apos;4&apos;, &apos;color&apos;, &apos;c&apos;);</span><br></pre></td></tr></table></figure></p>
 <p><img src="./pics/2_1.png" alt="pic2_1">  </p>
 <p><strong>注意</strong>：T3和T4结果的差别说明，T1*T2表示，T2的变换是相对于T1坐标系进行的，所以3坐标系的原点不是(3,3)，而4坐标系的原点是(3,3)。</p>
 <p>另一个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">P=[3;2]   %坐标(3,2)点</span><br><span class="line">plot_point(P, &apos;label&apos;, &apos;P&apos;, &apos;solid&apos;, &apos;ko&apos;);</span><br><span class="line"></span><br><span class="line">%求P点相对于坐标系1的坐标</span><br><span class="line">P1 =  inv(T1) * [P;1] %此处将P点写为齐次坐标的形式</span><br><span class="line">%使用e2h函数也可实现普通点到齐次坐标的变化，h2e反之，即：</span><br><span class="line">P1 = h2e(inv(T1) * e2h(P))</span><br></pre></td></tr></table></figure></p>
@@ -481,22 +523,46 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">T = transl2(2, 3) * trot2(0.5)</span><br><span class="line"></span><br><span class="line">%计算Twist向量值</span><br><span class="line">tw = Twist(T)</span><br><span class="line"></span><br><span class="line">%得到T</span><br><span class="line">tw.T</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<p>#2.2 Working in Three Dimensions (3D)  </p>
-<blockquote>
+<h1 id="2-2-Working-in-Three-Dimensions-3D"><a href="#2-2-Working-in-Three-Dimensions-3D" class="headerlink" title="2.2 Working in Three Dimensions (3D)"></a>2.2 Working in Three Dimensions (3D)</h1><blockquote>
 <p>Euler’s rotation theorem:<br>Any two independent orthonormal coordinate frames can be related by a sequence of rotations (not more than three) about coordinate axes, where no two successive rotations may be about the same axis.</p>
 </blockquote>
 <p><img src="./pics/2_3.png" alt="pic2_3"> </p>
-<h2 id="2-2-1-Orientation-in-3-Dimensions"><a href="#2-2-1-Orientation-in-3-Dimensions" class="headerlink" title="2.2.1 Orientation in 3-Dimensions"></a>2.2.1 Orientation in 3-Dimensions</h2><h3 id="2-2-1-1-Orthonormal-Rotation-Matrix"><a href="#2-2-1-1-Orthonormal-Rotation-Matrix" class="headerlink" title="2.2.1.1 Orthonormal Rotation Matrix"></a>2.2.1.1 Orthonormal Rotation Matrix</h3><p>从B坐标系旋转至A坐标系：<br>$$<br>    \begin{pmatrix}<br>    ^{A}x&amp; \<br>    ^{A}y&amp; \<br>    ^{A}z&amp;<br>    \end{pmatrix}<br>    = \,<br>    ^{A}R_{B}<br>    \begin{pmatrix}<br>    ^{B}x&amp; \<br>    ^{B}y&amp; \<br>    ^{B}z&amp;<br>    \end{pmatrix}<br>$$</p>
-<p>3维旋转矩阵的一些性质：</p>
+<h2 id="2-2-1-Orientation-in-3-Dimensions"><a href="#2-2-1-Orientation-in-3-Dimensions" class="headerlink" title="2.2.1 Orientation in 3-Dimensions"></a>2.2.1 Orientation in 3-Dimensions</h2><h3 id="2-2-1-1-Orthonormal-Rotation-Matrix"><a href="#2-2-1-1-Orthonormal-Rotation-Matrix" class="headerlink" title="2.2.1.1 Orthonormal Rotation Matrix"></a>2.2.1.1 Orthonormal Rotation Matrix</h3><p>从B坐标系旋转至A坐标系：</p>
+<script type="math/tex; mode=display">
+    \begin{pmatrix}
+    ^{A}x& \\ 
+    ^{A}y& \\
+    ^{A}z&
+    \end{pmatrix}  
+    = \,
+    ^{A}R_{B}
+    \begin{pmatrix}
+    ^{B}x& \\ 
+    ^{B}y& \\
+    ^{B}z&
+    \end{pmatrix}</script><p>3维旋转矩阵的一些性质：</p>
 <ul>
 <li>正交性，每列是单位向量，且列与列之间是正交的</li>
 <li>$R^{-1} = R^{T}$</li>
 <li>正交旋转矩阵共9个元素，但是并不是彼此独立，各列是单位向量且彼此正交，提供6个约束条件，所以9个元素只有三个是独立的</li>
 </ul>
-<p>各个轴的正交旋转矩阵：<br>$$<br>R_{x}(\theta) = \begin{pmatrix}<br>                1&amp; 0&amp; 0\<br>                0&amp; cos(\theta)&amp; -sin(\theta)\<br>                0&amp; sin(\theta)&amp; cos(\theta)<br>                \end{pmatrix}<br>$$</p>
-<p>$$<br>R_{y}(\theta) = \begin{pmatrix}<br>                cos(\theta)&amp; 0&amp; sin(\theta)\<br>                0&amp; 1&amp; 0\<br>                -sin(\theta)&amp; 0&amp; cos(\theta)<br>                \end{pmatrix}<br>$$</p>
-<p>$$<br>R_{z}(\theta) = \begin{pmatrix}<br>                cos(\theta)&amp; -sin(\theta)&amp; 0 \<br>                sin(\theta)&amp; cos(\theta)&amp; 0\<br>                0&amp; 0&amp; 1<br>                \end{pmatrix}<br>$$</p>
-<p>相关Matlab函数：</p>
+<p>各个轴的正交旋转矩阵：</p>
+<script type="math/tex; mode=display">
+R_{x}(\theta) = \begin{pmatrix}
+                1& 0& 0\\ 
+                0& cos(\theta)& -sin(\theta)\\
+                0& sin(\theta)& cos(\theta)
+                \end{pmatrix}</script><script type="math/tex; mode=display">
+R_{y}(\theta) = \begin{pmatrix}
+                cos(\theta)& 0& sin(\theta)\\
+                0& 1& 0\\ 
+                -sin(\theta)& 0& cos(\theta)
+                \end{pmatrix}</script><script type="math/tex; mode=display">
+R_{z}(\theta) = \begin{pmatrix}
+                cos(\theta)& -sin(\theta)& 0 \\
+                sin(\theta)& cos(\theta)& 0\\
+                0& 0& 1
+                \end{pmatrix}</script><p>相关Matlab函数：</p>
 <ul>
 <li>rotx, roty, rotz (单位是deg)</li>
 <li>可视化函数：trplot(R)， 动画tranimate(R)</li>
@@ -506,18 +572,24 @@
 <li>Eulerian type: XYX, XZX, YXY, YZY, ZXZ, or ZYZ</li>
 <li>Cardanian type: XYZ, XZY, YZX, YXZ, ZXY, or ZYX</li>
 </ul>
-<h4 id="欧拉角"><a href="#欧拉角" class="headerlink" title="欧拉角"></a>欧拉角</h4><p>比如ZYZ序列：$R=R_{z}(\phi)R_{y}(\theta)R_{z}(\psi)$<br>其对应的欧拉角为：$\Gamma=(\phi,\theta,\psi)$<br>例如欧拉角$\Gamma=(0.1,0.2,0.3)$，其对应的ZYZ旋转矩阵为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">R = rotz(0.1) * roty(0.2) * rotz(0.3);</span><br><span class="line"></span><br><span class="line">%更便捷的求法</span><br><span class="line">R = eul2r(0.1, 0.2, 0.3)</span><br></pre></td></tr></table></figure></p>
+<h4 id="欧拉角"><a href="#欧拉角" class="headerlink" title="欧拉角"></a>欧拉角</h4><p>比如ZYZ序列：$R=R<em>{z}(\phi)R</em>{y}(\theta)R_{z}(\psi)$<br>其对应的欧拉角为：$\Gamma=(\phi,\theta,\psi)$<br>例如欧拉角$\Gamma=(0.1,0.2,0.3)$，其对应的ZYZ旋转矩阵为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">R = rotz(0.1) * roty(0.2) * rotz(0.3);</span><br><span class="line"></span><br><span class="line">%更便捷的求法</span><br><span class="line">R = eul2r(0.1, 0.2, 0.3)</span><br></pre></td></tr></table></figure></p>
 <p>逆问题从旋转矩阵求欧拉角：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gamma = tr2eul(R)</span><br></pre></td></tr></table></figure></p>
 <p><strong>注意</strong>:当$\theta$角为负时，从旋转矩阵求出的欧拉角将和之前的值不一样，$\theta$将变为正值，$\phi,\psi$都将不同。这是因为从旋转矩阵到欧拉角的映射是不唯一的，且Matlab ToolBox中的函数总是返回正的$\theta$角。</p>
 <h4 id="万向角"><a href="#万向角" class="headerlink" title="万向角"></a>万向角</h4><p>另一种常用的角度是Cardan angles(万向节角): roll, pitch and yaw.<br>常用序列为：ZYX or XYZ</p>
 <ul>
-<li>ZYX: $R=R_{z}(\theta_{y})R_{y}(\theta_{p})R_{x}(\theta_{r})$, 常用于船舶、汽车、航行器的姿态描述, X轴指向前进方向</li>
-<li>XYZ: $R=R_{X}(\theta_{y})R_{y}(\theta_{p})R_{Z}(\theta_{r})$，常用于机械臂末端执行器，Z轴指向前方，X轴指向上或者下</li>
+<li>ZYX: $R=R<em>{z}(\theta</em>{y})R<em>{y}(\theta</em>{p})R<em>{x}(\theta</em>{r})$, 常用于船舶、汽车、航行器的姿态描述, X轴指向前进方向</li>
+<li>XYZ: $R=R<em>{X}(\theta</em>{y})R<em>{y}(\theta</em>{p})R<em>{Z}(\theta</em>{r})$，常用于机械臂末端执行器，Z轴指向前方，X轴指向上或者下</li>
 </ul>
 <p>Matlab Toolbox默认ZYX序列，可使用’xyz’参数进行设置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">R = rpy2r(0.1, 0.2, 0.3)</span><br><span class="line"></span><br><span class="line">%逆操作</span><br><span class="line">gamma = tr2rpy(R)</span><br><span class="line"></span><br><span class="line">%xyz序列</span><br><span class="line">R = rpy2r(0.1, 0.2, 0.3, &apos;xyz&apos;)</span><br><span class="line">gamma = tr2rpy(R, &apos;xyz&apos;)</span><br></pre></td></tr></table></figure></p>
 <h3 id="2-2-1-3-Singularities-and-Gimbal-Lock-奇异点现象和万向节锁"><a href="#2-2-1-3-Singularities-and-Gimbal-Lock-奇异点现象和万向节锁" class="headerlink" title="2.2.1.3 Singularities and Gimbal Lock 奇异点现象和万向节锁"></a>2.2.1.3 Singularities and Gimbal Lock 奇异点现象和万向节锁</h3><p><img src="./pics/2_4.png" alt="pic2_4"><br>当两个连续轴对齐时，欧拉角和万向节角的表示方法都会出现奇异点现象，即只能表示两个轴的姿态，第三个轴的姿态无法表示，出现自由度丢失的情况。对于ZYZ形式的欧拉角，当$\theta = k\pi, k\in \mathbb{Z}$时出现奇异点；对于万向节角，当pitch角$\theta_{p}=\pm(2k+1)\frac{\pi}{2}$时出现奇异点。</p>
 <h3 id="2-2-1-4-Two-Vector-Representation双向量表示法"><a href="#2-2-1-4-Two-Vector-Representation双向量表示法" class="headerlink" title="2.2.1.4 Two Vector Representation双向量表示法"></a>2.2.1.4 Two Vector Representation双向量表示法</h3><p>这种表示方法主要用于机械臂,考虑末端执行器坐标系为E，如下图</p>
-<p><img src="./pics/2_5.png" alt="pic2_5"><br>设工具指向的方向为Z轴，其对应的方向向量命名为approach vector（z向矢量）,设为$\hat{a}=(a_x,a_y,a_z)$。设两指之间的指向为orientation vector（y向矢量）, 设为$\hat{o}=(o_x,o_y,o_z)$。使用$\hat{a},\hat{o}$已经足够得到旋转矩阵R：<br>$$<br>R = \begin{pmatrix}<br>    n_x&amp; o_x&amp; a_x \<br>    n_y&amp; o_y&amp; a_y\<br>    n_z&amp; o_z&amp; a_z<br>    \end{pmatrix}<br>$$<br>$\hat{n},\hat{o},\hat{a}$向量依次对应X,Y,Z轴。</p>
+<p><img src="./pics/2_5.png" alt="pic2_5"><br>设工具指向的方向为Z轴，其对应的方向向量命名为approach vector（z向矢量）,设为$\hat{a}=(a_x,a_y,a_z)$。设两指之间的指向为orientation vector（y向矢量）, 设为$\hat{o}=(o_x,o_y,o_z)$。使用$\hat{a},\hat{o}$已经足够得到旋转矩阵R：</p>
+<script type="math/tex; mode=display">
+R = \begin{pmatrix}
+    n_x& o_x& a_x \\
+    n_y& o_y& a_y\\
+    n_z& o_z& a_z
+    \end{pmatrix}</script><p>$\hat{n},\hat{o},\hat{a}$向量依次对应X,Y,Z轴。</p>
 <ul>
 <li><p>当$\hat{a},\hat{o}$正交时：$\hat{n} = \hat{a}\times\hat{o}$，$\hat{n}$称为normal vetor（x向矢量）。<br>Matlab对应指令：</p>
   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = [1 0 0]&apos;;</span><br><span class="line">o = [0 1 0]&apos;;</span><br><span class="line">R = oa2r(o, a)</span><br></pre></td></tr></table></figure>
@@ -526,21 +598,76 @@
 </li>
 </ul>
 <h3 id="2-2-1-5-Rotation-about-an-Arbitrary-Vector绕任意向量旋转"><a href="#2-2-1-5-Rotation-about-an-Arbitrary-Vector绕任意向量旋转" class="headerlink" title="2.2.1.5 Rotation about an Arbitrary Vector绕任意向量旋转"></a>2.2.1.5 Rotation about an Arbitrary Vector绕任意向量旋转</h3><p>任意朝向的两个坐标轴可以通过绕空间中某个轴旋转一次而重合。设旋转轴为向量v，旋转角为theta，Matlab实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">R = rpy2r(0.1 , 0.2, 0.3);</span><br><span class="line">[theta, v] = tr2angvec(R)</span><br><span class="line"></span><br><span class="line">%求R的特征值和特征向量</span><br><span class="line">[x,e] = eig(R)</span><br><span class="line"></span><br><span class="line">%通过R的特征值求取旋转角</span><br><span class="line">theta = angle(e(1,1))</span><br></pre></td></tr></table></figure></p>
-<p>v和theta不唯一。同时旋转矩阵R的特征值和特征向量存在如下关系：<br>因为特征值和特征向量存在关系:$$Rv={\lambda}v$$<br>当$\lambda=1$,即特征值为1时：$$Rv=v$$<br>此时对应的特征向量v在旋转矩阵R的变换下不发生改变，即该特征向量就是旋转轴。一个正交旋转矩阵总有一个特征值$\lambda=1$,且另外两个特征值为共轭复数，满足$\lambda=cos\theta{\pm}isin\theta$，此处$\theta$就是旋转角。</p>
-<p><strong>逆问题</strong>：从旋转角和转轴向量求解旋转矩阵,使用Rodrigues旋转公式：<br>$$<br>R=I_{3\times3}+sin{\theta}[\hat{v}]<em>{\times}+<br>(1-cos\theta)[\hat{v}]^{2}</em>{\times}<br>$$<br>此处$[\hat{v}]_{\times}$是偏斜对称矩阵。对应的Matlab实现为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">%绕X轴旋转pi/2的旋转矩阵</span><br><span class="line">R = angvec2r(pi/2, [1 0 0])</span><br></pre></td></tr></table></figure></p>
+<p>v和theta不唯一。同时旋转矩阵R的特征值和特征向量存在如下关系：<br>因为特征值和特征向量存在关系:<script type="math/tex">Rv={\lambda}v</script><br>当$\lambda=1$,即特征值为1时：<script type="math/tex">Rv=v</script><br>此时对应的特征向量v在旋转矩阵R的变换下不发生改变，即该特征向量就是旋转轴。一个正交旋转矩阵总有一个特征值$\lambda=1$,且另外两个特征值为共轭复数，满足$\lambda=cos\theta{\pm}isin\theta$，此处$\theta$就是旋转角。</p>
+<p><strong>逆问题</strong>：从旋转角和转轴向量求解旋转矩阵,使用Rodrigues旋转公式：</p>
+<script type="math/tex; mode=display">
+R=I_{3\times3}+sin{\theta}[\hat{v}]_{\times}+
+(1-cos\theta)[\hat{v}]^{2}_{\times}</script><p>此处$[\hat{v}]_{\times}$是偏斜对称矩阵。对应的Matlab实现为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">%绕X轴旋转pi/2的旋转矩阵</span><br><span class="line">R = angvec2r(pi/2, [1 0 0])</span><br></pre></td></tr></table></figure></p>
 <h3 id="2-2-1-6-Matrix-Exponentials矩阵指数"><a href="#2-2-1-6-Matrix-Exponentials矩阵指数" class="headerlink" title="2.2.1.6 Matrix Exponentials矩阵指数"></a>2.2.1.6 Matrix Exponentials矩阵指数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">R = rotx(0.3) </span><br><span class="line"></span><br><span class="line">%求解矩阵对数</span><br><span class="line">%结果是拥有两个元素的稀疏矩阵,大小为0.3</span><br><span class="line">S = logm(R)</span><br><span class="line"></span><br><span class="line">%S也是偏斜对称矩阵</span><br><span class="line">%vex结果的第一个元素为旋转角0.3，对应于X轴为旋转轴</span><br><span class="line">vex(S)&apos;</span><br><span class="line"></span><br><span class="line">%使用工具箱函数获取旋转角和旋转轴</span><br><span class="line">[th,w] = trlog(R)</span><br><span class="line"></span><br><span class="line">%矩阵对数函数logm的逆函数为矩阵指数函数expm</span><br><span class="line">%重新得到旋转矩阵</span><br><span class="line">expm(S)</span><br><span class="line"></span><br><span class="line">%所以以下两个命令等价</span><br><span class="line">R = rotx(0.3);</span><br><span class="line">R = expm( skew([1 0 0]) * 0.3 );</span><br></pre></td></tr></table></figure>
-<p>绕任意轴旋转的情况可以写为：<br>$$<br>R = e^{\hat{[\omega]}_\times\theta}\in{SO_3}<br>$$<br>$\theta$是旋转角，$\hat{\omega}$是平行于旋转轴的单位向量,符号$[\bullet]_\times:\mathbb{R}^3\mapsto\mathbb{R}^{3\times3}$表示从一个向量到偏斜对称矩阵的映射。</p>
-<h3 id="2-2-1-7-Unit-Quaternions单位四元数"><a href="#2-2-1-7-Unit-Quaternions单位四元数" class="headerlink" title="2.2.1.7 Unit Quaternions单位四元数"></a>2.2.1.7 Unit Quaternions单位四元数</h3><p>Quaternions定义:<br>$$<br>q=s+v_{\tiny1}i+v_{\tiny2}j+v_{\tiny3}k<br>$$</p>
-<p>Unit Quaternions 满足:<br>$$<br>\left |q \right | =s^2+v^2_{1}+v^2_{2}+v^2_{3} =1<br>$$<br>可以看做是绕单位向量$\hat{v}$旋转$\theta$角,满足关系式:<br>$$<br>\mathring{q}=cos\frac{\theta}{2}&lt;\hat{v}sin\frac{\theta}{2}&gt;<br>$$</p>
-<p>对应的Matlab实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">%注意角度单位是度还是弧度</span><br><span class="line">q = UnitQuaternion( rpy2tr(0.1, 0.2, 0.3) )</span><br><span class="line"></span><br><span class="line">inv(q)</span><br><span class="line">q*inv(q)</span><br><span class="line">q.R</span><br><span class="line">q.plot()</span><br><span class="line"></span><br><span class="line">%借助四元数进行旋转变换</span><br><span class="line">q*[1 0 0]&apos;</span><br></pre></td></tr></table></figure></p>
-<h2 id="2-2-2-Pose-in-3-Dimensions"><a href="#2-2-2-Pose-in-3-Dimensions" class="headerlink" title="2.2.2 Pose in 3-Dimensions"></a>2.2.2 Pose in 3-Dimensions</h2><h3 id="2-2-2-1-Homogeneous-Transformation-Matrix"><a href="#2-2-2-1-Homogeneous-Transformation-Matrix" class="headerlink" title="2.2.2.1 Homogeneous Transformation Matrix"></a>2.2.2.1 Homogeneous Transformation Matrix</h3><p>3维齐次变换矩阵与2维类似：<br>$$<br>    \begin{pmatrix}<br>    ^{A}x&amp; \<br>    ^{A}y&amp; \<br>    ^{A}z&amp; \<br>    1&amp;<br>    \end{pmatrix}<br>    =<br>    \begin{pmatrix}<br>    ^{A}R_{B}&amp; t\<br>    0_{1\times3}&amp; 1<br>    \end{pmatrix}<br>    \begin{pmatrix}<br>    ^{B}x&amp; \<br>    ^{B}y&amp; \<br>    ^{B}z&amp; \<br>    1&amp;<br>    \end{pmatrix}<br>$$</p>
-<p>引入齐次坐标，则上述变换可写为:<br>$$<br>^{A}\tilde{p} =<br>    \begin{pmatrix}<br>    ^{A}R_{B}&amp; t\<br>    0_{1\times3}&amp; 1<br>    \end{pmatrix} \,<br>    ^{B}\tilde{p} = \,<br>    ^{A}T_{B}\,^{B}\tilde{p}<br>$$<br>$^{A}T_{B}$是4x4的齐次变换矩阵。</p>
-<p>T的性质：<br>$$<br>T_1T_2 = \begin{pmatrix}<br>    R_1&amp; t_1\<br>    0_{1\times3}&amp; 1<br>    \end{pmatrix}<br>    \begin{pmatrix}<br>    R_2&amp; t_2\<br>    0_{1\times3}&amp; 1<br>    \end{pmatrix}=<br>    \begin{pmatrix}<br>    R_1R_2&amp; t_1+R_1t_2\<br>    0_{1\times3}&amp; 1<br>    \end{pmatrix}<br>$$</p>
-<p>$$<br>T^{-1} = \begin{pmatrix}<br>    R&amp; t\<br>    0_{1\times3}&amp; 1<br>    \end{pmatrix}^{-1} =<br>    \begin{pmatrix}<br>    R^{T}&amp; -R^{T}t\<br>    0_{1\times3}&amp; 1<br>    \end{pmatrix}<br>$$</p>
-<p>相关Matlab程序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">%注意角度单位问题</span><br><span class="line">T = transl(1, 0, 0) * trotx(pi/2) * transl(0, 1, 0)</span><br><span class="line">tranimate(T)</span><br><span class="line"></span><br><span class="line">%旋转矩阵求解</span><br><span class="line">t2r(T)</span><br><span class="line"></span><br><span class="line">%坐标变换部分，一个列向量</span><br><span class="line">transl(T)&apos;</span><br></pre></td></tr></table></figure></p>
-<h3 id="2-2-2-2-Vector-Quaternion-Pair向量-四元数对"><a href="#2-2-2-2-Vector-Quaternion-Pair向量-四元数对" class="headerlink" title="2.2.2.2 Vector-Quaternion Pair向量-四元数对"></a>2.2.2.2 Vector-Quaternion Pair向量-四元数对</h3><p>位姿的简洁、实用表示方法是向量-四元数对：<br>$$<br>\xi \sim (t, \mathring{q})<br>$$<br>其中$t \in \mathbb{R}^3$是一个表征原坐标系与参考坐标系之间关系的向量，$\mathring{q} \in \mathbb{S}^3$表征原坐标系相对于参考坐标系的朝向。</p>
+<p>绕任意轴旋转的情况可以写为：</p>
+<script type="math/tex; mode=display">
+R = e^{\hat{[\omega]}_\times\theta}\in{SO_3}</script><p>$\theta$是旋转角，$\hat{\omega}$是平行于旋转轴的单位向量,符号$[\bullet]_\times:\mathbb{R}^3\mapsto\mathbb{R}^{3\times3}$表示从一个向量到偏斜对称矩阵的映射。</p>
+<h3 id="2-2-1-7-Unit-Quaternions单位四元数"><a href="#2-2-1-7-Unit-Quaternions单位四元数" class="headerlink" title="2.2.1.7 Unit Quaternions单位四元数"></a>2.2.1.7 Unit Quaternions单位四元数</h3><p>Quaternions定义:</p>
+<script type="math/tex; mode=display">
+q=s+v_{\tiny1}i+v_{\tiny2}j+v_{\tiny3}k</script><p>Unit Quaternions 满足:</p>
+<script type="math/tex; mode=display">
+\left \|q \right \| =s^2+v^2_{1}+v^2_{2}+v^2_{3} =1</script><p>可以看做是绕单位向量$\hat{v}$旋转$\theta$角,满足关系式:</p>
+<script type="math/tex; mode=display">
+\mathring{q}=cos\frac{\theta}{2}<\hat{v}sin\frac{\theta}{2}></script><p>对应的Matlab实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">%注意角度单位是度还是弧度</span><br><span class="line">q = UnitQuaternion( rpy2tr(0.1, 0.2, 0.3) )</span><br><span class="line"></span><br><span class="line">inv(q)</span><br><span class="line">q*inv(q)</span><br><span class="line">q.R</span><br><span class="line">q.plot()</span><br><span class="line"></span><br><span class="line">%借助四元数进行旋转变换</span><br><span class="line">q*[1 0 0]&apos;</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-2-2-Pose-in-3-Dimensions"><a href="#2-2-2-Pose-in-3-Dimensions" class="headerlink" title="2.2.2 Pose in 3-Dimensions"></a>2.2.2 Pose in 3-Dimensions</h2><h3 id="2-2-2-1-Homogeneous-Transformation-Matrix"><a href="#2-2-2-1-Homogeneous-Transformation-Matrix" class="headerlink" title="2.2.2.1 Homogeneous Transformation Matrix"></a>2.2.2.1 Homogeneous Transformation Matrix</h3><p>3维齐次变换矩阵与2维类似：</p>
+<script type="math/tex; mode=display">
+    \begin{pmatrix}
+    ^{A}x& \\ 
+    ^{A}y& \\
+    ^{A}z& \\
+    1&
+    \end{pmatrix}  
+    = 
+    \begin{pmatrix}
+    ^{A}R_{B}& t\\ 
+    0_{1\times3}& 1
+    \end{pmatrix}  
+    \begin{pmatrix}
+    ^{B}x& \\ 
+    ^{B}y& \\
+    ^{B}z& \\
+    1&
+    \end{pmatrix}</script><p>引入齐次坐标，则上述变换可写为:</p>
+<script type="math/tex; mode=display">
+^{A}\tilde{p} = 
+    \begin{pmatrix}
+    ^{A}R_{B}& t\\ 
+    0_{1\times3}& 1
+    \end{pmatrix} \,
+    ^{B}\tilde{p} = \,
+    ^{A}T_{B}\,^{B}\tilde{p}</script><p>$^{A}T_{B}$是4x4的齐次变换矩阵。</p>
+<p>T的性质：</p>
+<script type="math/tex; mode=display">
+T_1T_2 = \begin{pmatrix}
+    R_1& t_1\\ 
+    0_{1\times3}& 1
+    \end{pmatrix} 
+    \begin{pmatrix}
+    R_2& t_2\\ 
+    0_{1\times3}& 1
+    \end{pmatrix}= 
+    \begin{pmatrix}
+    R_1R_2& t_1+R_1t_2\\ 
+    0_{1\times3}& 1
+    \end{pmatrix}</script><script type="math/tex; mode=display">
+T^{-1} = \begin{pmatrix}
+    R& t\\ 
+    0_{1\times3}& 1
+    \end{pmatrix}^{-1} = 
+    \begin{pmatrix}
+    R^{T}& -R^{T}t\\ 
+    0_{1\times3}& 1
+    \end{pmatrix}</script><p>相关Matlab程序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">%注意角度单位问题</span><br><span class="line">T = transl(1, 0, 0) * trotx(pi/2) * transl(0, 1, 0)</span><br><span class="line">tranimate(T)</span><br><span class="line"></span><br><span class="line">%旋转矩阵求解</span><br><span class="line">t2r(T)</span><br><span class="line"></span><br><span class="line">%坐标变换部分，一个列向量</span><br><span class="line">transl(T)&apos;</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-2-2-2-Vector-Quaternion-Pair向量-四元数对"><a href="#2-2-2-2-Vector-Quaternion-Pair向量-四元数对" class="headerlink" title="2.2.2.2 Vector-Quaternion Pair向量-四元数对"></a>2.2.2.2 Vector-Quaternion Pair向量-四元数对</h3><p>位姿的简洁、实用表示方法是向量-四元数对：</p>
+<script type="math/tex; mode=display">
+\xi \sim (t, \mathring{q})</script><p>其中$t \in \mathbb{R}^3$是一个表征原坐标系与参考坐标系之间关系的向量，$\mathring{q} \in \mathbb{S}^3$表征原坐标系相对于参考坐标系的朝向。</p>
 <p><strong>Note</strong>：这种方法Matlab Robotics Toolbox没有实现。</p>
-<h3 id="2-2-2-3-Twists"><a href="#2-2-2-3-Twists" class="headerlink" title="2.2.2.3 Twists"></a>2.2.2.3 Twists</h3><p>在三维空间，刚体的任意运动等效于螺旋运动–绕着空间中某条线旋转的同时沿着该线移动。<br>定义3维向量对Twist表征螺旋运动，$s=(v,\omega) \in \mathbb{R}^6$。$\omega$表征旋转轴，$v$表征twist轴在空间中的位置和螺旋运动的俯仰角。</p>
+<h3 id="2-2-2-3-Twists"><a href="#2-2-2-3-Twists" class="headerlink" title="2.2.2.3 Twists"></a>2.2.2.3 Twists</h3><p>在三维空间，刚体的任意运动等效于螺旋运动—绕着空间中某条线旋转的同时沿着该线移动。<br>定义3维向量对Twist表征螺旋运动，$s=(v,\omega) \in \mathbb{R}^6$。$\omega$表征旋转轴，$v$表征twist轴在空间中的位置和螺旋运动的俯仰角。</p>
 <p>Matlab相关代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">%初始化一个单位twist，且转轴为x轴</span><br><span class="line">tw = Twist(&apos;R&apos;, [1 0 0], [0 0 0])</span><br><span class="line">%绕x轴旋转0.3rad，等价于trotx(0.3)</span><br><span class="line">tw.T(0.3)</span><br><span class="line"></span><br><span class="line">%创建沿y轴平移的twist</span><br><span class="line">tw = Twist(&apos;T&apos;, [0 1 0])</span><br><span class="line">%平移2个单位</span><br><span class="line">tw.T(2)</span><br></pre></td></tr></table></figure></p>
 <p>一个关于螺旋运动模型的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">X = transl(3, 4, -4);</span><br><span class="line">angles = [0:0.3:15];</span><br><span class="line"></span><br><span class="line">%定义旋转轴</span><br><span class="line">tw = Twist(&apos;R&apos;, [0 0 1], [2 3 2], 0.5);</span><br><span class="line"></span><br><span class="line">%可视化</span><br><span class="line">tranimate( @(theta) tw.T(theta) * X, angles, &apos;length&apos;, 0.5, &apos;retain&apos;, &apos;rgb&apos;, &apos;notext&apos;);</span><br><span class="line"></span><br><span class="line">%获取旋转轴，并绘制出来</span><br><span class="line">L = tw.line</span><br><span class="line">L.plot(&apos;k:&apos;, &apos;LineWidth&apos;, 2)</span><br></pre></td></tr></table></figure></p>
 <p>将任意齐次变换转换为非单位twist：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">T = transl(1, 2, 3) * eul2tr(0.3, 0.4, 0.5);</span><br><span class="line">tw = Twist(T)</span><br><span class="line"></span><br><span class="line">%俯仰角</span><br><span class="line">tw.pitch</span><br><span class="line"></span><br><span class="line">%关于轴的旋转</span><br><span class="line">tw.theta</span><br><span class="line"></span><br><span class="line">%旋转轴上的一点</span><br><span class="line">tw.pole&apos;</span><br></pre></td></tr></table></figure></p>
@@ -552,11 +679,53 @@
 </ul>
 <h2 id="2-3-2-Understanding-the-Exponential-Mapping"><a href="#2-3-2-Understanding-the-Exponential-Mapping" class="headerlink" title="2.3.2 Understanding the Exponential Mapping"></a>2.3.2 Understanding the Exponential Mapping</h2><p>本章讲解旋转矩阵(rotation matrices)、偏斜对称矩阵(skewsymmetric matrices)和矩阵指数(matrix exponentiation)之间的关系。  </p>
 <hr>
-<p>设一点P，其坐标向量为p，以角速度向量$\omega$旋转，$\omega$的方向即为转轴方向。若使P点旋转$\theta$角，则P点的线速度为:<br>$$<br>\dot{p} = \omega \times p<br>$$<br>将交叉积替换为偏斜对称矩阵和向量的积:<br>$$<br>\dot{p} = [\omega]<em>\times p<br>$$<br>对于上述方程的一阶形式(标量形式):<br>$$<br>\dot{x} = ax<br>$$<br>得一阶形式的解为：<br>$$<br>x(t) = e^{at}x(0)<br>$$<br>原方程的解为：<br>$$<br>p(t) = e^{[\omega]</em>{\times}t} p(0)<br>$$<br>当$\left | \omega \right | = 1$时，表示t秒之后旋转t rad。我们需要旋转$\theta$角，所以设置$t = \theta$，可得：<br>$$<br>p(\theta) = e^{[\hat{\omega}]<em>{\times}\theta} p(0)<br>$$<br>该方程表示$p(0)$被旋转至$p(\theta)$。一个矩阵对向量进行旋转，该矩阵即是旋转矩阵:<br>$$<br>R(\theta,\hat{\omega}) = e^{[\hat{\omega}]</em>{\times}\theta} \in \mathrm{SO(3)}<br>$$</p>
-<hr>
-<p>考虑一般情况下的旋转和平移运动:<br>$$<br>\dot{p} = [\omega]<em>\times p + v<br>$$<br>写为矩阵形式：<br>$$<br>\begin{pmatrix}<br>\dot{p} \<br>0<br>\end{pmatrix} = \begin{pmatrix}<br>                [\omega]</em>\times&amp; v\<br>                0&amp; 0<br>                \end{pmatrix}<br>                \begin{pmatrix}<br>                p\<br>                1<br>                \end{pmatrix}<br>$$</p>
-<p>引入齐次坐标，上述方程写为：<br>$$<br>\dot{\tilde{p}} = \begin{pmatrix}<br>                [\omega]<em>\times&amp; v\<br>                0&amp; 0<br>                \end{pmatrix}<br>                \tilde{p}<br>                =\Sigma \tilde{p}<br>$$<br>其中$\Sigma$是4x4阶增广斜对称矩阵,可得其标量形式的解为：<br>$$<br>\tilde{p}(\theta) = e^{\Sigma\theta}\tilde{p}(0)<br>$$<br>可得齐次变换矩阵$T(\theta,\hat\omega,v)$为：<br>$$<br>T(\theta,\hat\omega,v) = e^{<br>                \begin{pmatrix}<br>                [\hat\omega]</em>\times&amp; v\<br>                0&amp; 0<br>                \end{pmatrix}<br>                \theta<br>                } \in \mathrm{SE(3)}<br>$$</p>
-<hr>
+<p>设一点P，其坐标向量为p，以角速度向量$\omega$旋转，$\omega$的方向即为转轴方向。若使P点旋转$\theta$角，则P点的线速度为:</p>
+<script type="math/tex; mode=display">
+\dot{p} = \omega \times p</script><p>将交叉积替换为偏斜对称矩阵和向量的积:</p>
+<script type="math/tex; mode=display">
+\dot{p} = [\omega]_\times p</script><p>对于上述方程的一阶形式(标量形式):</p>
+<script type="math/tex; mode=display">
+\dot{x} = ax</script><p>得一阶形式的解为：</p>
+<script type="math/tex; mode=display">
+x(t) = e^{at}x(0)</script><p>原方程的解为：</p>
+<script type="math/tex; mode=display">
+p(t) = e^{[\omega]_{\times}t} p(0)</script><p>当$\left | \omega \right | = 1$时，表示t秒之后旋转t rad。我们需要旋转$\theta$角，所以设置$t = \theta$，可得：</p>
+<script type="math/tex; mode=display">
+p(\theta) = e^{[\hat{\omega}]_{\times}\theta} p(0)</script><p>该方程表示$p(0)$被旋转至$p(\theta)$。一个矩阵对向量进行旋转，该矩阵即是旋转矩阵:</p>
+<script type="math/tex; mode=display">
+R(\theta,\hat{\omega}) = e^{[\hat{\omega}]_{\times}\theta} \in \mathrm{SO(3)}</script><hr>
+<p>考虑一般情况下的旋转和平移运动:</p>
+<script type="math/tex; mode=display">
+\dot{p} = [\omega]_\times p + v</script><p>写为矩阵形式：</p>
+<script type="math/tex; mode=display">
+\begin{pmatrix}
+\dot{p} \\
+0
+\end{pmatrix} = \begin{pmatrix}
+                [\omega]_\times& v\\
+                0& 0
+                \end{pmatrix}
+                \begin{pmatrix}
+                p\\
+                1
+                \end{pmatrix}</script><p>引入齐次坐标，上述方程写为：</p>
+<script type="math/tex; mode=display">
+\dot{\tilde{p}} = \begin{pmatrix}
+                [\omega]_\times& v\\
+                0& 0
+                \end{pmatrix}
+                \tilde{p}
+                =\Sigma \tilde{p}</script><p>其中$\Sigma$是4x4阶增广斜对称矩阵,可得其标量形式的解为：</p>
+<script type="math/tex; mode=display">
+\tilde{p}(\theta) = e^{\Sigma\theta}\tilde{p}(0)</script><p>可得齐次变换矩阵$T(\theta,\hat\omega,v)$为：</p>
+<script type="math/tex; mode=display">
+T(\theta,\hat\omega,v) = e^{
+                \begin{pmatrix}
+                [\hat\omega]_\times& v\\
+                0& 0
+                \end{pmatrix}
+                \theta
+                } \in \mathrm{SE(3)}</script><hr>
 <p>以上讲解旋转矩阵(rotation matrices)、偏斜对称矩阵(skewsymmetric matrices)和矩阵指数(matrix exponentiation)之间的关系，Matlab实现的函数为<code>expm</code>和<code>trexp</code>。</p>
 <h2 id="2-3-4-Dual-Quaternions对偶四元数"><a href="#2-3-4-Dual-Quaternions对偶四元数" class="headerlink" title="2.3.4 Dual Quaternions对偶四元数"></a>2.3.4 Dual Quaternions对偶四元数</h2><p>常规四元数只能表示空间旋转，而对偶四元数可以表示空间任意旋转和平移的组合。</p>
 <h2 id="2-3-5-Configuration-Space构型空间"><a href="#2-3-5-Configuration-Space构型空间" class="headerlink" title="2.3.5 Configuration Space构型空间"></a>2.3.5 Configuration Space构型空间</h2><p>构型空间又称为C空间(C-Space),是系统所有可能的状态或配置（configuration）的集合,包括：</p>
@@ -575,15 +744,47 @@
 <li><p>表示位姿的不同方法间的变换<br><img src="./pics/2_8.png" alt="pic2_8"></p>
 </li>
 </ul>
-<h1 id="Chapter-3-Time-and-Motion"><a href="#Chapter-3-Time-and-Motion" class="headerlink" title="Chapter 3 Time and Motion"></a>Chapter 3 Time and Motion</h1><h1 id="3-1-Time-Varying-Pose"><a href="#3-1-Time-Varying-Pose" class="headerlink" title="3.1 Time-Varying Pose"></a>3.1 Time-Varying Pose</h1><h2 id="3-1-1-Derivative-of-Pose"><a href="#3-1-1-Derivative-of-Pose" class="headerlink" title="3.1.1 Derivative of Pose"></a>3.1.1 Derivative of Pose</h2><p><strong>指数形势下位姿的导数</strong>：<br>表示坐标系朝向的方法有很多种，这里我们使用最方便的指数形式:<br>$$<br>^{A}\mathrm{R}<em>{B}(t) = e^{[^{A}\hat{\omega}(t)]</em>{\times}\theta(t)} \in \mathrm{SO(3)}<br>$$<br>$^{A}\hat{\omega}(t)$表示相对于A坐标系的旋转轴,转角为$\theta(t)$，$[\bullet]<em>{\times}$表示偏斜对称矩阵。<br>关于时间的导数：<br>$$<br>^{A}\dot{R}</em>{B}(t) = [^{A}\hat{\omega}(t)]<em>{\times} \dot{\theta} e^{[^{A}\hat{\omega}(t)]</em>{\times}\theta(t)} \in \mathbb{R^{3\times3}}<br>=[^{A}\hat{\omega}(t)]<em>{\times}\dot{\theta} \, ^{A}\mathrm{R}</em>{B}(t)<br>$$</p>
-<p>令$^A\omega= \, ^{A}\hat{\omega}\dot{\theta}$，则$^A\omega$是相对于A坐标系的角速度,上述方程可重写为：<br>$$<br>^{A}\dot{R}<em>{B} = [^{A}\hat{\omega}]</em>\times \, ^{A}{R}_{B} \in \mathbb{R^{3\times3}}<br>$$</p>
-<p>B坐标系下的角速度变换至A坐标系：<br>$$<br>^A\omega = \, ^AR_B \, ^B\omega<br>$$</p>
-<hr>
-<p><strong>齐次变换矩阵形式下位姿的导数</strong>：<br>位姿的齐次矩阵形式：<br>$$<br>\xi \sim\, ^AT_B = \begin{pmatrix}<br>                    ^{A}R_{B}&amp; ^At_B\<br>                    0_{1\times3}&amp; 1<br>                    \end{pmatrix}<br>$$<br>其导数形式为：<br>$$<br>\dot\xi \sim\, ^A\dot{T}<em>B = \begin{pmatrix}<br>                    ^{A}\dot{R}</em>{B}&amp; ^A\dot{t}<em>B\<br>                    0</em>{1\times3}&amp; 0<br>                    \end{pmatrix}<br>                    =\begin{pmatrix}<br>                    [^{A}{\omega}]<em>\times \,^{A}{R}</em>{B}&amp; ^A\dot{t}<em>B\<br>                    0</em>{1\times3}&amp; 0<br>                    \end{pmatrix}<br>$$</p>
-<p>B坐标系相对于A坐标系的平移速度即线速度为：$v=^A\dot{t}_{B}$，B坐标系相对于A坐标系的角速度是$^A{\omega}<em>B$。将上述两个速度向量组合为一个空间速度向量：<br>$$<br>^{\tiny{A}}v</em>{\tiny{B}} = (^{\tiny{A}}v_{\tiny{B}}, ^{\tiny{A}}\omega_{\tiny{B}}) \in \mathbb{R^6}<br>$$<br>这就是坐标系B相对于坐标系A的瞬时速度。</p>
-<h2 id="3-1-2-Transforming-Spatial-Velocities空间速度的变换"><a href="#3-1-2-Transforming-Spatial-Velocities空间速度的变换" class="headerlink" title="3.1.2 Transforming Spatial Velocities空间速度的变换"></a>3.1.2 Transforming Spatial Velocities空间速度的变换</h2><p>如下图，坐标系A是世界参考坐标系，坐标系B是运动物体坐标系:<br><img src="./pics/3_1.png" alt="pic3_1"><br>空间速度$^Av,\,^Bv,\,^Cv$之间的变换关系为：<br>$$<br>^Av = \begin{pmatrix}<br>    ^{A}R_{B}&amp; 0_{3\times3}\<br>    0_{3\times3}&amp; ^{A}R_{B}<br>    \end{pmatrix}<br>    {^Bv} =<br>    {^A\mathit{J}_B}{(^A\xi_B)}{^Bv}<br>$$</p>
-<p>$$<br>^Cv = \begin{pmatrix}<br>    ^{C}R_{B}&amp; [^Ct_B]<em>{\times}{^{C}R</em>{B}}\<br>    0_{3\times3}&amp; ^{C}R_{B}<br>    \end{pmatrix}<br>    {^Bv} =<br>    Ad{(^C\xi_B)}{^Bv}<br>$$</p>
-<h2 id="3-1-3-Incremental-Rotation旋转的增量"><a href="#3-1-3-Incremental-Rotation旋转的增量" class="headerlink" title="3.1.3 Incremental Rotation旋转的增量"></a>3.1.3 Incremental Rotation旋转的增量</h2><p>占位:smile:</p>
+<h1 id="Chapter-3-Time-and-Motion"><a href="#Chapter-3-Time-and-Motion" class="headerlink" title="Chapter 3 Time and Motion"></a>Chapter 3 Time and Motion</h1><h1 id="3-1-Time-Varying-Pose"><a href="#3-1-Time-Varying-Pose" class="headerlink" title="3.1 Time-Varying Pose"></a>3.1 Time-Varying Pose</h1><h2 id="3-1-1-Derivative-of-Pose"><a href="#3-1-1-Derivative-of-Pose" class="headerlink" title="3.1.1 Derivative of Pose"></a>3.1.1 Derivative of Pose</h2><p><strong>指数形势下位姿的导数</strong>：<br>表示坐标系朝向的方法有很多种，这里我们使用最方便的指数形式:</p>
+<script type="math/tex; mode=display">
+^{A}\mathrm{R}_{B}(t) = e^{[^{A}\hat{\omega}(t)]_{\times}\theta(t)} \in \mathrm{SO(3)}</script><p>$^{A}\hat{\omega}(t)$表示相对于A坐标系的旋转轴,转角为$\theta(t)$，$[\bullet]_{\times}$表示偏斜对称矩阵。<br>关于时间的导数：</p>
+<script type="math/tex; mode=display">
+^{A}\dot{R}_{B}(t) = [^{A}\hat{\omega}(t)]_{\times} \dot{\theta} e^{[^{A}\hat{\omega}(t)]_{\times}\theta(t)} \in \mathbb{R^{3\times3}}
+=[^{A}\hat{\omega}(t)]_{\times}\dot{\theta} \, ^{A}\mathrm{R}_{B}(t)</script><p>令$^A\omega= \, ^{A}\hat{\omega}\dot{\theta}$，则$^A\omega$是相对于A坐标系的角速度,上述方程可重写为：</p>
+<script type="math/tex; mode=display">
+^{A}\dot{R}_{B} = [^{A}\hat{\omega}]_\times \, ^{A}{R}_{B} \in \mathbb{R^{3\times3}}</script><p>B坐标系下的角速度变换至A坐标系：</p>
+<script type="math/tex; mode=display">
+^A\omega = \, ^AR_B \, ^B\omega</script><hr>
+<p><strong>齐次变换矩阵形式下位姿的导数</strong>：<br>位姿的齐次矩阵形式：</p>
+<script type="math/tex; mode=display">
+\xi \sim\, ^AT_B = \begin{pmatrix}
+                    ^{A}R_{B}& ^At_B\\ 
+                    0_{1\times3}& 1
+                    \end{pmatrix}</script><p>其导数形式为：</p>
+<script type="math/tex; mode=display">
+\dot\xi \sim\, ^A\dot{T}_B = \begin{pmatrix}
+                    ^{A}\dot{R}_{B}& ^A\dot{t}_B\\ 
+                    0_{1\times3}& 0
+                    \end{pmatrix}  
+                    =\begin{pmatrix}
+                    [^{A}{\omega}]_\times \,^{A}{R}_{B}& ^A\dot{t}_B\\ 
+                    0_{1\times3}& 0
+                    \end{pmatrix}</script><p>B坐标系相对于A坐标系的平移速度即线速度为：$v=^A\dot{t}_{B}$，B坐标系相对于A坐标系的角速度是$^A{\omega}_B$。将上述两个速度向量组合为一个空间速度向量：</p>
+<script type="math/tex; mode=display">
+^{\tiny{A}}v_{\tiny{B}} = (^{\tiny{A}}v_{\tiny{B}}, ^{\tiny{A}}\omega_{\tiny{B}}) \in \mathbb{R^6}</script><p>这就是坐标系B相对于坐标系A的瞬时速度。</p>
+<h2 id="3-1-2-Transforming-Spatial-Velocities空间速度的变换"><a href="#3-1-2-Transforming-Spatial-Velocities空间速度的变换" class="headerlink" title="3.1.2 Transforming Spatial Velocities空间速度的变换"></a>3.1.2 Transforming Spatial Velocities空间速度的变换</h2><p>如下图，坐标系A是世界参考坐标系，坐标系B是运动物体坐标系:<br><img src="./pics/3_1.png" alt="pic3_1"><br>空间速度$^Av,\,^Bv,\,^Cv$之间的变换关系为：</p>
+<script type="math/tex; mode=display">
+^Av = \begin{pmatrix}
+    ^{A}R_{B}& 0_{3\times3}\\ 
+    0_{3\times3}& ^{A}R_{B}
+    \end{pmatrix} 
+    {^Bv} = 
+    {^A\mathit{J}_B}{(^A\xi_B)}{^Bv}</script><script type="math/tex; mode=display">
+^Cv = \begin{pmatrix}
+    ^{C}R_{B}& [^Ct_B]_{\times}{^{C}R_{B}}\\ 
+    0_{3\times3}& ^{C}R_{B}
+    \end{pmatrix} 
+    {^Bv} = 
+    Ad{(^C\xi_B)}{^Bv}</script><h2 id="3-1-3-Incremental-Rotation旋转的增量"><a href="#3-1-3-Incremental-Rotation旋转的增量" class="headerlink" title="3.1.3 Incremental Rotation旋转的增量"></a>3.1.3 Incremental Rotation旋转的增量</h2><p>占位:smile:</p>
 <h2 id="3-1-4-Incremental-Rigid-Body-Motion-刚体运动的增量"><a href="#3-1-4-Incremental-Rigid-Body-Motion-刚体运动的增量" class="headerlink" title="3.1.4 Incremental Rigid-Body Motion 刚体运动的增量"></a>3.1.4 Incremental Rigid-Body Motion 刚体运动的增量</h2><p>占位:smile:</p>
 <h1 id="3-2-Accelerating-Bodies-and-Reference-Frames"><a href="#3-2-Accelerating-Bodies-and-Reference-Frames" class="headerlink" title="3.2 Accelerating Bodies and Reference Frames"></a>3.2 Accelerating Bodies and Reference Frames</h1><h2 id="3-2-1-Dynamics-of-Moving-Bodies动力学"><a href="#3-2-1-Dynamics-of-Moving-Bodies动力学" class="headerlink" title="3.2.1 Dynamics of Moving Bodies动力学"></a>3.2.1 Dynamics of Moving Bodies动力学</h2><p>占位:smile:</p>
 <h2 id="3-2-2-Transforming-Forces-and-Torques力和力矩的变换"><a href="#3-2-2-Transforming-Forces-and-Torques力和力矩的变换" class="headerlink" title="3.2.2 Transforming Forces and Torques力和力矩的变换"></a>3.2.2 Transforming Forces and Torques力和力矩的变换</h2><p>占位:smile:<br>wrench:力螺旋</p>
@@ -593,8 +794,9 @@
 <li>Trajectory轨迹：指定时间参数的路径(运动时间、速度、加速度等)，要求轨迹平滑</li>
 </ul>
 <p><strong>平滑</strong>：要求关于时间的前几阶导数是连续的，即要求速度、加速度、甚至加加速度是连续的。</p>
-<h2 id="3-3-1-Smooth-One-Dimensional-Trajectories"><a href="#3-3-1-Smooth-One-Dimensional-Trajectories" class="headerlink" title="3.3.1 Smooth One-Dimensional Trajectories"></a>3.3.1 Smooth One-Dimensional Trajectories</h2><p>符合一维轨迹平滑要求的函数最常见的是多项式函数，比如五阶多项式函数：<br>$$<br>s(t)=At^5+Bt^4+Ct^3+Dt^2+Et+F, \, t \in [0,T]<br>$$</p>
-<hr>
+<h2 id="3-3-1-Smooth-One-Dimensional-Trajectories"><a href="#3-3-1-Smooth-One-Dimensional-Trajectories" class="headerlink" title="3.3.1 Smooth One-Dimensional Trajectories"></a>3.3.1 Smooth One-Dimensional Trajectories</h2><p>符合一维轨迹平滑要求的函数最常见的是多项式函数，比如五阶多项式函数：</p>
+<script type="math/tex; mode=display">
+s(t)=At^5+Bt^4+Ct^3+Dt^2+Et+F, \, t \in [0,T]</script><hr>
 <p><strong>基于多项式函数的轨迹规划</strong></p>
 <ul>
 <li>Matlab函数：<code>tpoly()</code>，可指定初始时刻和终止时刻的参数  </li>
@@ -622,8 +824,11 @@
 <h1 id="Part-III-Arm-Type-Robots"><a href="#Part-III-Arm-Type-Robots" class="headerlink" title="Part III Arm-Type Robots"></a>Part III Arm-Type Robots</h1><h1 id="7-1-Forward-Kinematics"><a href="#7-1-Forward-Kinematics" class="headerlink" title="7.1 Forward Kinematics"></a>7.1 Forward Kinematics</h1><p>从关节坐标系或者配置空间到末端执行器位姿的映射。  </p>
 <h2 id="7-1-1-2-Dimensional-Planar-Robotic-Arms"><a href="#7-1-1-2-Dimensional-Planar-Robotic-Arms" class="headerlink" title="7.1.1 2-Dimensional (Planar) Robotic Arms"></a>7.1.1 2-Dimensional (Planar) Robotic Arms</h2><p><img src="./pics/7_1.png" alt="pic7_1"> </p>
 <ul>
-<li>图a的变换公式：<br>$$<br>\xi_E(q) = \mathcal{R}<em>z(q</em>{\tiny{1}}) \oplus \mathcal{T}<em>x(a</em>{\tiny{1}})<br>$$  </li>
-<li><p>图b的变换公式：<br>$$<br>\xi_E(q) = \underbrace{\mathcal{R}<em>z(q</em>{\tiny{1}}) }_{joint1} \oplus \underbrace{\mathcal{T}<em>x(a</em>{\tiny{1}})}_{link1} \oplus \underbrace{\mathcal{R}<em>z(q</em>{\tiny{2}}) }_{joint2} \oplus \underbrace{\mathcal{T}<em>x(a</em>{\tiny{2}})}_{link2}<br>$$<br> 对应的Matlab仿真程序：</p>
+<li>图a的变换公式：<script type="math/tex; mode=display">
+\xi_E(q) = \mathcal{R}_z(q_{\tiny{1}}) \oplus \mathcal{T}_x(a_{\tiny{1}})</script></li>
+<li><p>图b的变换公式：</p>
+<script type="math/tex; mode=display">
+\xi_E(q) = \underbrace{\mathcal{R}_z(q_{\tiny{1}}) }_{joint1} \oplus \underbrace{\mathcal{T}_x(a_{\tiny{1}})}_{link1} \oplus \underbrace{\mathcal{R}_z(q_{\tiny{2}}) }_{joint2} \oplus \underbrace{\mathcal{T}_x(a_{\tiny{2}})}_{link2}</script><p> 对应的Matlab仿真程序：</p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">   import ETS2.*</span><br><span class="line">   a1 = 1; a2 = 1;</span><br><span class="line">   E = Rz(&apos;q1&apos;) * Tx(a1) * Rz(&apos;q2&apos;) * Tx(a2)</span><br><span class="line">   E.fkine( [30, 40], &apos;deg&apos;)</span><br><span class="line"></span><br><span class="line">   E.plot( [30, 40], &apos;deg&apos;)</span><br><span class="line">   E.teach</span><br><span class="line"></span><br><span class="line">   %关节类型</span><br><span class="line">   %R：表示铰链结构 P:表示滑杆结构</span><br><span class="line">   %返回RR</span><br><span class="line">   E.structure</span><br><span class="line">   ```  </span><br><span class="line">   这种两关节结构自由度为2，配置空间为：$\mathcal&#123;C&#125; = \mathbb&#123;S&#125;^1 \times \mathbb&#123;S&#125;^1$,可以到达的工作空间为$\mathcal&#123;T&#125; \subset \mathbb&#123;R&#125;^2$，对于工作空间$\mathcal&#123;T&#125; \subset \mathrm&#123;SE&#125;(2)$则无法完全到达。</span><br><span class="line">+ 图c的变换公式：</span><br><span class="line">$$</span><br><span class="line">\xi_E(q) = \underbrace&#123;\mathcal&#123;R&#125;_z(q_&#123;\tiny&#123;1&#125;&#125;) &#125;_&#123;joint1&#125; \oplus \underbrace&#123;\mathcal&#123;T&#125;_x(a_&#123;\tiny&#123;1&#125;&#125;)&#125;_&#123;link1&#125; \oplus \underbrace&#123;\mathcal&#123;T&#125;_x(q_&#123;\tiny&#123;2&#125;&#125;) &#125;_&#123;joint2&#125;</span><br><span class="line">$$</span><br><span class="line">   对应的Matlab仿真程序：</span><br></pre></td></tr></table></figure>
 <p> import ETS2.<em><br> a1 = 1;<br> E = Rz(‘q1’) </em> Tx(a1) * Tx(‘q2’)</p>
 <p> E.plot( [30, 40], ‘deg’)<br> E.teach</p>
@@ -707,7 +912,7 @@
 <p>%执行上述生成的命令，生成机器人模型<br>robot = eval(cmd)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">可以看到上述程序在描述第二个关节时使用&quot;Ry(q2)&quot;，这在传统方法D-H形式主义中是不允许（D-H形式主义要求旋转必须绕z轴）。</span><br><span class="line"></span><br><span class="line">## 7.4.3 Modified Denavit-Hartenberg Parameters 改进型D-H参数  </span><br><span class="line">改进型D-H参数与普通的D-H参数相比：前者连杆坐标系连接到每个连杆的近端（近端）而不是远端（远端）。这种改进使符号在某些方面更加清晰和整洁。D-H参数的定义直接影响到运动学、Jacobian行列式和动力学算法。  </span><br><span class="line">改进型D-H参数约定的连杆见变换矩阵为：</span><br><span class="line">$$</span><br><span class="line">^&#123;j-1&#125;\xi_j(\alpha_&#123;j-1&#125;,a_&#123;j-1&#125;,d_j,\theta_j)= \mathcal&#123;R&#125;_x(\alpha_&#123;\tiny&#123;j-1&#125;&#125;) \oplus \mathcal&#123;T&#125;_x(a_&#123;\tiny&#123;j-1&#125;&#125;) \oplus \mathcal&#123;T&#125;_z(d_&#123;\tiny&#123;j&#125;&#125;) \oplus \mathcal&#123;R&#125;_z(\theta_&#123;\tiny&#123;j&#125;&#125;) </span><br><span class="line">$$</span><br><span class="line">改进型D-H参数坐标系定义图示：  </span><br><span class="line">![pic7_12](./pics/7_12.png)  </span><br><span class="line"></span><br><span class="line">**Note:** 使用论文中提供的D-H参数建立机器人模型时，首先需要确定该论文使用的是哪一种约定的参数表达方式。一般来说，表头是$\theta_j,d_j,a_j,\alpha_j$的是标准D-H参数形式，表头是$\theta_j,d_j,a_&#123;j-1&#125;,\alpha_&#123;j-1&#125;$的是改进型D-H参数。  </span><br><span class="line">在Matlab中使用`L1 = RevoluteMDH(&apos;d&apos;, 1)`来建立一个使用改进型D-H（MDH）参数的旋转铰链结构模型，然后就可以进一步建立完整的机械臂模型。  </span><br><span class="line">**标准D-H参数和改进型D-H参数的联系：**</span><br><span class="line">设标准D-H参数的表达式为：</span><br><span class="line">$$</span><br><span class="line">\underbrace&#123;\mathcal&#123;R&#125;_z(\theta_&#123;\tiny&#123;1&#125;&#125;) \oplus \mathcal&#123;T&#125;_z(d_&#123;\tiny&#123;1&#125;&#125;) \oplus \mathcal&#123;T&#125;_x(a_&#123;\tiny&#123;1&#125;&#125;) \oplus \mathcal&#123;R&#125;_x(\alpha_&#123;\tiny&#123;1&#125;&#125;)&#125;_&#123;DH_1&#125; \oplus  \underbrace&#123;\mathcal&#123;R&#125;_z(\theta_&#123;\tiny&#123;2&#125;&#125;) \oplus \mathcal&#123;T&#125;_z(d_&#123;\tiny&#123;2&#125;&#125;) \oplus \mathcal&#123;T&#125;_x(a_&#123;\tiny&#123;2&#125;&#125;) \oplus \mathcal&#123;R&#125;_x(\alpha_&#123;\tiny&#123;2&#125;&#125;)&#125;_&#123;DH_2&#125; \cdots </span><br><span class="line">$$  </span><br><span class="line">改进型D-H参数的表达式可由上式重写为：</span><br><span class="line">$$</span><br><span class="line">\underbrace&#123;\mathcal&#123;R&#125;_z(\theta_&#123;\tiny&#123;1&#125;&#125;) \oplus \mathcal&#123;T&#125;_z(d_&#123;\tiny&#123;1&#125;&#125;)&#125;_&#123;base&#125; \oplus \underbrace&#123; \mathcal&#123;T&#125;_x(a_&#123;\tiny&#123;1&#125;&#125;) \oplus \mathcal&#123;R&#125;_x(\alpha_&#123;\tiny&#123;1&#125;&#125;) \oplus  \mathcal&#123;R&#125;_z(\theta_&#123;\tiny&#123;2&#125;&#125;) \oplus \mathcal&#123;T&#125;_z(d_&#123;\tiny&#123;2&#125;&#125;)&#125;_&#123;MDH_1&#125; \oplus \underbrace&#123;\mathcal&#123;T&#125;_x(a_&#123;\tiny&#123;2&#125;&#125;) \oplus \mathcal&#123;R&#125;_x(\alpha_&#123;\tiny&#123;2&#125;&#125;) \cdots&#125;_&#123;MDH_2&#125; </span><br><span class="line">$$  </span><br><span class="line">其中$MDH_j$的形式与</span><br><span class="line">$$</span><br><span class="line">^&#123;j-1&#125;\xi_j(\alpha_&#123;j-1&#125;,a_&#123;j-1&#125;,d_j,\theta_j)= \mathcal&#123;R&#125;_x(\alpha_&#123;\tiny&#123;j-1&#125;&#125;) \oplus \mathcal&#123;T&#125;_x(a_&#123;\tiny&#123;j-1&#125;&#125;) \oplus \mathcal&#123;T&#125;_z(d_&#123;\tiny&#123;j&#125;&#125;) \oplus \mathcal&#123;R&#125;_z(\theta_&#123;\tiny&#123;j&#125;&#125;) </span><br><span class="line">$$</span><br><span class="line">是等价的，因为沿着同一个轴进行平移和旋转的变换是可以交换的,即满足：</span><br><span class="line">$$</span><br><span class="line">R_i(\theta)  \oplus T_i(d) = T_i(d) \oplus R_i(\theta), \, i \in \left \&#123; x,y,z \right \&#125;</span><br><span class="line">$$</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 7.5 Applications</span><br><span class="line">## 7.5.1 Writing on a Surface [examples/drawing.m]</span><br><span class="line">使用[Hershey font](http://paulbourke.net/dataformats/hershey/)作为字体输入数据。  </span><br><span class="line">Matlab程序：</span><br></pre></td></tr></table></figure></p>
 <p>%载入hershy字体数据<br>load hershey</p>
 <p>%载入‘B’的字体数据<br>B = hershey{‘B’};</p>
-<p>%两行数据分别代表x,y轴的点，NaN表示分段点–起笔或落笔点<br>B.stroke</p>
+<p>%两行数据分别代表x,y轴的点，NaN表示分段点—起笔或落笔点<br>B.stroke</p>
 <p>%将坐标乘以0.25，限制路径在0.85<em>0.25cm的范围内，，并添加z轴<br>%将Nan点替换为其上一时刻的坐标<br>path = [ 0.25</em>B.stroke; zeros(1,numcols(B.stroke))];<br>k = find(isnan(path(1,:)));<br>path(:,k) = path(:,k-1); path(3,k) = 0.2;</p>
 <p>%使用mstraj进行多段轨迹规划，更多信息help mstraj查看<br>traj = mstraj(path(:,2:end)’, [0.5 0.5 0.5], [], path(:,1)’,    0.02, 0.2);</p>
 <p>%得到路径的信息<br>about(traj)</p>
@@ -744,9 +949,37 @@
 <p>% create a fixed size axis for the robot, and set z positive downward<br>clf; axis([-0.3 0.1 -0.2 0.2 -0.15 0.05]); set(gca,’Zdir’, ‘reverse’)<br>hold on<br>% draw the robot’s body<br>patch([0 -L -L 0], [0 0 -W -W], [0 0 0 0], …<br>    ‘FaceColor’, ‘r’, ‘FaceAlpha’, 0.5)<br>% instantiate each robot in the axes<br>for i=1:4<br>    legs(i).plot(qcycle(1,:), plotopt{:});<br>end<br>hold off</p>
 <p>% walk!<br>k = 1;<br>%A = Animate(‘walking’);<br>%while 1<br>for i=1:500<br>    legs(1).animate( gait(qcycle, k, 0,   0));<br>    legs(2).animate( gait(qcycle, k, 100, 0));<br>    legs(3).animate( gait(qcycle, k, 200, 1));<br>    legs(4).animate( gait(qcycle, k, 300, 1));<br>    drawnow<br>    k = k+1;<br>    %A.add();<br>end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"># 8 Manipulator Velocity  </span><br><span class="line">末端执行器的速度（平移和旋转速度）是各个关节速度合成的结果。本章介绍机械臂末端执行器的空间速度和关节速度之间的关系。关节变化率和末端执行器的速度是通过机械臂雅克比矩阵联系起来，机械臂雅克比矩阵是其配置的函数。  </span><br><span class="line"></span><br><span class="line"># 8.1 Manipulator Jacobian</span><br><span class="line">## 8.1.1 Jacobian in the World Coordinate Frame  </span><br><span class="line">以平面2关节机械臂为例.</span><br><span class="line">![pic8_1](./pics/8_1.png)</span><br></pre></td></tr></table></figure></p>
 <p>%导入2关节机械臂模型<br>mdl_planar2_sym<br>syms q1 q2 real<br>TE = p2.fkine( [q1 q2] );<br>p = TE.t; p = p(1:2)</p>
-<p>%求末端执行器位置向量的雅克比矩阵<br>J = jacobian(p, [q1 q2])<br><code>`</code><br>所求的雅克比矩阵设为$J(q)$，满足：<br>$$<br>\frac{dp}{dq}=J(q)<br>$$<br>由上述公式得：<br>$$<br>\frac{dp}{dt}=J(q)\frac{dq}{dt}<br>$$<br>即$$<br>\dot{p}=J(q)\dot{q}<br>$$<br>所以雅克比矩阵将速度从关节坐标（配置空间）映射至末端执行器的笛卡尔坐标空间，同时雅克比矩阵是关节坐标的函数。<br>类似于正向运动学$^0\xi=\mathcal{K}(q)$,我们可以写成：<br>$$<br>^0v={^0J(q)}\dot{q}<br>$$<br>此处的$^0v$是世界坐标系下的空间速度，即$^0v=(v_x,v_y,v_z,\omega_x,\omega_y,\omega_z) \in \mathbb{R}^6$。<br>MATLAB中可使用<strong>SerialLink</strong>对象的<code>jacob0</code>方法求取雅克比矩阵的数值解：<code>J = p560.jacob0(qn)</code>。求得的雅克比矩阵维度是$dim \mathcal{T} \times dim \mathcal{C}$,此处是6x6。每一行表示笛卡尔空间自由度，每一列对应一个关节，该关节的单位速度用于合成末端执行器的空间速度。   </p>
-<h2 id="8-1-2-Jacobian-in-the-End-Effector-Coordinate-Frame"><a href="#8-1-2-Jacobian-in-the-End-Effector-Coordinate-Frame" class="headerlink" title="8.1.2 Jacobian in the End-Effector Coordinate Frame"></a>8.1.2 Jacobian in the End-Effector Coordinate Frame</h2><p>通过<code>jacob0</code>求得的雅克比矩阵表示在世界坐标系下从关节速度到末端执行器空间速度的映射。而在末端执行器坐标系下的空间速度满足：<br>$$<br>^Ev= {^EJ_0}(^E\xi_0){^0J(q)}\dot{q}= \underbrace{<br>    \begin {pmatrix}<br>    ^{E}R_{0}&amp; 0_{3\times3}\<br>    0_{3\times3}&amp; ^{E}R_{0}<br>    \end{pmatrix}<br>    {^0J(q)}<br>    }_{}\dot{q} =<br>    {^EJ(q)}\dot{q}<br>$$<br>Matlab中使用<code>jacobe</code>求末端执行器坐标系下的雅克比矩阵:<code>p560.jacobe(qn)</code></p>
-<h2 id="8-1-3-Analytical-Jacobian"><a href="#8-1-3-Analytical-Jacobian" class="headerlink" title="8.1.3 Analytical Jacobian"></a>8.1.3 Analytical Jacobian</h2><p>公式<br>$$<br>^0v={^0J(q)}\dot{q}<br>$$<br>中$^0v$是以平移和角速度向量表示的空间速度，用角速度表示旋转速度不直观，所以常用roll-pitch-yaw角或欧拉角的变化率来表示旋转速度。常用三角速率形式的解析式雅克比来表示旋转速度。<br>以XYZ形式的roll-pitch-yaw角$\Gamma=(\theta_r,\theta_p,\theta_y)$为例，旋转变换为：<br>$$<br>R=R_x(\theta_r) R_y(\theta_p) R_z(\theta_y) =<br>    \begin {pmatrix}<br>    c\theta_p c\theta_r&amp; -c\theta_p s\theta_r&amp; s\theta_p\<br>    c\theta_y s\theta_r+c\theta_r s\theta_p s\theta_y&amp; -s\theta_p s\theta_y s\theta_r+c\theta_y c\theta_r&amp; -c\theta_p s\theta_y\<br>    s\theta_y s\theta_r-c\theta_y c\theta_r s\theta_p&amp; c\theta_y s\theta_p s\theta_r+c\theta_r s\theta_y&amp; c\theta_p c\theta_y<br>    \end{pmatrix}<br>$$<br>由上式可得R的微分:<br>$$<br>\dot{R} = [\omega]_{\times}R<br>$$<br>可以以roll-pitch-yaw角形式解出$\omega$：<br>$$<br>\begin {pmatrix}<br>\omega_x\<br>\omega_y\<br>\omega_z<br>\end{pmatrix} =\begin {pmatrix}<br>s\theta_p\dot{\theta_r}+\dot{\theta_y} \<br>-c\theta_p s\theta_y \dot{\theta_r} + c\theta_y\dot{\theta_p}\<br>c\theta_p c\theta_y \dot{\theta_r} + s\theta_y \dot{\theta_p}<br>\end{pmatrix}<br>$$<br>可以因式分解为：<br>$$<br>\omega =\begin {pmatrix}<br>            s\theta_p&amp; 0&amp; 1\<br>            -c\theta_p s\theta_y&amp; c\theta_y&amp; 0\<br>            c\theta_p c\theta_y&amp; s\theta_y&amp; 0<br>        \end{pmatrix}<br>        \begin {pmatrix}<br>        \dot{\theta_r}\<br>        \dot{\theta_p}\<br>        \dot{\theta_r}<br>        \end{pmatrix}<br>$$<br>进一步可以写为：<br>$$<br>\omega = A(\Gamma)\dot{\Gamma}<br>$$<br>其中矩阵A就是雅克比矩阵，表示从XYZ roll-pitch-yaw角到角速度的映射,当$cos\phi=0$或者pitch角$\phi<br>=\pm\frac{\pi}{2}$时会出现奇异点。对应的MATLAB实现为：<code>rpy2jac(0.1, 0.2, 0.3)</code>。同样可以使用欧拉角形式的雅克比矩阵，对应的MATLAB函数为：<code>eul2jac</code>。对于PUMA560的求解为：<code>p560.jacob0(qn, &#39;eul&#39;)</code>。   </p>
+<p>%求末端执行器位置向量的雅克比矩阵<br>J = jacobian(p, [q1 q2])<br>```<br>所求的雅克比矩阵设为$J(q)$，满足：</p>
+<script type="math/tex; mode=display">
+\frac{dp}{dq}=J(q)</script><p>由上述公式得：  </p>
+<script type="math/tex; mode=display">
+\frac{dp}{dt}=J(q)\frac{dq}{dt}</script><p>即$$<br>\dot{p}=J(q)\dot{q}</p>
+<script type="math/tex; mode=display">
+所以雅克比矩阵将速度从关节坐标（配置空间）映射至末端执行器的笛卡尔坐标空间，同时雅克比矩阵是关节坐标的函数。  
+类似于正向运动学$^0\xi=\mathcal{K}(q)$,我们可以写成：</script><p>^0v={^0J(q)}\dot{q} </p>
+<script type="math/tex; mode=display">
+此处的$^0v$是世界坐标系下的空间速度，即$^0v=(v_x,v_y,v_z,\omega_x,\omega_y,\omega_z) \in \mathbb{R}^6$。  
+MATLAB中可使用**SerialLink**对象的`jacob0`方法求取雅克比矩阵的数值解：`J = p560.jacob0(qn)`。求得的雅克比矩阵维度是$dim \mathcal{T} \times dim \mathcal{C}$,此处是6x6。每一行表示笛卡尔空间自由度，每一列对应一个关节，该关节的单位速度用于合成末端执行器的空间速度。   
+
+## 8.1.2 Jacobian in the End-Effector Coordinate Frame
+通过`jacob0`求得的雅克比矩阵表示在世界坐标系下从关节速度到末端执行器空间速度的映射。而在末端执行器坐标系下的空间速度满足：</script><p>^Ev= {^EJ<em>0}(^E\xi_0){^0J(q)}\dot{q}= \underbrace{<br>    \begin {pmatrix}<br>    ^{E}R</em>{0}&amp; 0<em>{3\times3}\<br>    0</em>{3\times3}&amp; ^{E}R<em>{0}<br>    \end{pmatrix}<br>    {^0J(q)}<br>    }</em>{}\dot{q} =<br>    {^EJ(q)}\dot{q}</p>
+<script type="math/tex; mode=display">
+Matlab中使用`jacobe`求末端执行器坐标系下的雅克比矩阵:`p560.jacobe(qn)`
+
+## 8.1.3 Analytical Jacobian
+公式</script><p>^0v={^0J(q)}\dot{q} </p>
+<script type="math/tex; mode=display">
+中$^0v$是以平移和角速度向量表示的空间速度，用角速度表示旋转速度不直观，所以常用roll-pitch-yaw角或欧拉角的变化率来表示旋转速度。常用三角速率形式的解析式雅克比来表示旋转速度。  
+以XYZ形式的roll-pitch-yaw角$\Gamma=(\theta_r,\theta_p,\theta_y)$为例，旋转变换为：</script><p>R=R_x(\theta_r) R_y(\theta_p) R_z(\theta_y) =<br>    \begin {pmatrix}<br>    c\theta_p c\theta_r&amp; -c\theta_p s\theta_r&amp; s\theta_p\<br>    c\theta_y s\theta_r+c\theta_r s\theta_p s\theta_y&amp; -s\theta_p s\theta_y s\theta_r+c\theta_y c\theta_r&amp; -c\theta_p s\theta_y\<br>    s\theta_y s\theta_r-c\theta_y c\theta_r s\theta_p&amp; c\theta_y s\theta_p s\theta_r+c\theta_r s\theta_y&amp; c\theta_p c\theta_y<br>    \end{pmatrix}</p>
+<script type="math/tex; mode=display">
+由上式可得R的微分:</script><p>\dot{R} = [\omega]_{\times}R</p>
+<script type="math/tex; mode=display">
+可以以roll-pitch-yaw角形式解出$\omega$：</script><p>\begin {pmatrix}<br>\omega_x\<br>\omega_y\<br>\omega_z<br>\end{pmatrix} =\begin {pmatrix}<br>s\theta_p\dot{\theta_r}+\dot{\theta_y} \<br>-c\theta_p s\theta_y \dot{\theta_r} + c\theta_y\dot{\theta_p}\<br>c\theta_p c\theta_y \dot{\theta_r} + s\theta_y \dot{\theta_p}<br>\end{pmatrix}</p>
+<script type="math/tex; mode=display">
+可以因式分解为：</script><p>\omega =\begin {pmatrix}<br>            s\theta_p&amp; 0&amp; 1\<br>            -c\theta_p s\theta_y&amp; c\theta_y&amp; 0\<br>            c\theta_p c\theta_y&amp; s\theta_y&amp; 0<br>        \end{pmatrix}<br>        \begin {pmatrix}<br>        \dot{\theta_r}\<br>        \dot{\theta_p}\<br>        \dot{\theta_r}<br>        \end{pmatrix}</p>
+<script type="math/tex; mode=display">
+进一步可以写为：</script><p>\omega = A(\Gamma)\dot{\Gamma}</p>
+<p>$$<br>其中矩阵A就是雅克比矩阵，表示从XYZ roll-pitch-yaw角到角速度的映射,当$cos\phi=0$或者pitch角$\phi<br>=\pm\frac{\pi}{2}$时会出现奇异点。对应的MATLAB实现为：<code>rpy2jac(0.1, 0.2, 0.3)</code>。同样可以使用欧拉角形式的雅克比矩阵，对应的MATLAB函数为：<code>eul2jac</code>。对于PUMA560的求解为：<code>p560.jacob0(qn, &#39;eul&#39;)</code>。   </p>
 <h1 id="8-2-Jacobian-Condition-and-Manipulability雅克比条件和可操纵性"><a href="#8-2-Jacobian-Condition-and-Manipulability雅克比条件和可操纵性" class="headerlink" title="8.2 Jacobian Condition and Manipulability雅克比条件和可操纵性"></a>8.2 Jacobian Condition and Manipulability雅克比条件和可操纵性</h1><p>页内跳转：<br>锚点：<span id="jump">Hello World</span><br>跳转：<a href="#jump">XXXX</a></p>
 
       
@@ -984,7 +1217,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Reading-Note"><span class="nav-number">1.</span> <span class="nav-text">Reading Note</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-1-Working-in-Two-Dimensions-2D"><span class="nav-number">2.</span> <span class="nav-text">2.1 Working in Two Dimensions (2D)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-1-Orientation-in-2-Dimensions"><span class="nav-number">2.1.</span> <span class="nav-text">2.1.1 Orientation in 2-Dimensions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-1-Orthonormal-Rotation-Matrix-正交旋转矩阵"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.1.1.1 Orthonormal Rotation Matrix 正交旋转矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-2-Matrix-Exponential-矩阵指数"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.1.2 Matrix Exponential 矩阵指数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-2-Pose-in-2-Dimensions"><span class="nav-number">2.2.</span> <span class="nav-text">2.1.2 Pose in 2-Dimensions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-1-Homogeneous-Transformation-Matrix-齐次变换矩阵"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.1.2.1 Homogeneous Transformation Matrix 齐次变换矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-2-Centers-of-Rotation旋转中心"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.1.2.2 Centers of Rotation旋转中心</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-3-Twists-in-2D"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.1.2.3 Twists in 2D</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-1-Orientation-in-3-Dimensions"><span class="nav-number">2.3.</span> <span class="nav-text">2.2.1 Orientation in 3-Dimensions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-1-Orthonormal-Rotation-Matrix"><span class="nav-number">2.3.1.</span> <span class="nav-text">2.2.1.1 Orthonormal Rotation Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-2-Three-Angle-Representations"><span class="nav-number">2.3.2.</span> <span class="nav-text">2.2.1.2 Three- Angle Representations</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#欧拉角"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">欧拉角</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#万向角"><span class="nav-number">2.3.2.2.</span> <span class="nav-text">万向角</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-3-Singularities-and-Gimbal-Lock-奇异点现象和万向节锁"><span class="nav-number">2.3.3.</span> <span class="nav-text">2.2.1.3 Singularities and Gimbal Lock 奇异点现象和万向节锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-4-Two-Vector-Representation双向量表示法"><span class="nav-number">2.3.4.</span> <span class="nav-text">2.2.1.4 Two Vector Representation双向量表示法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-5-Rotation-about-an-Arbitrary-Vector绕任意向量旋转"><span class="nav-number">2.3.5.</span> <span class="nav-text">2.2.1.5 Rotation about an Arbitrary Vector绕任意向量旋转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-6-Matrix-Exponentials矩阵指数"><span class="nav-number">2.3.6.</span> <span class="nav-text">2.2.1.6 Matrix Exponentials矩阵指数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-7-Unit-Quaternions单位四元数"><span class="nav-number">2.3.7.</span> <span class="nav-text">2.2.1.7 Unit Quaternions单位四元数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-2-Pose-in-3-Dimensions"><span class="nav-number">2.4.</span> <span class="nav-text">2.2.2 Pose in 3-Dimensions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-1-Homogeneous-Transformation-Matrix"><span class="nav-number">2.4.1.</span> <span class="nav-text">2.2.2.1 Homogeneous Transformation Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-2-Vector-Quaternion-Pair向量-四元数对"><span class="nav-number">2.4.2.</span> <span class="nav-text">2.2.2.2 Vector-Quaternion Pair向量-四元数对</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-3-Twists"><span class="nav-number">2.4.3.</span> <span class="nav-text">2.2.2.3 Twists</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-3-Advanced-Topics"><span class="nav-number">3.</span> <span class="nav-text">2.3 Advanced Topics</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-1-Normalization"><span class="nav-number">3.1.</span> <span class="nav-text">2.3.1 Normalization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-2-Understanding-the-Exponential-Mapping"><span class="nav-number">3.2.</span> <span class="nav-text">2.3.2 Understanding the Exponential Mapping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-4-Dual-Quaternions对偶四元数"><span class="nav-number">3.3.</span> <span class="nav-text">2.3.4 Dual Quaternions对偶四元数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-5-Configuration-Space构型空间"><span class="nav-number">3.4.</span> <span class="nav-text">2.3.5 Configuration Space构型空间</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-4-Using-the-Toolbox"><span class="nav-number">4.</span> <span class="nav-text">2.4 Using the Toolbox</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-3-Time-and-Motion"><span class="nav-number">5.</span> <span class="nav-text">Chapter 3 Time and Motion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-1-Time-Varying-Pose"><span class="nav-number">6.</span> <span class="nav-text">3.1 Time-Varying Pose</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-1-Derivative-of-Pose"><span class="nav-number">6.1.</span> <span class="nav-text">3.1.1 Derivative of Pose</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-2-Transforming-Spatial-Velocities空间速度的变换"><span class="nav-number">6.2.</span> <span class="nav-text">3.1.2 Transforming Spatial Velocities空间速度的变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-3-Incremental-Rotation旋转的增量"><span class="nav-number">6.3.</span> <span class="nav-text">3.1.3 Incremental Rotation旋转的增量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-4-Incremental-Rigid-Body-Motion-刚体运动的增量"><span class="nav-number">6.4.</span> <span class="nav-text">3.1.4 Incremental Rigid-Body Motion 刚体运动的增量</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-Accelerating-Bodies-and-Reference-Frames"><span class="nav-number">7.</span> <span class="nav-text">3.2 Accelerating Bodies and Reference Frames</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-1-Dynamics-of-Moving-Bodies动力学"><span class="nav-number">7.1.</span> <span class="nav-text">3.2.1 Dynamics of Moving Bodies动力学</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-2-Transforming-Forces-and-Torques力和力矩的变换"><span class="nav-number">7.2.</span> <span class="nav-text">3.2.2 Transforming Forces and Torques力和力矩的变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-3-Inertial-Reference-Frame惯性参考系"><span class="nav-number">7.3.</span> <span class="nav-text">3.2.3 Inertial Reference Frame惯性参考系</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-3-Creating-Time-Varying-Pose"><span class="nav-number">8.</span> <span class="nav-text">3.3 Creating Time-Varying Pose</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-1-Smooth-One-Dimensional-Trajectories"><span class="nav-number">8.1.</span> <span class="nav-text">3.3.1 Smooth One-Dimensional Trajectories</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-2-Multi-Dimensional-Trajectories多维空间的轨迹规划"><span class="nav-number">8.2.</span> <span class="nav-text">3.3.2 Multi-Dimensional Trajectories多维空间的轨迹规划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-3-Multi-Segment-Trajectories多段轨迹"><span class="nav-number">8.3.</span> <span class="nav-text">3.3.3 Multi-Segment Trajectories多段轨迹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-4-Interpolation-of-Orientation-in-3D"><span class="nav-number">8.4.</span> <span class="nav-text">3.3.4 Interpolation of Orientation in 3D</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-4-1-Direction-of-Rotation"><span class="nav-number">8.4.1.</span> <span class="nav-text">3.3.4.1 Direction of Rotation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-5-Cartesian-Motion-in-3D"><span class="nav-number">8.5.</span> <span class="nav-text">3.3.5 Cartesian Motion in 3D</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Part-III-Arm-Type-Robots"><span class="nav-number">9.</span> <span class="nav-text">Part III Arm-Type Robots</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-1-Forward-Kinematics"><span class="nav-number">10.</span> <span class="nav-text">7.1 Forward Kinematics</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-1-2-Dimensional-Planar-Robotic-Arms"><span class="nav-number">10.1.</span> <span class="nav-text">7.1.1 2-Dimensional (Planar) Robotic Arms</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-1-2-Jacobian-in-the-End-Effector-Coordinate-Frame"><span class="nav-number">10.2.</span> <span class="nav-text">8.1.2 Jacobian in the End-Effector Coordinate Frame</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-1-3-Analytical-Jacobian"><span class="nav-number">10.3.</span> <span class="nav-text">8.1.3 Analytical Jacobian</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-2-Jacobian-Condition-and-Manipulability雅克比条件和可操纵性"><span class="nav-number">11.</span> <span class="nav-text">8.2 Jacobian Condition and Manipulability雅克比条件和可操纵性</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Reading-Note"><span class="nav-number">1.</span> <span class="nav-text">Reading Note</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-1-Working-in-Two-Dimensions-2D"><span class="nav-number">2.</span> <span class="nav-text">2.1 Working in Two Dimensions (2D)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-1-Orientation-in-2-Dimensions"><span class="nav-number">2.1.</span> <span class="nav-text">2.1.1 Orientation in 2-Dimensions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-1-Orthonormal-Rotation-Matrix-正交旋转矩阵"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.1.1.1 Orthonormal Rotation Matrix 正交旋转矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-2-Matrix-Exponential-矩阵指数"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.1.2 Matrix Exponential 矩阵指数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-2-Pose-in-2-Dimensions"><span class="nav-number">2.2.</span> <span class="nav-text">2.1.2 Pose in 2-Dimensions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-1-Homogeneous-Transformation-Matrix-齐次变换矩阵"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.1.2.1 Homogeneous Transformation Matrix 齐次变换矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-2-Centers-of-Rotation旋转中心"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.1.2.2 Centers of Rotation旋转中心</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-3-Twists-in-2D"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.1.2.3 Twists in 2D</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-2-Working-in-Three-Dimensions-3D"><span class="nav-number">3.</span> <span class="nav-text">2.2 Working in Three Dimensions (3D)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-1-Orientation-in-3-Dimensions"><span class="nav-number">3.1.</span> <span class="nav-text">2.2.1 Orientation in 3-Dimensions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-1-Orthonormal-Rotation-Matrix"><span class="nav-number">3.1.1.</span> <span class="nav-text">2.2.1.1 Orthonormal Rotation Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-2-Three-Angle-Representations"><span class="nav-number">3.1.2.</span> <span class="nav-text">2.2.1.2 Three- Angle Representations</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#欧拉角"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">欧拉角</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#万向角"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">万向角</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-3-Singularities-and-Gimbal-Lock-奇异点现象和万向节锁"><span class="nav-number">3.1.3.</span> <span class="nav-text">2.2.1.3 Singularities and Gimbal Lock 奇异点现象和万向节锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-4-Two-Vector-Representation双向量表示法"><span class="nav-number">3.1.4.</span> <span class="nav-text">2.2.1.4 Two Vector Representation双向量表示法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-5-Rotation-about-an-Arbitrary-Vector绕任意向量旋转"><span class="nav-number">3.1.5.</span> <span class="nav-text">2.2.1.5 Rotation about an Arbitrary Vector绕任意向量旋转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-6-Matrix-Exponentials矩阵指数"><span class="nav-number">3.1.6.</span> <span class="nav-text">2.2.1.6 Matrix Exponentials矩阵指数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-7-Unit-Quaternions单位四元数"><span class="nav-number">3.1.7.</span> <span class="nav-text">2.2.1.7 Unit Quaternions单位四元数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-2-Pose-in-3-Dimensions"><span class="nav-number">3.2.</span> <span class="nav-text">2.2.2 Pose in 3-Dimensions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-1-Homogeneous-Transformation-Matrix"><span class="nav-number">3.2.1.</span> <span class="nav-text">2.2.2.1 Homogeneous Transformation Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-2-Vector-Quaternion-Pair向量-四元数对"><span class="nav-number">3.2.2.</span> <span class="nav-text">2.2.2.2 Vector-Quaternion Pair向量-四元数对</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-3-Twists"><span class="nav-number">3.2.3.</span> <span class="nav-text">2.2.2.3 Twists</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-3-Advanced-Topics"><span class="nav-number">4.</span> <span class="nav-text">2.3 Advanced Topics</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-1-Normalization"><span class="nav-number">4.1.</span> <span class="nav-text">2.3.1 Normalization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-2-Understanding-the-Exponential-Mapping"><span class="nav-number">4.2.</span> <span class="nav-text">2.3.2 Understanding the Exponential Mapping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-4-Dual-Quaternions对偶四元数"><span class="nav-number">4.3.</span> <span class="nav-text">2.3.4 Dual Quaternions对偶四元数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-5-Configuration-Space构型空间"><span class="nav-number">4.4.</span> <span class="nav-text">2.3.5 Configuration Space构型空间</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-4-Using-the-Toolbox"><span class="nav-number">5.</span> <span class="nav-text">2.4 Using the Toolbox</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-3-Time-and-Motion"><span class="nav-number">6.</span> <span class="nav-text">Chapter 3 Time and Motion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-1-Time-Varying-Pose"><span class="nav-number">7.</span> <span class="nav-text">3.1 Time-Varying Pose</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-1-Derivative-of-Pose"><span class="nav-number">7.1.</span> <span class="nav-text">3.1.1 Derivative of Pose</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-2-Transforming-Spatial-Velocities空间速度的变换"><span class="nav-number">7.2.</span> <span class="nav-text">3.1.2 Transforming Spatial Velocities空间速度的变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-3-Incremental-Rotation旋转的增量"><span class="nav-number">7.3.</span> <span class="nav-text">3.1.3 Incremental Rotation旋转的增量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-4-Incremental-Rigid-Body-Motion-刚体运动的增量"><span class="nav-number">7.4.</span> <span class="nav-text">3.1.4 Incremental Rigid-Body Motion 刚体运动的增量</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-Accelerating-Bodies-and-Reference-Frames"><span class="nav-number">8.</span> <span class="nav-text">3.2 Accelerating Bodies and Reference Frames</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-1-Dynamics-of-Moving-Bodies动力学"><span class="nav-number">8.1.</span> <span class="nav-text">3.2.1 Dynamics of Moving Bodies动力学</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-2-Transforming-Forces-and-Torques力和力矩的变换"><span class="nav-number">8.2.</span> <span class="nav-text">3.2.2 Transforming Forces and Torques力和力矩的变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-3-Inertial-Reference-Frame惯性参考系"><span class="nav-number">8.3.</span> <span class="nav-text">3.2.3 Inertial Reference Frame惯性参考系</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-3-Creating-Time-Varying-Pose"><span class="nav-number">9.</span> <span class="nav-text">3.3 Creating Time-Varying Pose</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-1-Smooth-One-Dimensional-Trajectories"><span class="nav-number">9.1.</span> <span class="nav-text">3.3.1 Smooth One-Dimensional Trajectories</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-2-Multi-Dimensional-Trajectories多维空间的轨迹规划"><span class="nav-number">9.2.</span> <span class="nav-text">3.3.2 Multi-Dimensional Trajectories多维空间的轨迹规划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-3-Multi-Segment-Trajectories多段轨迹"><span class="nav-number">9.3.</span> <span class="nav-text">3.3.3 Multi-Segment Trajectories多段轨迹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-4-Interpolation-of-Orientation-in-3D"><span class="nav-number">9.4.</span> <span class="nav-text">3.3.4 Interpolation of Orientation in 3D</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-4-1-Direction-of-Rotation"><span class="nav-number">9.4.1.</span> <span class="nav-text">3.3.4.1 Direction of Rotation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-5-Cartesian-Motion-in-3D"><span class="nav-number">9.5.</span> <span class="nav-text">3.3.5 Cartesian Motion in 3D</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Part-III-Arm-Type-Robots"><span class="nav-number">10.</span> <span class="nav-text">Part III Arm-Type Robots</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-1-Forward-Kinematics"><span class="nav-number">11.</span> <span class="nav-text">7.1 Forward Kinematics</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-1-2-Dimensional-Planar-Robotic-Arms"><span class="nav-number">11.1.</span> <span class="nav-text">7.1.1 2-Dimensional (Planar) Robotic Arms</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-2-Jacobian-Condition-and-Manipulability雅克比条件和可操纵性"><span class="nav-number">12.</span> <span class="nav-text">8.2 Jacobian Condition and Manipulability雅克比条件和可操纵性</span></a></li></ol></div>
             
 
           </div>
@@ -1358,6 +1591,28 @@
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
 
   
 
