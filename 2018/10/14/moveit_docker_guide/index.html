@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="M-d51FT64gQ2RZF72MacGEYBhVCNwc6s5HrcHk7-NU8" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/5_128.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/2_32.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1_16.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/5_128.ico?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ros,moveit,docker," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用Docker版本的moveit最近打算学习使用一下moveit，在安装moveit时发现官网提供docker版本，之前对docker有一些浅显的了解，苦于没有应用场景，这次就尝试使用docker版的moveit练练手。在折腾了两天之后，完成支持gui的moveit的docker环境配置，主要内容包括两部分：  docker的安装和简单使用，以及nvidia-docker的安装 docker对m">
+<meta name="keywords" content="ros,moveit,docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Moveit Docker的安装与配置过程">
+<meta property="og:url" content="http://doctorsrn.cn/2018/10/14/moveit_docker_guide/index.html">
+<meta property="og:site_name" content="Hello World">
+<meta property="og:description" content="使用Docker版本的moveit最近打算学习使用一下moveit，在安装moveit时发现官网提供docker版本，之前对docker有一些浅显的了解，苦于没有应用场景，这次就尝试使用docker版的moveit练练手。在折腾了两天之后，完成支持gui的moveit的docker环境配置，主要内容包括两部分：  docker的安装和简单使用，以及nvidia-docker的安装 docker对m">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-10-14T08:52:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Moveit Docker的安装与配置过程">
+<meta name="twitter:description" content="使用Docker版本的moveit最近打算学习使用一下moveit，在安装moveit时发现官网提供docker版本，之前对docker有一些浅显的了解，苦于没有应用场景，这次就尝试使用docker版的moveit练练手。在折腾了两天之后，完成支持gui的moveit的docker环境配置，主要内容包括两部分：  docker的安装和简单使用，以及nvidia-docker的安装 docker对m">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://doctorsrn.cn/2018/10/14/moveit_docker_guide/"/>
+
+
+
+
+
+  <title>Moveit Docker的安装与配置过程 | Hello World</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?1dfa1c7ff6fb0549819d508771ae03c8";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hello World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://doctorsrn.cn/2018/10/14/moveit_docker_guide/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SamLiu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/050.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Moveit Docker的安装与配置过程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-14T16:52:22+08:00">
+                2018-10-14
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2018-10-14T16:52:22+08:00">
+                2018-10-14
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ros/" itemprop="url" rel="index">
+                    <span itemprop="name">ros</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/10/14/moveit_docker_guide/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/10/14/moveit_docker_guide/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/10/14/moveit_docker_guide/" class="leancloud_visitors" data-flag-title="Moveit Docker的安装与配置过程">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,459 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  17 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="使用Docker版本的moveit"><a href="#使用Docker版本的moveit" class="headerlink" title="使用Docker版本的moveit"></a>使用Docker版本的moveit</h1><p>最近打算学习使用一下moveit，在安装moveit时发现官网提供docker版本，之前对docker有一些浅显的了解，苦于没有应用场景，这次就尝试使用docker版的moveit练练手。在折腾了两天之后，完成支持gui的moveit的docker环境配置，主要内容包括两部分：</p>
+<ul>
+<li>docker的安装和简单使用，以及nvidia-docker的安装</li>
+<li>docker对moveit gui的支持</li>
+</ul>
+<p>测试主机的环境是： </p>
+<ul>
+<li>系统：Ubuntu16.04</li>
+<li>显卡：1060 6G</li>
+</ul>
+<a id="more"></a>
+<h1 id="Docker的安装和简单使用，以及nvidia-docker的安装"><a href="#Docker的安装和简单使用，以及nvidia-docker的安装" class="headerlink" title="Docker的安装和简单使用，以及nvidia-docker的安装"></a>Docker的安装和简单使用，以及nvidia-docker的安装</h1><h2 id="Docker的安装"><a href="#Docker的安装" class="headerlink" title="Docker的安装"></a>Docker的安装</h2><p>按照<a href="!http://moveit.ros.org/install/docker/">moveit官网</a>的教程安装：<br>官网的命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install curl</span><br><span class="line">curl -sSL https://get.docker.com/ | sh</span><br><span class="line">sudo usermod -aG docker $(whoami)</span><br></pre></td></tr></table></figure></p>
+<p>将官网命令中的链接改为国内链接后使用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install curl</span><br><span class="line">curl -sSL https://get.daocloud.io/docker | sh</span><br><span class="line">sudo usermod -aG docker $USER</span><br></pre></td></tr></table></figure></p>
+<p>安装完成后记得log out然后log in使用户组权限配置生效，然后执行docker命令时就不需要敲<code>sudo</code>了。<br><strong>常用docker命令:</strong><br>另开shell进入已打开的容器：<code>docker exec -it docker_id /bin/bash</code><br>将打开的容器作为镜像存储：<code>docker commit docker_id moveit/moveit_own:0.1</code><br>容器和宿主机之间拷贝文件：<code>docker cp container:path  host</code>  和 <code>docker cp host container:path</code><br>exit退出并关闭容器后再重启容器：<code>docker restart containerID</code><br>利用Dockerfile新建镜像：<code>docker build -t moveit_test .</code><br>参考网站：<a href="https://www.simapple.com/docker-tutorial" target="_blank" rel="noopener">https://www.simapple.com/docker-tutorial</a></p>
+<p>常用bash命令：<a href="https://github.com/zhangzju/myDockerBashrc/blob/master/.bashrc" target="_blank" rel="noopener">https://github.com/zhangzju/myDockerBashrc/blob/master/.bashrc</a></p>
+<h2 id="拉取moveit镜像并运行一个支持图形界面的moveit容器"><a href="#拉取moveit镜像并运行一个支持图形界面的moveit容器" class="headerlink" title="拉取moveit镜像并运行一个支持图形界面的moveit容器"></a>拉取moveit镜像并运行一个支持图形界面的moveit容器</h2><p>下面是<a href="!http://moveit.ros.org/install/docker/">moveit官网</a>中使用gui的命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/ros-planning/moveit/kinetic-devel/.docker/gui-docker gui-docker &amp;&amp; chmod +x gui-docker</span><br><span class="line"></span><br><span class="line">./gui-docker -it --rm moveit/moveit:kinetic-release /bin/bash</span><br></pre></td></tr></table></figure></p>
+<p>这两条命令是拉取moveit仓库的gui命令脚本<code>gui-docker</code>,并给执行权限，然后使用<code>gui-docker</code>脚本运行。<br><code>gui-docker</code>的具体内容是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env bash</span><br><span class="line"></span><br><span class="line"># This script is used to create and run a docker container with settings for gui interactions</span><br><span class="line"># All arguments to this script will be appended to a docker run command.</span><br><span class="line"># Example command line:</span><br><span class="line"># ./gui-docker -ti --rm moveit/moveit /bin/bash</span><br><span class="line"></span><br><span class="line"># XAUTH=/tmp/.docker.xauth</span><br><span class="line"># xauth nlist :0 | sed -e &apos;s/^..../ffff/&apos; | xauth -f $XAUTH nmerge -</span><br><span class="line">if [ ! -f /tmp/.docker.xauth ]</span><br><span class="line">then</span><br><span class="line">  export XAUTH=/tmp/.docker.xauth</span><br><span class="line">  xauth nlist :0 | sed -e &apos;s/^..../ffff/&apos; | xauth -f $XAUTH nmerge -</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># Use lspci to check for the presence of an nvidia graphics card</span><br><span class="line">has_nvidia=`lspci | grep -i nvidia | wc -l`</span><br><span class="line">has_nvidia_docker=`which nvidia-docker &gt; /dev/null 2&gt;&amp;1; echo $?`</span><br><span class="line"></span><br><span class="line"># Check if nvidia-docker is avaialble</span><br><span class="line">if [ $&#123;has_nvidia_docker&#125; -eq 0 ] &amp;&amp; [ $&#123;has_nvidia&#125; -gt 0 ]</span><br><span class="line">then</span><br><span class="line">  DOCKER_COMMAND=nvidia-docker</span><br><span class="line">  # Set docker gpu parameters</span><br><span class="line">  # check if nvidia-modprobe is installed</span><br><span class="line">  if ! which nvidia-modprobe &gt; /dev/null</span><br><span class="line">  then</span><br><span class="line">    echo nvidia-docker-plugin requires nvidia-modprobe</span><br><span class="line">    echo please install nvidia-modprobe</span><br><span class="line">    exit -1</span><br><span class="line">  fi</span><br><span class="line">  # check if nvidia-docker-plugin is installed</span><br><span class="line">  if curl -s http://localhost:3476/docker/cli &gt; /dev/null</span><br><span class="line">  then</span><br><span class="line">    DOCKER_GPU_PARAMS=&quot; $(curl -s http://localhost:3476/docker/cli)&quot;</span><br><span class="line">  else</span><br><span class="line">    echo nvidia-docker-plugin not responding on http://localhost:3476/docker/cli</span><br><span class="line">    echo please install nvidia-docker-plugin</span><br><span class="line">    echo https://github.com/NVIDIA/nvidia-docker/wiki/Installation</span><br><span class="line">    exit -1</span><br><span class="line">  fi</span><br><span class="line">else</span><br><span class="line">  DOCKER_COMMAND=docker</span><br><span class="line">  DOCKER_GPU_PARAMS=&quot;&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">DISPLAY=&quot;$&#123;DISPLAY:-:0&#125;&quot;</span><br><span class="line">echo $&#123;DOCKER_COMMAND&#125;</span><br><span class="line">echo $&#123;DOCKER_GPU_PARAMS&#125;</span><br><span class="line">echo $&#123;DISPLAY&#125;</span><br><span class="line">$&#123;DOCKER_COMMAND&#125; run \</span><br><span class="line">  --privileged \</span><br><span class="line">  -e DISPLAY=unix$DISPLAY \</span><br><span class="line">  -e XAUTHORITY=/tmp/.docker.xauth \</span><br><span class="line">  -v &quot;/etc/localtime:/etc/localtime:ro&quot; \</span><br><span class="line">  -v /tmp/.X11-unix:/tmp/.X11-unix \</span><br><span class="line">  -v &quot;/tmp/.docker.xauth:/tmp/.docker.xauth&quot; \</span><br><span class="line">  $&#123;DOCKER_GPU_PARAMS&#125; \</span><br><span class="line">  $@</span><br></pre></td></tr></table></figure></p>
+<p><strong>注意：</strong> 这个脚本直接使用是无法支持gui的，我们还需要安装nvidia-docker和启用xhost。</p>
+<p>这个脚本的实现过程是检查主机是否安装nvidia-docker，若未安装则直接使用不支持gui的docker命令运行；否则调用nvidia-docker执行命令，同时会检查是否安装nvidia-docker-plugin。<br>需要注意的是nvidia-docker-plugin是nvidia-docker1专有的一个插件，用于支持gui，而nvidia-docker2版本中已经内置了nvidia-docker-plugin，所以不需要额外安装这个插件，<strong>也就是说这个脚本是针对nvidia-docker1的</strong>。<br>我在使用nvidia-docker2时没用折腾成功moveit的gui，而使用nvidia-docker1成功支持moveit的gui。所以接下来介绍nvidia-docker1的安装。</p>
+<h2 id="nvidia-docker1的安装"><a href="#nvidia-docker1的安装" class="headerlink" title="nvidia-docker1的安装"></a>nvidia-docker1的安装</h2><p>nvidia-docker1的安装方法参考<a href="!https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(version-1.0">nvidia-docker官网wiki</a>)。<br>安装完成后使用如下命令测试：<br><code>docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi</code></p>
+<p>可能会遇到的问题：</p>
+<ul>
+<li><code>docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi</code>出现如下错误：<blockquote>
+<p>docker: Error response from daemon: OCI runtime create failed: container_linux.go:348: starting container process caused “process_linux.go:402: container init caused \”process_linux.go:385: running prestart hook 1 caused \\\”error running hook: exit status 1, stdout: , stderr: exec command: [/usr/bin/nvidia-container-cli —load-kmods configure —ldconfig=@/sbin/ldconfig.real —device=all —compute —utility —require=cuda&gt;=10.0 brand=tesla,driver&gt;=384,driver&lt;385 —pid=8170 /var/lib/docker/overlay2/47e939b1bbc070d3ce4ec0920318a08c0cafb13d80d1716dd42251547bc6e64e/merged]\\\\nnvidia-container-cli: requirement error: unsatisfied condition: brand = tesla\\\\n\\\”\””: unknown.</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>解决办法：</strong> 出现这个错误的原因是pull下来的cuda版本和宿主机的cuda版本不一致导致的，宿主机使用的是cuda8.0，所以删除pull下来的镜像，使用下面指令重新pull：<br><code>docker run --runtime=nvidia --rm nvidia/cuda:8.0-runtime nvidia-smi</code>即可以正常显示显卡的使用信息。</p>
+<ul>
+<li><code>docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi</code>运行如果出错：<blockquote>
+<p>docker: Error response from daemon: Unknown runtime specified nvidiawhile running nvidia docker</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>解决办法：</strong> 上述错误是因为没有注册nvidia-docker-plugin的原因，<br>解决办法具体参考这个网站:<a href="https://github.com/nvidia/nvidia-container-runtime#docker-engine-setup" target="_blank" rel="noopener">https://github.com/nvidia/nvidia-container-runtime#docker-engine-setup</a><br>主要命令是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p /etc/systemd/system/docker.service.d</span><br><span class="line">sudo tee /etc/systemd/system/docker.service.d/override.conf &lt;&lt;EOF</span><br><span class="line">[Service]</span><br><span class="line">ExecStart=</span><br><span class="line">ExecStart=/usr/bin/dockerd --host=fd:// --add-runtime=nvidia=/usr/bin/nvidia-container-runtime</span><br><span class="line">EOF</span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure></p>
+<p>至此nvidia-docker的安装和配置基本完成，使用mesa-utils包进行测试。<br>参考ROS官网<a href="!http://wiki.ros.org/docker/Tutorials/GUI">Docker GUI</a>的方法使用<code>xhost +local:root</code>的方式运行moveit/moveit-release镜像：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#暴露显示端口给主机</span><br><span class="line">xhost +local:root</span><br><span class="line"></span><br><span class="line">#从moveit/moveit-release镜像创建一个容器</span><br><span class="line">nvidia-docker run -it --rm\</span><br><span class="line">  --env=&quot;DISPLAY&quot; \</span><br><span class="line">  --volume=&quot;/tmp/.X11-unix:/tmp/.X11-unix:rw&quot; \</span><br><span class="line">  moveit/moveit-release bash</span><br></pre></td></tr></table></figure></p>
+<p>进入容器环境后，在容器中安装mesa-utils包：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install -y mesa-utils</span><br></pre></td></tr></table></figure></p>
+<p>然后在命令行运行：<code>glxgear</code>。正常的话可以看到转动的齿轮。这说明nvidia-docker工作正常，如果没有显示转动的齿轮，可以先跳过这个测试继续下面的配置。即使这个齿轮测试正常，想让moveit支持gui还没有完成配置，还需要对moveit的docker镜像添加配置信息。<br>可以尝试运行<code>roscore &amp; rviz</code>（记得source ros的配置：<code>source /opt/ros/kinetic/setup.bash</code>）,这个时候肯定会报如下错误：</p>
+<blockquote>
+<p>libGL error: No matching fbConfigs or visuals found libGL error: failed to load driver: swrast Could not initialize OpenGL for RasterGLSurface, reverting to RasterSurface. libGL error: No matching fbConfigs or visuals found libGL error: failed to load driver: swrast Segmentation fault (core dumped)</p>
+</blockquote>
+<p><strong>解决办法：</strong> 见下一章节。</p>
+<h1 id="Docker对moveit-gui的支持"><a href="#Docker对moveit-gui的支持" class="headerlink" title="Docker对moveit gui的支持"></a>Docker对moveit gui的支持</h1><p>上一章节最后介绍了运行<code>roscore &amp; rviz</code>（记得source ros的配置：<code>source /opt/ros/kinetic/setup.bash</code>）,这个时候肯定会报如下错误：</p>
+<blockquote>
+<p>libGL error: No matching fbConfigs or visuals found libGL error: failed to load driver: swrast Could not initialize OpenGL for RasterGLSurface, reverting to RasterSurface. libGL error: No matching fbConfigs or visuals found libGL error: failed to load driver: swrast Segmentation fault (core dumped)<br>这是因为当前使用的docker镜像没加添加nvidia-docker的相关支持信息，我们需要重新生成新的docker镜像。</p>
+</blockquote>
+<p>插播一个知识点：之前有提到使用xhost支持gui显示，更多信息参考<a href="!http://wiki.ros.org/docker/Tutorials/GUI">ros docker gui</a>的wiki，从这个wiki可以看到是docker支持gui主要有使用xhost和使用vnc等方式，我们就使用最简单的xhost方式实现，这种方式大概原理就是把宿主机的显示端口暴露给容器，然后显示gui。这种方法不仅适用于moveit镜像，也通用于ros系列的其他docker镜像。所以为了安全，记得退出容器时使用如下命令关闭暴露的端口：<code>xhost +local:root</code></p>
+<h2 id="重新生成docker镜像"><a href="#重新生成docker镜像" class="headerlink" title="重新生成docker镜像"></a>重新生成docker镜像</h2><p>这一步主要为了解决这个错误：</p>
+<blockquote>
+<p>libGL error: No matching fbConfigs or visuals found libGL error: failed to load driver: swrast Could not initialize OpenGL for RasterGLSurface, reverting to RasterSurface. libGL error: No matching fbConfigs or visuals found libGL error: failed to load driver: swrast Segmentation fault (core dumped)</p>
+</blockquote>
+<p>参考网站：</p>
+<ul>
+<li><a href="https://github.com/diegoferigo/dockerfiles/issues/6" target="_blank" rel="noopener">https://github.com/diegoferigo/dockerfiles/issues/6</a></li>
+<li><a href="https://github.com/NVIDIA/nvidia-docker/issues/136#issuecomment-232755805" target="_blank" rel="noopener">https://github.com/NVIDIA/nvidia-docker/issues/136#issuecomment-232755805</a></li>
+</ul>
+<p>具体步骤是：</p>
+<ul>
+<li><p><strong>在moveit/moveit-release镜像的基础上重新生成镜像，加入nvidia-docker相关参数</strong>，对应生成镜像的Dockerfile为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">FROM moveit/moveit_own:0.2</span><br><span class="line"></span><br><span class="line"># install GLX-Gears</span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y \</span><br><span class="line">    mesa-utils &amp;&amp; \</span><br><span class="line">    rm -rf /var/lib/apt/lists/*</span><br><span class="line"></span><br><span class="line"># nvidia-docker hooks</span><br><span class="line">LABEL com.nvidia.volumes.needed=&quot;nvidia_driver&quot;</span><br><span class="line">ENV PATH /usr/local/nvidia/bin:$&#123;PATH&#125;</span><br><span class="line">ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:$&#123;LD_LIBRARY_PATH&#125;</span><br></pre></td></tr></table></figure>
+<p>将上述命令存为Dockerfile</p>
+</li>
+<li>biuld上面的Dockerfile：<code>docker build -t moveit_gui .</code><br>将会生成一个名为moveit_gui的docker镜像，可以通过<code>docker image ls</code>查看</li>
+<li>运行：<code>xhost +local:root</code></li>
+<li><p>从之前生成的docker镜像生成一个容器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nvidia-docker run -it \</span><br><span class="line">  --env=&quot;DISPLAY&quot; \</span><br><span class="line">  --volume=&quot;/tmp/.X11-unix:/tmp/.X11-unix:rw&quot; \</span><br><span class="line">  moveit_gui bash</span><br></pre></td></tr></table></figure>
+<p>比较方便的做法是将上面的命令写入一个bash文件，比如run.bash，然后给定执行权限：<code>`chmod +x run.bash</code>，然后执行：<code>./run.bash</code>。</p>
+</li>
+<li><p>在容器中测试gui是否正常：首先运行常用的测试：<code>glxgear</code>，正常的话会有一个转动的齿轮。然后运行<code>roscore &amp; rviz</code>看能否正常启动。依然要考虑source ros配置脚本的问题。</p>
+</li>
+</ul>
+<h2 id="解决Segmentation-fault-core-dumped-问题"><a href="#解决Segmentation-fault-core-dumped-问题" class="headerlink" title="解决Segmentation fault (core dumped)问题"></a>解决Segmentation fault (core dumped)问题</h2><p>如果上一步一切正常则表示当前的docker换进已经完全支持moveit的gui了。很大概率在运行rviz时会出现如下错误：</p>
+<blockquote>
+<p>[ INFO] [1539315753.889247768]: rviz version 1.12.16<br>[ INFO] [1539315753.889276892]: compiled against Qt version 5.5.1<br>[ INFO] [1539315753.889300776]: compiled against OGRE version 1.9.0 (Ghadamon)<br>[ INFO] [1539315754.465995908]: Stereo is NOT SUPPORTED<br>[ INFO] [1539315754.466066729]: OpenGl version: 4.5 (GLSL 4.5).<br>Segmentation fault (core dumped)</p>
+</blockquote>
+<p><strong>解决办法：</strong> 参考这两个issue可以解决这个问题：<br><a href="https://github.com/ros-visualization/rviz/issues/975" target="_blank" rel="noopener">https://github.com/ros-visualization/rviz/issues/975</a><br><a href="http://ubuntuhandbook.org/index.php/2018/01/how-to-install-mesa-17-3-3-in-ubuntu-16-04-17-10/" target="_blank" rel="noopener">http://ubuntuhandbook.org/index.php/2018/01/how-to-install-mesa-17-3-3-in-ubuntu-16-04-17-10/</a></p>
+<p>解决的思路是更新MESA 3D graphics library，具体过程：</p>
+<ul>
+<li><p><code>sudo add-apt-repository ppa:ubuntu-x-swat/updates</code><br>这一步出错的话参考：<a href="https://www.aliyun.com/jiaocheng/137952.html" target="_blank" rel="noopener">https://www.aliyun.com/jiaocheng/137952.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install python-software-properties</span><br><span class="line">sudo apt-get install software-properties-common</span><br></pre></td></tr></table></figure>
+<p>然后再运行。</p>
+</li>
+<li>接下来<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get dist-upgrade</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>如果一切正常的话，<strong>现在就可以愉快的运行GUI了。</strong><br>所以Docker对moveit gui的支持总结来说，关键的步骤有两步：</p>
+<ul>
+<li>安装nvidia-docker1</li>
+<li>基于moveit/moveit-release镜像生成支持GUI的镜像</li>
+</ul>
+<h2 id="重写Dockerfile生成一个功能完善的moveit镜像"><a href="#重写Dockerfile生成一个功能完善的moveit镜像" class="headerlink" title="重写Dockerfile生成一个功能完善的moveit镜像"></a>重写Dockerfile生成一个功能完善的moveit镜像</h2><p>现在已经完成docker对moveit gui的支持的配置，我们将上面的一些配置过程和一些比较重要的环境配置整合至Dockerfile，可以基于官方moveit/moveit：release镜像生成一个功能完善的moveit镜像。主要的配置内容包括：</p>
+<ul>
+<li>修改apt更新源为国内的源</li>
+<li>安装常用的工具包vim、bash-completion、mesa-utils包等</li>
+<li>添加<a href="!https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html">moveit教程</a>的示例代码并编译</li>
+<li>添加ROS更新环境变量指令</li>
+<li>支持命令行自动补全</li>
+<li>其他…</li>
+</ul>
+<p>Dockerfile的书写：<a href="https://blog.csdn.net/wo18237095579/article/details/80540571" target="_blank" rel="noopener">https://blog.csdn.net/wo18237095579/article/details/80540571</a></p>
+<p>Dockerfile的具体内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">FROM moveit/moveit:release</span><br><span class="line"></span><br><span class="line"># MAINTAINER</span><br><span class="line">MAINTAINER sam.1223@live.cn</span><br><span class="line"></span><br><span class="line"># running required command</span><br><span class="line"># update source and install some useful packages</span><br><span class="line"># bash-complete</span><br><span class="line"></span><br><span class="line">RUN cd /etc/apt/ \</span><br><span class="line">    &amp;&amp; mv sources.list sources.list.bkp \</span><br><span class="line">    &amp;&amp; touch sources.list \</span><br><span class="line">    &amp;&amp; echo &quot;deb http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse&quot; &gt; sources.list \</span><br><span class="line">    &amp;&amp; echo &quot;deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe multiverse&quot; &gt;&gt; sources.list \</span><br><span class="line">    &amp;&amp; echo &quot;deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse&quot; &gt;&gt; sources.list \</span><br><span class="line">    &amp;&amp; echo &quot;deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-proposed main restricted universe multiverse&quot; &gt;&gt; sources.list \</span><br><span class="line">    &amp;&amp; echo &quot;deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse&quot; &gt;&gt; sources.list \</span><br><span class="line">    &amp;&amp; echo &quot;deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe multiverse&quot; &gt;&gt; sources.list \</span><br><span class="line">    &amp;&amp; echo &quot;deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse&quot; &gt;&gt; sources.list \</span><br><span class="line">    &amp;&amp; echo &quot;deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse&quot; &gt;&gt; sources.list \</span><br><span class="line">    &amp;&amp; echo &quot;deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-proposed main restricted universe multiverse&quot; &gt;&gt; sources.list \</span><br><span class="line">    &amp;&amp; echo &quot;deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse&quot; &gt;&gt; sources.list \</span><br><span class="line">    &amp;&amp; cd   \</span><br><span class="line">    &amp;&amp; apt-get update &amp;&amp; apt-get install -y \</span><br><span class="line">    mesa-utils less ssh bash-completion \</span><br><span class="line">    tree nano vim \</span><br><span class="line">    &amp;&amp; echo &quot;if [ -f /etc/bash_completion ] &amp;&amp; ! shopt &quot; &gt;&gt; ~/.bashrc \</span><br><span class="line">    &amp;&amp; echo &quot;-oq posix; then&quot; &gt;&gt; ~/.bashrc \</span><br><span class="line">    &amp;&amp; echo &quot;    . /etc/bash_completion&quot; &gt;&gt; ~/.bashrc \</span><br><span class="line">    &amp;&amp; echo &quot;fi&quot; &gt;&gt; ~/.bashrc \</span><br><span class="line">    &amp;&amp; rm -rf /var/lib/apt/lists/*</span><br><span class="line"></span><br><span class="line"># install moveit example code and build</span><br><span class="line"># add setup.bash command to .bashrc</span><br><span class="line"># reference: https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html</span><br><span class="line"></span><br><span class="line">RUN source /opt/ros/kinetic/setup.bash \</span><br><span class="line">    &amp;&amp; echo &quot;source /opt/ros/kinetic/setup.bash&quot; &gt;&gt; ~/.bashrc \</span><br><span class="line">    &amp;&amp; source ~/.bashrc \</span><br><span class="line">    &amp;&amp; cd ~/ws_moveit/src \</span><br><span class="line">    &amp;&amp; git clone https://github.com/ros-planning/moveit_tutorials.git \</span><br><span class="line">    &amp;&amp; git clone https://github.com/ros-planning/panda_moveit_config.git \</span><br><span class="line">    &amp;&amp; cd ~/ws_moveit/src \</span><br><span class="line">    &amp;&amp; rosdep install -y --from-paths . --ignore-src --rosdistro kinetic \</span><br><span class="line">    &amp;&amp; cd ~/ws_moveit \</span><br><span class="line">    &amp;&amp; catkin config --extend /opt/ros/kinetic \</span><br><span class="line">    &amp;&amp; catkin build \</span><br><span class="line">    &amp;&amp; source ~/ws_moveit/devel/setup.bash \</span><br><span class="line">    &amp;&amp; echo &apos;source ~/ws_moveit/devel/setup.bash&apos; &gt;&gt; ~/.bashrc \</span><br><span class="line">    &amp;&amp; source ~/.bashrc</span><br><span class="line"></span><br><span class="line"># nvidia-docker hooks</span><br><span class="line">LABEL com.nvidia.volumes.needed=&quot;nvidia_driver&quot;</span><br><span class="line">ENV PATH /usr/local/nvidia/bin:$&#123;PATH&#125;</span><br><span class="line">ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:$&#123;LD_LIBRARY_PATH&#125;</span><br></pre></td></tr></table></figure></p>
+<p>以上就是Dockerfile的内容，如果还需要其他包或者配置，可以自行添加。<br>创建对应的Docker镜像： <code>docker build -t moveit/moveit_gui:release .</code><br>之后使用生成的<strong>moveit/moveit_gui:release</strong>镜像创建容器和使用，接下来就可以愉快的按照<a href="!https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html">Moveit官网教程</a>学习moveit的使用。比如载入rviz：<code>roslaunch panda_moveit_config demo.launch rviz_tutorial:=true</code></p>
+<h1 id="待探索的内容和附录"><a href="#待探索的内容和附录" class="headerlink" title="待探索的内容和附录"></a>待探索的内容和附录</h1><p>这次主要使用了nvidia-docker1和xhost方式实现moveit的gui使用，还可以尝试以下内容：</p>
+<ul>
+<li>nvidia-docker2</li>
+<li>基于VNC使moveit在docker容器中支持GUI：<ul>
+<li><a href="https://github.com/fcwu/docker-ubuntu-vnc-desktop" target="_blank" rel="noopener">https://github.com/fcwu/docker-ubuntu-vnc-desktop</a></li>
+<li><a href="http://wiki.ros.org/docker/Tutorials/GUI" target="_blank" rel="noopener">http://wiki.ros.org/docker/Tutorials/GUI</a></li>
+<li><a href="https://github.com/bpinaya/robond-docker" target="_blank" rel="noopener">https://github.com/bpinaya/robond-docker</a></li>
+</ul>
+</li>
+</ul>
+<p>其他的参考网站：</p>
+<ul>
+<li>基于nvidia-docker1的ros gui<ul>
+<li><a href="https://github.com/turlucode/ros-docker-gui" target="_blank" rel="noopener">https://github.com/turlucode/ros-docker-gui</a></li>
+<li><a href="http://wiki.ros.org/docker/Tutorials/GUI" target="_blank" rel="noopener">http://wiki.ros.org/docker/Tutorials/GUI</a></li>
+<li><a href="https://docs.nvidia.com/ngc/ngc-titan-setup-guide/index.html" target="_blank" rel="noopener">https://docs.nvidia.com/ngc/ngc-titan-setup-guide/index.html</a></li>
+</ul>
+</li>
+<li>有助于docker理解的资料：<br><a href="https://zhuanlan.zhihu.com/p/26418829?utm_medium=social&amp;utm_source=weibo" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/26418829?utm_medium=social&amp;utm_source=weibo</a></li>
+</ul>
+<p>这次配置docker moveit环境前后花了两天时间，中间遇到无数坑，google了无数问题，可能因为自己是Docker的初学者，对很多概念理解的不深，所以走了岔路。总之，通过这次环境的配置是自己对Docker的认识更深刻，Docker真的是一大神器。</p>
+
+      
+    </div>
+    
+    
+    
+    
+    <div>
+     
+       <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------The End<i class="fa fa-paw"></i>Thanks for reading!-------------</div>
+    
+</div>
+
+     
+    </div>     
+
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    SamLiu
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://doctorsrn.cn/2018/10/14/moveit_docker_guide/" title="Moveit Docker的安装与配置过程">http://doctorsrn.cn/2018/10/14/moveit_docker_guide/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ros/" rel="tag"><i class="fa fa-tag"></i> ros</a>
+          
+            <a href="/tags/moveit/" rel="tag"><i class="fa fa-tag"></i> moveit</a>
+          
+            <a href="/tags/docker/" rel="tag"><i class="fa fa-tag"></i> docker</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/08/reading_note_rvc/" rel="next" title="Robotics, Vision and Control, Second Edition读书笔记">
+                <i class="fa fa-chevron-left"></i> Robotics, Vision and Control, Second Edition读书笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://raw.githubusercontent.com/doctorsrn/git_test/master/050.jpg"
+                alt="SamLiu" />
+            
+              <p class="site-author-name" itemprop="name">SamLiu</p>
+              <p class="site-description motion-element" itemprop="description">Valar Morghulis!</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/doctorsrn" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用Docker版本的moveit"><span class="nav-number">1.</span> <span class="nav-text">使用Docker版本的moveit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker的安装和简单使用，以及nvidia-docker的安装"><span class="nav-number">2.</span> <span class="nav-text">Docker的安装和简单使用，以及nvidia-docker的安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker的安装"><span class="nav-number">2.1.</span> <span class="nav-text">Docker的安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拉取moveit镜像并运行一个支持图形界面的moveit容器"><span class="nav-number">2.2.</span> <span class="nav-text">拉取moveit镜像并运行一个支持图形界面的moveit容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nvidia-docker1的安装"><span class="nav-number">2.3.</span> <span class="nav-text">nvidia-docker1的安装</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker对moveit-gui的支持"><span class="nav-number">3.</span> <span class="nav-text">Docker对moveit gui的支持</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#重新生成docker镜像"><span class="nav-number">3.1.</span> <span class="nav-text">重新生成docker镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决Segmentation-fault-core-dumped-问题"><span class="nav-number">3.2.</span> <span class="nav-text">解决Segmentation fault (core dumped)问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重写Dockerfile生成一个功能完善的moveit镜像"><span class="nav-number">3.3.</span> <span class="nav-text">重写Dockerfile生成一个功能完善的moveit镜像</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#待探索的内容和附录"><span class="nav-number">4.</span> <span class="nav-text">待探索的内容和附录</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SamLiu</span>
+
+  
+</div>
+
+<div>
+<a href="http://www.miitbeian.gov.cn/">陕ICP备16008972号</a> 
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'jQxFkr8U9EDRbCqLEKgx0kO1-gzGzoHsz',
+        appKey: 'YCVKL4J0cJ0zfYLiUXdEopPe',
+        placeholder: 'ヾﾉ≧∀≦)o Just say something.',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("jQxFkr8U9EDRbCqLEKgx0kO1-gzGzoHsz", "YCVKL4J0cJ0zfYLiUXdEopPe");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
