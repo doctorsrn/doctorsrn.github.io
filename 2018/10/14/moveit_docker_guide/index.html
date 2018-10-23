@@ -7,7 +7,7 @@
 
 <html class="theme-next pisces use-motion" lang="zh-Hans">
 <head>
-  <meta charset="UTF-8"/>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <meta name="theme-color" content="#222">
@@ -96,7 +96,7 @@
 <meta property="og:site_name" content="Hello World">
 <meta property="og:description" content="使用Docker版本的moveit最近打算学习使用一下moveit，在安装moveit时发现官网提供docker版本，之前对docker有一些浅显的了解，苦于没有应用场景，这次就尝试使用docker版的moveit练练手。在折腾了两天之后，完成支持gui的moveit的docker环境配置，主要内容包括两部分：  docker的安装和简单使用，以及nvidia-docker的安装 docker对m">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-10-16T16:11:22.000Z">
+<meta property="og:updated_time" content="2018-10-18T15:44:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Moveit Docker的安装与配置过程">
 <meta name="twitter:description" content="使用Docker版本的moveit最近打算学习使用一下moveit，在安装moveit时发现官网提供docker版本，之前对docker有一些浅显的了解，苦于没有应用场景，这次就尝试使用docker版的moveit练练手。在折腾了两天之后，完成支持gui的moveit的docker环境配置，主要内容包括两部分：  docker的安装和简单使用，以及nvidia-docker的安装 docker对m">
@@ -150,7 +150,7 @@
       var s = document.getElementsByTagName("script")[0];
       s.parentNode.insertBefore(hm, s);
     })();
-  </script>
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 
 
@@ -164,7 +164,7 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -327,8 +327,8 @@
               
                 <span class="post-meta-item-text">更新于&#58;</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2018-10-17T00:11:22+08:00">
-                2018-10-17
+              <time title="更新于" itemprop="dateModified" datetime="2018-10-18T23:44:22+08:00">
+                2018-10-18
               </time>
             
           </span>
@@ -398,7 +398,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,728 字
+                  3,730 字
                 </span>
               
 
@@ -453,12 +453,12 @@
 <h2 id="拉取moveit镜像并运行一个支持图形界面的moveit容器"><a href="#拉取moveit镜像并运行一个支持图形界面的moveit容器" class="headerlink" title="拉取moveit镜像并运行一个支持图形界面的moveit容器"></a>拉取moveit镜像并运行一个支持图形界面的moveit容器</h2><p>下面是<a href="!http://moveit.ros.org/install/docker/">moveit官网</a>中使用gui的命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/ros-planning/moveit/kinetic-devel/.docker/gui-docker gui-docker &amp;&amp; chmod +x gui-docker</span><br><span class="line"></span><br><span class="line">./gui-docker -it --rm moveit/moveit:kinetic-release /bin/bash</span><br></pre></td></tr></table></figure></p>
 <p>这两条命令是拉取moveit仓库的gui命令脚本<code>gui-docker</code>,并给执行权限，然后使用<code>gui-docker</code>脚本运行。<br><code>gui-docker</code>的具体内容是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env bash</span><br><span class="line"></span><br><span class="line"># This script is used to create and run a docker container with settings for gui interactions</span><br><span class="line"># All arguments to this script will be appended to a docker run command.</span><br><span class="line"># Example command line:</span><br><span class="line"># ./gui-docker -ti --rm moveit/moveit /bin/bash</span><br><span class="line"></span><br><span class="line"># XAUTH=/tmp/.docker.xauth</span><br><span class="line"># xauth nlist :0 | sed -e &apos;s/^..../ffff/&apos; | xauth -f $XAUTH nmerge -</span><br><span class="line">if [ ! -f /tmp/.docker.xauth ]</span><br><span class="line">then</span><br><span class="line">  export XAUTH=/tmp/.docker.xauth</span><br><span class="line">  xauth nlist :0 | sed -e &apos;s/^..../ffff/&apos; | xauth -f $XAUTH nmerge -</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># Use lspci to check for the presence of an nvidia graphics card</span><br><span class="line">has_nvidia=`lspci | grep -i nvidia | wc -l`</span><br><span class="line">has_nvidia_docker=`which nvidia-docker &gt; /dev/null 2&gt;&amp;1; echo $?`</span><br><span class="line"></span><br><span class="line"># Check if nvidia-docker is avaialble</span><br><span class="line">if [ $&#123;has_nvidia_docker&#125; -eq 0 ] &amp;&amp; [ $&#123;has_nvidia&#125; -gt 0 ]</span><br><span class="line">then</span><br><span class="line">  DOCKER_COMMAND=nvidia-docker</span><br><span class="line">  # Set docker gpu parameters</span><br><span class="line">  # check if nvidia-modprobe is installed</span><br><span class="line">  if ! which nvidia-modprobe &gt; /dev/null</span><br><span class="line">  then</span><br><span class="line">    echo nvidia-docker-plugin requires nvidia-modprobe</span><br><span class="line">    echo please install nvidia-modprobe</span><br><span class="line">    exit -1</span><br><span class="line">  fi</span><br><span class="line">  # check if nvidia-docker-plugin is installed</span><br><span class="line">  if curl -s http://localhost:3476/docker/cli &gt; /dev/null</span><br><span class="line">  then</span><br><span class="line">    DOCKER_GPU_PARAMS=&quot; $(curl -s http://localhost:3476/docker/cli)&quot;</span><br><span class="line">  else</span><br><span class="line">    echo nvidia-docker-plugin not responding on http://localhost:3476/docker/cli</span><br><span class="line">    echo please install nvidia-docker-plugin</span><br><span class="line">    echo https://github.com/NVIDIA/nvidia-docker/wiki/Installation</span><br><span class="line">    exit -1</span><br><span class="line">  fi</span><br><span class="line">else</span><br><span class="line">  DOCKER_COMMAND=docker</span><br><span class="line">  DOCKER_GPU_PARAMS=&quot;&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">DISPLAY=&quot;$&#123;DISPLAY:-:0&#125;&quot;</span><br><span class="line">echo $&#123;DOCKER_COMMAND&#125;</span><br><span class="line">echo $&#123;DOCKER_GPU_PARAMS&#125;</span><br><span class="line">echo $&#123;DISPLAY&#125;</span><br><span class="line">$&#123;DOCKER_COMMAND&#125; run \</span><br><span class="line">  --privileged \</span><br><span class="line">  -e DISPLAY=unix$DISPLAY \</span><br><span class="line">  -e XAUTHORITY=/tmp/.docker.xauth \</span><br><span class="line">  -v &quot;/etc/localtime:/etc/localtime:ro&quot; \</span><br><span class="line">  -v /tmp/.X11-unix:/tmp/.X11-unix \</span><br><span class="line">  -v &quot;/tmp/.docker.xauth:/tmp/.docker.xauth&quot; \</span><br><span class="line">  $&#123;DOCKER_GPU_PARAMS&#125; \</span><br><span class="line">  $@</span><br></pre></td></tr></table></figure></p>
 <p><strong>注意：</strong> 这个脚本直接使用是无法支持gui的，我们还需要安装nvidia-docker和启用xhost。</p>
-<p>这个脚本的实现过程是检查主机是否安装nvidia-docker，若未安装则直接使用不支持gui的docker命令运行；否则调用nvidia-docker执行命令，同时会检查是否安装nvidia-docker-plugin。<br>需要注意的是nvidia-docker-plugin是nvidia-docker1专有的一个插件，用于支持gui，而nvidia-docker2版本中已经内置了nvidia-docker-plugin，所以不需要额外安装这个插件，<strong>也就是说这个脚本是针对nvidia-docker1的</strong>。<br>我在使用nvidia-docker2时没用折腾成功moveit的gui，而使用nvidia-docker1成功支持moveit的gui。所以接下来介绍nvidia-docker1的安装。</p>
+<p>这个脚本的实现过程是检查主机是否安装nvidia-docker，若未安装则直接使用不支持gui的原生docker命令运行；否则调用nvidia-docker执行命令，同时会检查是否安装nvidia-docker-plugin。<br>需要注意的是nvidia-docker-plugin是nvidia-docker1专有的一个插件，用于支持gui，而nvidia-docker2版本中已经内置了nvidia-docker-plugin，所以不需要额外安装这个插件，<strong>也就是说这个脚本是针对nvidia-docker1的</strong>。<br>我在使用nvidia-docker2时没有折腾成功moveit的gui，而使用nvidia-docker1成功支持moveit的gui。所以接下来介绍nvidia-docker1的安装。</p>
 <h2 id="nvidia-docker1的安装"><a href="#nvidia-docker1的安装" class="headerlink" title="nvidia-docker1的安装"></a>nvidia-docker1的安装</h2><p>nvidia-docker1的安装方法参考<a href="!https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(version-1.0">nvidia-docker官网wiki</a>)。<br>安装完成后使用如下命令测试：<br><code>docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi</code></p>
 <p>可能会遇到的问题：</p>
 <ul>
 <li><code>docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi</code>出现如下错误：<blockquote>
-<p>docker: Error response from daemon: OCI runtime create failed: container_linux.go:348: starting container process caused “process_linux.go:402: container init caused \”process_linux.go:385: running prestart hook 1 caused \\\”error running hook: exit status 1, stdout: , stderr: exec command: [/usr/bin/nvidia-container-cli —load-kmods configure —ldconfig=@/sbin/ldconfig.real —device=all —compute —utility —require=cuda&gt;=10.0 brand=tesla,driver&gt;=384,driver&lt;385 —pid=8170 /var/lib/docker/overlay2/47e939b1bbc070d3ce4ec0920318a08c0cafb13d80d1716dd42251547bc6e64e/merged]\\\\nnvidia-container-cli: requirement error: unsatisfied condition: brand = tesla\\\\n\\\”\””: unknown.</p>
+<p>docker: Error response from daemon: OCI runtime create failed: container_linux.go:348: starting container process caused “process_linux.go:402: container init caused \”process_linux.go:385: running prestart hook 1 caused \\”error running hook: exit status 1, stdout: , stderr: exec command: [/usr/bin/nvidia-container-cli –load-kmods configure --ldconfig=@/sbin/ldconfig.real –device=all –compute –utility –require=cuda&gt;=10.0 brand=tesla,driver&gt;=384,driver&lt;385 –pid=8170 /var/lib/docker/overlay2/47e939b1bbc070d3ce4ec0920318a08c0cafb13d80d1716dd42251547bc6e64e/merged]\\nnvidia-container-cli: requirement error: unsatisfied condition: brand = tesla\\n\\”\””: unknown.</p>
 </blockquote>
 </li>
 </ul>
@@ -501,7 +501,7 @@
 <li>运行：<code>xhost +local:root</code></li>
 <li><p>从之前生成的docker镜像生成一个容器：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nvidia-docker run -it \</span><br><span class="line">  --env=&quot;DISPLAY&quot; \</span><br><span class="line">  --volume=&quot;/tmp/.X11-unix:/tmp/.X11-unix:rw&quot; \</span><br><span class="line">  moveit_gui bash</span><br></pre></td></tr></table></figure>
-<p>比较方便的做法是将上面的命令写入一个bash文件，比如run.bash，然后给定执行权限：<code>`chmod +x run.bash</code>，然后执行：<code>./run.bash</code>。</p>
+<p>比较方便的做法是将上面的命令写入一个bash文件，比如run.bash，然后给定执行权限：<code></code>chmod +x run.bash<code>，然后执行：</code>./run.bash`。</p>
 </li>
 <li><p>在容器中测试gui是否正常：首先运行常用的测试：<code>glxgear</code>，正常的话会有一个转动的齿轮。然后运行<code>roscore &amp; rviz</code>看能否正常启动。依然要考虑source ros配置脚本的问题。</p>
 </li>
@@ -647,6 +647,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/23/hello-world/" rel="prev" title="Hello World">
+                Hello World <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -1179,13 +1183,28 @@
       new needShareButton('#needsharebutton-postbottom', pbOptions);
     
     
-  </script>
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 
   
 
   
-  
-
 
   
 
