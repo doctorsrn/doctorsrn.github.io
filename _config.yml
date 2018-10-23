@@ -3,16 +3,16 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: HelloWorld
+title: Hello World
 subtitle:
-description:
+description: Valar Morghulis!
 author: SamLiu
-language:
-timezone:
+language: zh-Hans
+timezone: Asia/Shanghai
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: http://doctorsrn.cn
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -72,8 +72,12 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
+#theme: hexo-theme-next
 theme: next
+#plugins:
+#    - hexo-renderer-mathjax
 plugins: hexo-generate-feed
+
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
@@ -82,3 +86,5 @@ deploy:
   repo: git@github.com:doctorsrn/doctorsrn.github.io.git
   branch: master
   message: 'website update:{{now("YYYY-MM-DD HH:mm:ss")}}'
+
+

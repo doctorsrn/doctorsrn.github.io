@@ -1,0 +1,2603 @@
+---
+title: Robotics, Vision and Control, Second Edition读书笔记
+date: 2018-10-08 23:34:22
+updated: 2018-10-23 01:41:22
+layout: post
+tags: [robotics, algorithm, matlab]
+comments: true
+mathjax: true
+categories: 
+- robotics
+---
+
+
+# Reading Note 
+
+**Book:** [Robotics, Vision and Control, Second Edition](https://link.springer.com/book/10.1007/978-3-642-20144-8)  
+**Author:** [Peter Corke](http://petercorke.com/wordpress/)
+**公开课:** [The open online robotics education resource](https://robotacademy.net.au/)
+
+
+摘录
+> + Robots are data-driven machines. They acquire data, process it and take action based on it.  
+> + instant gratification: 及时行乐  
+> + Robot definition: a goal oriented machine that can sense, plan and act.  
+> + Further Reading: The Handbook of Robotics (Siciliano and Khatib 2016)
+
+<!--more-->
+
+**一个非常重要的问题**：Matlab Robotics Toolbox中函数的参数涉及角度时使用的单位默认是弧度rad，但是在使用时发现实际情况是度deg，该问题的主要原因是调用的函数可能与MATLAB自带工具箱Phased Array System Toolbox中的函数重名导致的，比如rotx函数。所以可将该工具箱卸载来解决该问题。该问题可以参考[Matlab Robotics Toolbox的官网](https://petercorke.com/wordpress/toolboxes/faq),其中有介绍“Toolbox is using degrees not radians”问题。
+
+
+部分符号说明：
+![pic2_0](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/2_0.png)
+
+
+# 2.1 Working in Two Dimensions (2D)
+## 2.1.1 Orientation in 2-Dimensions  
+### 2.1.1.1 Orthonormal Rotation Matrix 正交旋转矩阵
+Y坐标系相对于X坐标系的正交旋转矩阵为：
+$$ ^{X}R_{Y}(\theta) = 
+    \begin{pmatrix}
+    cos(\theta)& -sin(\theta)\\ 
+    sin(\theta)& cos(\theta)
+    \end{pmatrix}  
+$$
+
+### 2.1.1.2 Matrix Exponential 矩阵指数   
+矩阵指数存在的性质：
+R = rot2($\theta$) 正交旋转矩阵
+S = logm(R)
+R = expm(S) 矩阵指数
+S = skew($\theta$)
+$\theta$ = vex(S)
+
+## 2.1.2 Pose in 2-Dimensions  
+### 2.1.2.1 Homogeneous Transformation Matrix 齐次变换矩阵  
+从B坐标系到A坐标系的变换：
+$$ 
+    \begin{pmatrix}
+    ^{A}x& \\ 
+    ^{A}y& \\
+    1&
+    \end{pmatrix}  
+    = 
+    \begin{pmatrix}
+    ^{A}R_{B}& t\\ 
+    0_{1\times2}& 1
+    \end{pmatrix}  
+    \begin{pmatrix}
+    ^{B}x& \\ 
+    ^{B}y& \\
+    1&
+    \end{pmatrix}  
+$$
+其中t=(x,y)。  
+引入齐次坐标，则上述变换可写为:
+$$
+^{A}\tilde{p} = 
+    \begin{pmatrix}
+    ^{A}R_{B}& t\\ 
+    0_{1\times2}& 1
+    \end{pmatrix} \,
+    ^{B}\tilde{p} = \,
+    ^{A}T_{B}\,^{B}\tilde{p}
+$$
+其中$^{A}T_{B}$是齐次变换矩阵。T的值为：  
+$$
+T = \begin{pmatrix}
+    cos(\theta)& -sin(\theta)& x\\ 
+    sin(\theta)& cos(\theta)& y \\
+    0& 0& 1
+    \end{pmatrix} 
+$$  
+T的性质：
+$$
+T^{-1} = \begin{pmatrix}
+    R& t\\ 
+    0_{1\times2}& 1
+    \end{pmatrix}^{-1} = 
+    \begin{pmatrix}
+    R^{T}& -R^{T}t\\ 
+    0_{1\times2}& 1
+    \end{pmatrix}  
+$$
+
+MATLAB相关命令：  
+```
+T1 = transl2(1, 2) * trot2(30, 'deg')
+plotvol([0 5 0 5]);
+trplot2(T1, 'frame', '1', 'color', 'b')
+T2 = transl2(2, 1)
+T3 = T1*T2
+trplot2(T2, 'frame', '2', 'color', 'r');
+trplot2(T3, 'frame', '3', 'color', 'g');
+
+T4 = T2*T1
+trplot2(T4, 'frame', '4', 'color', 'c');
+```
+![pic2_1](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/2_1.png)  
+
+**注意**：T3和T4结果的差别说明，T1*T2表示，T2的变换是相对于T1坐标系进行的，所以3坐标系的原点不是(3,3)，而4坐标系的原点是(3,3)。
+
+另一个例子：
+```
+P=[3;2]   %坐标(3,2)点
+plot_point(P, 'label', 'P', 'solid', 'ko');
+
+%求P点相对于坐标系1的坐标
+P1 =  inv(T1) * [P;1] %此处将P点写为齐次坐标的形式
+%使用e2h函数也可实现普通点到齐次坐标的变化，h2e反之，即：
+P1 = h2e(inv(T1) * e2h(P))
+```
+
+### 2.1.2.2 Centers of Rotation旋转中心
+```
+plotvol([-5 4 -1 5]);
+T0 = eye(3,3);
+trplot2(T0, 'frame', '0');
+X = transl2(2, 3);
+trplot2(X, 'frame', 'X');
+R = trot2(2);
+trplot2(R*X, 'framelabel', 'RX', 'color', 'r');
+trplot2(X*R, 'framelabel', 'XR', 'color', 'r');
+C = [1 2]';
+plot_point(C, 'label', ' C', 'solid', 'ko')
+RC = transl2(C) * R * transl2(-C)
+trplot2(RC*X, 'framelabel', 'XC', 'color', 'r');
+```
+![pic2_2](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/2_2.png)  
+
+R\*X: 旋转中心是原始坐标原点
+X\*R: 旋转中心是X坐标系原点
+以任意点为旋转中心对X旋转变换：transl2(C) * R * transl2(-C) * X
+
+### 2.1.2.3 Twists in 2D
+
++ 使用Twist类型进行旋转变换
+```
+%创建以C点为旋转中心的Twist，C=[1 2]'
+tw = Twist('R', C)
+
+%获取以C点为旋转中心，旋转2 radians的变换矩阵
+%该结果与上一节RC = transl2(C) * R * transl2(-C)得到的结果一样
+T = tw.T(2)
+
+%从Twist得到旋转中心
+tw.pole()
+```
+
++ 使用Twist类型完成某方向上的平移变换
+```
+%沿(1,1)方向平移的Twist
+tw = Twist('T', [1 1])
+
+%平移√2
+tw.T(sqrt(2))
+```
+
++ 更一般的变换
+```
+T = transl2(2, 3) * trot2(0.5)
+
+%计算Twist向量值
+tw = Twist(T)
+
+%得到T
+tw.T
+```
+
+#2.2 Working in Three Dimensions (3D)  
+> Euler’s rotation theorem:
+Any two independent orthonormal coordinate frames can be related by a sequence of rotations (not more than three) about coordinate axes, where no two successive rotations may be about the same axis.
+
+![pic2_3](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/2_3.png) 
+## 2.2.1 Orientation in 3-Dimensions
+### 2.2.1.1 Orthonormal Rotation Matrix
+从B坐标系旋转至A坐标系：
+$$ 
+    \begin{pmatrix}
+    ^{A}x& \\ 
+    ^{A}y& \\
+    ^{A}z&
+    \end{pmatrix}  
+    = \,
+    ^{A}R_{B}
+    \begin{pmatrix}
+    ^{B}x& \\ 
+    ^{B}y& \\
+    ^{B}z&
+    \end{pmatrix}  
+$$
+
+3维旋转矩阵的一些性质：
++ 正交性，每列是单位向量，且列与列之间是正交的
++ $R^{-1} = R^{T}$
++ 正交旋转矩阵共9个元素，但是并不是彼此独立，各列是单位向量且彼此正交，提供6个约束条件，所以9个元素只有三个是独立的
+
+各个轴的正交旋转矩阵：
+$$
+R_{x}(\theta) = \begin{pmatrix}
+                1& 0& 0\\ 
+                0& cos(\theta)& -sin(\theta)\\
+                0& sin(\theta)& cos(\theta)
+                \end{pmatrix}
+$$
+
+$$
+R_{y}(\theta) = \begin{pmatrix}
+                cos(\theta)& 0& sin(\theta)\\
+                0& 1& 0\\ 
+                -sin(\theta)& 0& cos(\theta)
+                \end{pmatrix}
+$$
+
+$$
+R_{z}(\theta) = \begin{pmatrix}
+                cos(\theta)& -sin(\theta)& 0 \\
+                sin(\theta)& cos(\theta)& 0\\
+                0& 0& 1
+                \end{pmatrix}
+$$
+
+相关Matlab函数：
++ rotx, roty, rotz (单位是deg)
++ 可视化函数：trplot(R)， 动画tranimate(R)
+
+### 2.2.1.2 Three- Angle Representations
+根据Euler’s rotation theorem,有两类旋转方法：Eulerian and Cardanian  
++ Eulerian type: XYX, XZX, YXY, YZY, ZXZ, or ZYZ
++ Cardanian type: XYZ, XZY, YZX, YXZ, ZXY, or ZYX
+
+#### 欧拉角
+比如ZYZ序列：$R=R_{z}(\phi)R_{y}(\theta)R_{z}(\psi)$
+其对应的欧拉角为：$\Gamma=(\phi,\theta,\psi)$  
+例如欧拉角$\Gamma=(0.1,0.2,0.3)$，其对应的ZYZ旋转矩阵为：
+```
+R = rotz(0.1) * roty(0.2) * rotz(0.3);
+
+%更便捷的求法
+R = eul2r(0.1, 0.2, 0.3)
+```
+逆问题从旋转矩阵求欧拉角：
+```
+gamma = tr2eul(R)
+```
+**注意**:当$\theta$角为负时，从旋转矩阵求出的欧拉角将和之前的值不一样，$\theta$将变为正值，$\phi,\psi$都将不同。这是因为从旋转矩阵到欧拉角的映射是不唯一的，且Matlab ToolBox中的函数总是返回正的$\theta$角。
+
+#### 万向角
+另一种常用的角度是Cardan angles(万向节角): roll, pitch and yaw.  
+常用序列为：ZYX or XYZ
++ ZYX: $R=R_{z}(\theta_{y})R_{y}(\theta_{p})R_{x}(\theta_{r})$, 常用于船舶、汽车、航行器的姿态描述, X轴指向前进方向
++ XYZ: $R=R_{X}(\theta_{y})R_{y}(\theta_{p})R_{Z}(\theta_{r})$，常用于机械臂末端执行器，Z轴指向前方，X轴指向上或者下
+
+Matlab Toolbox默认ZYX序列，可使用'xyz'参数进行设置
+```
+R = rpy2r(0.1, 0.2, 0.3)
+
+%逆操作
+gamma = tr2rpy(R)
+
+%xyz序列
+R = rpy2r(0.1, 0.2, 0.3, 'xyz')
+gamma = tr2rpy(R, 'xyz')
+```
+
+### 2.2.1.3 Singularities and Gimbal Lock 奇异点现象和万向节锁
+![pic2_4](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/2_4.png) 
+当两个连续轴对齐时，欧拉角和万向节角的表示方法都会出现奇异点现象，即只能表示两个轴的姿态，第三个轴的姿态无法表示，出现自由度丢失的情况。对于ZYZ形式的欧拉角，当$\theta = k\pi, k\in \mathbb{Z}$时出现奇异点；对于万向节角，当pitch角$\theta_{p}=\pm(2k+1)\frac{\pi}{2}$时出现奇异点。
+
+### 2.2.1.4 Two Vector Representation双向量表示法
+这种表示方法主要用于机械臂,考虑末端执行器坐标系为E，如下图
+
+![pic2_5](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/2_5.png) 
+设工具指向的方向为Z轴，其对应的方向向量命名为approach vector（z向矢量）,设为$\hat{a}=(a_x,a_y,a_z)$。设两指之间的指向为orientation vector（y向矢量）, 设为$\hat{o}=(o_x,o_y,o_z)$。使用$\hat{a},\hat{o}$已经足够得到旋转矩阵R：
+$$
+R = \begin{pmatrix}
+    n_x& o_x& a_x \\
+    n_y& o_y& a_y\\
+    n_z& o_z& a_z
+    \end{pmatrix}
+$$
+$\hat{n},\hat{o},\hat{a}$向量依次对应X,Y,Z轴。
++ 当$\hat{a},\hat{o}$正交时：$\hat{n} = \hat{a}\times\hat{o}$，$\hat{n}$称为normal vetor（x向矢量）。   
+Matlab对应指令：
+    ```
+    a = [1 0 0]';
+    o = [0 1 0]';
+    R = oa2r(o, a)
+    ```
++ 当$\hat{a},\hat{o}$不正交，$\hat{a},\hat{o}$也可以定义一个平面，并且可以计算出与该平面垂直的法向量$\hat{n}$,然后可以得到与$\hat{a},\hat{n}$正交的向量$\hat{o}'=\hat{a}\times\hat{n}$
+
+### 2.2.1.5 Rotation about an Arbitrary Vector绕任意向量旋转
+任意朝向的两个坐标轴可以通过绕空间中某个轴旋转一次而重合。设旋转轴为向量v，旋转角为theta，Matlab实现：
+```
+R = rpy2r(0.1 , 0.2, 0.3);
+[theta, v] = tr2angvec(R)
+
+%求R的特征值和特征向量
+[x,e] = eig(R)
+
+%通过R的特征值求取旋转角
+theta = angle(e(1,1))
+```
+v和theta不唯一。同时旋转矩阵R的特征值和特征向量存在如下关系：
+因为特征值和特征向量存在关系:$$Rv={\lambda}v$$
+当$\lambda=1$,即特征值为1时：$$Rv=v$$
+此时对应的特征向量v在旋转矩阵R的变换下不发生改变，即该特征向量就是旋转轴。一个正交旋转矩阵总有一个特征值$\lambda=1$,且另外两个特征值为共轭复数，满足$\lambda=cos\theta{\pm}isin\theta$，此处$\theta$就是旋转角。
+
+**逆问题**：从旋转角和转轴向量求解旋转矩阵,使用Rodrigues旋转公式：
+$$
+R=I_{3\times3}+sin{\theta}[\hat{v}]_{\times}+
+(1-cos\theta)[\hat{v}]^{2}_{\times}
+$$
+此处$[\hat{v}]_{\times}$是偏斜对称矩阵。对应的Matlab实现为：
+```
+%绕X轴旋转pi/2的旋转矩阵
+R = angvec2r(pi/2, [1 0 0])
+```
+
+### 2.2.1.6 Matrix Exponentials矩阵指数
+```
+R = rotx(0.3) 
+
+%求解矩阵对数
+%结果是拥有两个元素的稀疏矩阵,大小为0.3
+S = logm(R)
+
+%S也是偏斜对称矩阵
+%vex结果的第一个元素为旋转角0.3，对应于X轴为旋转轴
+vex(S)'
+
+%使用工具箱函数获取旋转角和旋转轴
+[th,w] = trlog(R)
+
+%矩阵对数函数logm的逆函数为矩阵指数函数expm
+%重新得到旋转矩阵
+expm(S)
+
+%所以以下两个命令等价
+R = rotx(0.3);
+R = expm( skew([1 0 0]) * 0.3 );
+```
+绕任意轴旋转的情况可以写为：
+$$
+R = e^{\hat{[\omega]}_\times\theta}\in{SO_3}
+$$
+$\theta$是旋转角，$\hat{\omega}$是平行于旋转轴的单位向量,符号$[\bullet]_\times:\mathbb{R}^3\mapsto\mathbb{R}^{3\times3}$表示从一个向量到偏斜对称矩阵的映射。
+
+
+
+### 2.2.1.7 Unit Quaternions单位四元数
+Quaternions定义:
+$$
+q=s+v_{\tiny1}i+v_{\tiny2}j+v_{\tiny3}k
+$$
+
+Unit Quaternions 满足:
+$$
+\left \|q \right \| =s^2+v^2_{1}+v^2_{2}+v^2_{3} =1
+$$
+可以看做是绕单位向量$\hat{v}$旋转$\theta$角,满足关系式:
+$$
+\mathring{q}=cos\frac{\theta}{2}<\hat{v}sin\frac{\theta}{2}>
+$$
+
+对应的Matlab实现：
+```
+%注意角度单位是度还是弧度
+q = UnitQuaternion( rpy2tr(0.1, 0.2, 0.3) )
+
+inv(q)
+q*inv(q)
+q.R
+q.plot()
+
+%借助四元数进行旋转变换
+q*[1 0 0]'
+```
+
+## 2.2.2 Pose in 3-Dimensions
+### 2.2.2.1 Homogeneous Transformation Matrix
+3维齐次变换矩阵与2维类似：
+$$ 
+    \begin{pmatrix}
+    ^{A}x& \\ 
+    ^{A}y& \\
+    ^{A}z& \\
+    1&
+    \end{pmatrix}  
+    = 
+    \begin{pmatrix}
+    ^{A}R_{B}& t\\ 
+    0_{1\times3}& 1
+    \end{pmatrix}  
+    \begin{pmatrix}
+    ^{B}x& \\ 
+    ^{B}y& \\
+    ^{B}z& \\
+    1&
+    \end{pmatrix}  
+$$
+
+引入齐次坐标，则上述变换可写为:
+$$
+^{A}\tilde{p} = 
+    \begin{pmatrix}
+    ^{A}R_{B}& t\\ 
+    0_{1\times3}& 1
+    \end{pmatrix} \,
+    ^{B}\tilde{p} = \,
+    ^{A}T_{B}\,^{B}\tilde{p}
+$$
+$^{A}T_{B}$是4x4的齐次变换矩阵。
+
+T的性质：
+$$
+T_1T_2 = \begin{pmatrix}
+    R_1& t_1\\ 
+    0_{1\times3}& 1
+    \end{pmatrix} 
+    \begin{pmatrix}
+    R_2& t_2\\ 
+    0_{1\times3}& 1
+    \end{pmatrix}= 
+    \begin{pmatrix}
+    R_1R_2& t_1+R_1t_2\\ 
+    0_{1\times3}& 1
+    \end{pmatrix}
+$$
+
+$$
+T^{-1} = \begin{pmatrix}
+    R& t\\ 
+    0_{1\times3}& 1
+    \end{pmatrix}^{-1} = 
+    \begin{pmatrix}
+    R^{T}& -R^{T}t\\ 
+    0_{1\times3}& 1
+    \end{pmatrix}  
+$$
+
+相关Matlab程序：
+```
+%注意角度单位问题
+T = transl(1, 0, 0) * trotx(pi/2) * transl(0, 1, 0)
+tranimate(T)
+
+%旋转矩阵求解
+t2r(T)
+
+%坐标变换部分，一个列向量
+transl(T)'
+```
+
+### 2.2.2.2 Vector-Quaternion Pair向量-四元数对
+位姿的简洁、实用表示方法是向量-四元数对：
+$$
+\xi \sim (t, \mathring{q})
+$$
+其中$t \in \mathbb{R}^3$是一个表征原坐标系与参考坐标系之间关系的向量，$\mathring{q} \in \mathbb{S}^3$表征原坐标系相对于参考坐标系的朝向。
+
+**Note**：这种方法Matlab Robotics Toolbox没有实现。
+
+### 2.2.2.3 Twists
+在三维空间，刚体的任意运动等效于螺旋运动--绕着空间中某条线旋转的同时沿着该线移动。  
+定义3维向量对Twist表征螺旋运动，$s=(v,\omega) \in \mathbb{R}^6$。$\omega$表征旋转轴，$v$表征twist轴在空间中的位置和螺旋运动的俯仰角。
+
+Matlab相关代码：
+```
+%初始化一个单位twist，且转轴为x轴
+tw = Twist('R', [1 0 0], [0 0 0])
+%绕x轴旋转0.3rad，等价于trotx(0.3)
+tw.T(0.3)
+
+%创建沿y轴平移的twist
+tw = Twist('T', [0 1 0])
+%平移2个单位
+tw.T(2)
+```
+
+一个关于螺旋运动模型的例子：
+```
+X = transl(3, 4, -4);
+angles = [0:0.3:15];
+
+%定义旋转轴
+tw = Twist('R', [0 0 1], [2 3 2], 0.5);
+
+%可视化
+tranimate( @(theta) tw.T(theta) * X, angles, 'length', 0.5, 'retain', 'rgb', 'notext');
+
+%获取旋转轴，并绘制出来
+L = tw.line
+L.plot('k:', 'LineWidth', 2)
+```
+
+将任意齐次变换转换为非单位twist：
+```
+T = transl(1, 2, 3) * eul2tr(0.3, 0.4, 0.5);
+tw = Twist(T)
+
+%俯仰角
+tw.pitch
+
+%关于轴的旋转
+tw.theta
+
+%旋转轴上的一点
+tw.pole'
+```
+
+关于Twists的更多知识可参看该[书籍](http://www.cds.caltech.edu/~murray/books/MLS/pdf/mls94-complete.pdf)和[博客](https://blog.csdn.net/YgritteSnow/article/details/70307765)。
+
+# 2.3 Advanced Topics
+## 2.3.1 Normalization
+矩阵或者四元数经过多次乘积运算会出翔精度丢失的问题，可以使用归一化的方法进行解决：
++ 针对旋转矩阵：`trnorm(R)`
++ 针对四元数：`q.unit()`
+
+## 2.3.2 Understanding the Exponential Mapping
+本章讲解旋转矩阵(rotation matrices)、偏斜对称矩阵(skewsymmetric matrices)和矩阵指数(matrix exponentiation)之间的关系。  
+
+-------------
+设一点P，其坐标向量为p，以角速度向量$\omega$旋转，$\omega$的方向即为转轴方向。若使P点旋转$\theta$角，则P点的线速度为:
+$$
+\dot{p} = \omega \times p 
+$$
+将交叉积替换为偏斜对称矩阵和向量的积:
+$$
+\dot{p} = [\omega]_\times p
+$$
+对于上述方程的一阶形式(标量形式):
+$$
+\dot{x} = ax
+$$
+得一阶形式的解为：
+$$
+x(t) = e^{at}x(0)
+$$
+原方程的解为：
+$$
+p(t) = e^{[\omega]_{\times}t} p(0)
+$$
+当$\left \| \omega \right \| = 1$时，表示t秒之后旋转t rad。我们需要旋转$\theta$角，所以设置$t = \theta$，可得：
+$$
+p(\theta) = e^{[\hat{\omega}]_{\times}\theta} p(0)
+$$
+该方程表示$p(0)$被旋转至$p(\theta)$。一个矩阵对向量进行旋转，该矩阵即是旋转矩阵:
+$$
+R(\theta,\hat{\omega}) = e^{[\hat{\omega}]_{\times}\theta} \in \mathrm{SO(3)}
+$$
+
+--------
+考虑一般情况下的旋转和平移运动:
+$$
+\dot{p} = [\omega]_\times p + v
+$$
+写为矩阵形式：
+$$
+\begin{pmatrix}
+\dot{p} \\
+0
+\end{pmatrix} = \begin{pmatrix}
+                [\omega]_\times& v\\
+                0& 0
+                \end{pmatrix}
+                \begin{pmatrix}
+                p\\
+                1
+                \end{pmatrix}
+$$
+
+引入齐次坐标，上述方程写为：
+$$
+\dot{\tilde{p}} = \begin{pmatrix}
+                [\omega]_\times& v\\
+                0& 0
+                \end{pmatrix}
+                \tilde{p}
+                =\Sigma \tilde{p}
+$$
+其中$\Sigma$是4x4阶增广斜对称矩阵,可得其标量形式的解为：
+$$
+\tilde{p}(\theta) = e^{\Sigma\theta}\tilde{p}(0)
+$$
+可得齐次变换矩阵$T(\theta,\hat\omega,v)$为：
+$$
+T(\theta,\hat\omega,v) = e^{
+                \begin{pmatrix}
+                [\hat\omega]_\times& v\\
+                0& 0
+                \end{pmatrix}
+                \theta
+                } \in \mathrm{SE(3)}
+$$
+
+---
+以上讲解旋转矩阵(rotation matrices)、偏斜对称矩阵(skewsymmetric matrices)和矩阵指数(matrix exponentiation)之间的关系，Matlab实现的函数为`expm`和`trexp`。
+
+## 2.3.4 Dual Quaternions对偶四元数
+常规四元数只能表示空间旋转，而对偶四元数可以表示空间任意旋转和平移的组合。
+
+## 2.3.5 Configuration Space构型空间
+构型空间又称为C空间(C-Space),是系统所有可能的状态或配置（configuration）的集合,包括：
++ 运动学：不考虑物理学时所有可能配置的几何形状
++ 动力学：随时间推移，系统配置的演变
+
+每个自由度就是C空间的其中一维，同时C空间张成的空间受到障碍物、关节限制等因素的约束。  
+配置（configuration）是系统参数的最小集合，且该集合可以描述系统上的任意一个点的位置，又被称为广义坐标。配置空间中的任意一个点可以映射到工作空间中的一个点，反之不一定为真。
+
+工作空间的维度小于配置空间：系统过驱动（冗余），比如蛇形机器人
+工作空间的维度大于配置空间：系统欠驱动
+
+[更多关于构型空间资料。](https://web.eecs.umich.edu/~ocj/courses/autorob/autorob_14_configuration_spaces.pdf)
+
+# 2.4 Using the Toolbox
++ Matlab Robotics Toolbox支持2维位姿表示的数据类型：
+![pic2_6](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/2_6.png)
+
++ Matlab Robotics Toolbox支持3维位姿表示的数据类型：
+![pic2_7](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/2_7.png)
+
++ 表示位姿的不同方法间的变换 
+![pic2_8](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/2_8.png)
+
+
+# Chapter 3 Time and Motion
+# 3.1 Time-Varying Pose
+## 3.1.1 Derivative of Pose
+**指数形势下位姿的导数**：
+表示坐标系朝向的方法有很多种，这里我们使用最方便的指数形式:
+$$
+^{A}\mathrm{R}_{B}(t) = e^{[^{A}\hat{\omega}(t)]_{\times}\theta(t)} \in \mathrm{SO(3)}
+$$
+$^{A}\hat{\omega}(t)$表示相对于A坐标系的旋转轴,转角为$\theta(t)$，$[\bullet]_{\times}$表示偏斜对称矩阵。  
+关于时间的导数：
+$$
+^{A}\dot{R}_{B}(t) = [^{A}\hat{\omega}(t)]_{\times} \dot{\theta} e^{[^{A}\hat{\omega}(t)]_{\times}\theta(t)} \in \mathbb{R^{3\times3}}
+=[^{A}\hat{\omega}(t)]_{\times}\dot{\theta} \, ^{A}\mathrm{R}_{B}(t)
+$$
+
+令$^A\omega= \, ^{A}\hat{\omega}\dot{\theta}$，则$^A\omega$是相对于A坐标系的角速度,上述方程可重写为：
+$$
+^{A}\dot{R}_{B} = [^{A}\hat{\omega}]_\times \, ^{A}{R}_{B} \in \mathbb{R^{3\times3}}
+$$
+
+B坐标系下的角速度变换至A坐标系：
+$$
+^A\omega = \, ^AR_B \, ^B\omega
+$$
+
+----
+**齐次变换矩阵形式下位姿的导数**：
+位姿的齐次矩阵形式：
+$$
+\xi \sim\, ^AT_B = \begin{pmatrix}
+                    ^{A}R_{B}& ^At_B\\ 
+                    0_{1\times3}& 1
+                    \end{pmatrix}  
+$$
+其导数形式为：
+$$
+\dot\xi \sim\, ^A\dot{T}_B = \begin{pmatrix}
+                    ^{A}\dot{R}_{B}& ^A\dot{t}_B\\ 
+                    0_{1\times3}& 0
+                    \end{pmatrix}  
+                    =\begin{pmatrix}
+                    [^{A}{\omega}]_\times \,^{A}{R}_{B}& ^A\dot{t}_B\\ 
+                    0_{1\times3}& 0
+                    \end{pmatrix}  
+$$
+
+B坐标系相对于A坐标系的平移速度即线速度为：$v=^A\dot{t}_{B}$，B坐标系相对于A坐标系的角速度是$^A{\omega}_B$。将上述两个速度向量组合为一个空间速度向量：
+$$
+^{\tiny{A}}v_{\tiny{B}} = (^{\tiny{A}}v_{\tiny{B}}, ^{\tiny{A}}\omega_{\tiny{B}}) \in \mathbb{R^6} 
+$$
+这就是坐标系B相对于坐标系A的瞬时速度。
+
+## 3.1.2 Transforming Spatial Velocities空间速度的变换
+如下图，坐标系A是世界参考坐标系，坐标系B是运动物体坐标系:
+![pic3_1](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/3_1.png)
+空间速度$^Av,\,^Bv,\,^Cv$之间的变换关系为：
+$$
+^Av = \begin{pmatrix}
+    ^{A}R_{B}& 0_{3\times3}\\ 
+    0_{3\times3}& ^{A}R_{B}
+    \end{pmatrix} 
+    {^Bv} = 
+    {^A\mathit{J}_B}{(^A\xi_B)}{^Bv}
+$$
+
+$$
+^Cv = \begin{pmatrix}
+    ^{C}R_{B}& [^Ct_B]_{\times}{^{C}R_{B}}\\ 
+    0_{3\times3}& ^{C}R_{B}
+    \end{pmatrix} 
+    {^Bv} = 
+    Ad{(^C\xi_B)}{^Bv}
+$$
+
+## 3.1.3 Incremental Rotation旋转的增量
+占位:smile:
+
+## 3.1.4 Incremental Rigid-Body Motion 刚体运动的增量
+占位:smile:
+
+# 3.2 Accelerating Bodies and Reference Frames  
+## 3.2.1 Dynamics of Moving Bodies动力学  
+占位:smile:
+
+## 3.2.2 Transforming Forces and Torques力和力矩的变换 
+占位:smile:
+wrench:力螺旋
+
+## 3.2.3 Inertial Reference Frame惯性参考系
+占位:smile:
+
+# 3.3 Creating Time-Varying Pose
++ Path路径：空间曲线，从初始位姿到终时位姿
++ Trajectory轨迹：指定时间参数的路径(运动时间、速度、加速度等)，要求轨迹平滑
+
+**平滑**：要求关于时间的前几阶导数是连续的，即要求速度、加速度、甚至加加速度是连续的。
+
+
+## 3.3.1 Smooth One-Dimensional Trajectories
+符合一维轨迹平滑要求的函数最常见的是多项式函数，比如五阶多项式函数：
+$$
+s(t)=At^5+Bt^4+Ct^3+Dt^2+Et+F, \, t \in [0,T]
+$$
+
+----
+**基于多项式函数的轨迹规划**
++ Matlab函数：`tpoly()`，可指定初始时刻和终止时刻的参数  
++ 存在的问题：最大速度区域较少，没有充分利用电机的能力，会使机械臂的运动时间变长  
+
+----
+**混合轨迹的规划**
+为使最大速度的区域增大，可以使轨迹的某一段保持最大速度运动。
++ Matlab函数：`lspb()`，可指定最大速度
++ 缺点：速度是平滑的，但是加速度不平滑
+
+## 3.3.2 Multi-Dimensional Trajectories多维空间的轨迹规划  
++ Matlab函数：`mtraj()`，使用示例：`q = mtraj(@lspb, [0 2], [1 -1], 50)`
+
+
+## 3.3.3 Multi-Segment Trajectories多段轨迹  
++ Matlab函数：`mstraj()`,生成多段多轴轨迹
+
+## 3.3.4 Interpolation of Orientation in 3D
+**通过rpy角进行插值**
+```
+%SO3.Rz输入参数的单位是度，而不是弧度
+R0 = SO3.Rz(-10) * SO3.Ry(-10);
+R1 = SO3.Rz(10) * SO3.Ry(10);
+
+%.rpy的输出参数的单位是弧度
+rpy0 = R0.torpy(); rpy1 = R1.torpy();
+rpy = mtraj(@tpoly, rpy0, rpy1, 50);
+
+rpy = rad2deg(rpy)
+
+%SO3.rpy 输入参数rpy的默认单位是角度而不是弧度
+SO3.rpy(rpy). animate;
+```
+
+----
+**通过单位四元数进行插值**
+使用spherical linear interpolation（球面线性插值）
+```
+q0 = R0. UnitQuaternion; q1 = R1.UnitQuaternion;
+q = interp(q0, q1, 50);
+q.animate
+```
+
+### 3.3.4.1 Direction of Rotation
+不同方向的旋转即使都能到达目标点，但是角位移不一样。
+Matlab程序：
+```
+%正常旋转，角位移较大
+q0 = UnitQuaternion.Rz(-2); q1 = UnitQuaternion.Rz(2);
+q = interp(q0, q1, 50);
+q.animate()
+
+%使用'shortest'参数，将选择最短路径
+q = interp(q0, q1, 50, 'shortest');
+q.animate()
+```
+
+## 3.3.5 Cartesian Motion in 3D
+通常要求SE(3)空间中的位姿之间的路径平滑，即位置和方向的变化都要求平滑。
+Matlab程序：
+```
+n = 180/pi;
+T0 = SE3([0.4, 0.2, 0]) * SE3.rpy(0, 0, 3*n);
+T1 = SE3([-0.4, -0.2, 0.3]) * SE3.rpy(-pi/4*n, pi/4*n, -pi/2*n);
+
+Ts = interp(T0, T1, 50);
+Ts.animate
+
+%绘制位置坐标变换情况
+P = Ts.transl;
+plot(P);
+
+%绘制方向坐标变化情况
+rpy = Ts.torpy;
+plot(rpy);
+```
+![pic3_2](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/3_2.png)  
+从运行结果可知，位置坐标的变化是平滑且线性的，方向坐标的变化是平滑的。但是在起点和终点的速度和加速度不是连续的。  
+**interp函数**：interp对两点之间的归一化路径进行插值，所以`Ts = interp(T0, T1, 0.5)`表示T0和T1之间路径的中点。  
+
+如果使用多项式插值或者多段插值的方法就可以克服速度和加速度不连续的问题，使用方法为：`Ts = T0. interp(T1, lspb(0, 1, 50) )`，或者直接使用笛卡尔轨迹规划函数：`Ts = ctraj(T0, T1, 50)`
+![pic3_3](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/3_3.png)  
+
+
+
+
+# Part III Arm-Type Robots
+# 7.1 Forward Kinematics  
+从关节坐标系或者配置空间到末端执行器位姿的映射。  
+
+## 7.1.1 2-Dimensional (Planar) Robotic Arms
+![pic7_1](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_1.png) 
++ 图a的变换公式：
+$$
+\xi_E(q) = \mathcal{R}_z(q_{\tiny{1}}) \oplus \mathcal{T}_x(a_{\tiny{1}})
+$$  
++ 图b的变换公式：
+$$
+\xi_E(q) = \underbrace{\mathcal{R}_z(q_{\tiny{1}}) }_{joint1} \oplus \underbrace{\mathcal{T}_x(a_{\tiny{1}})}_{link1} \oplus \underbrace{\mathcal{R}_z(q_{\tiny{2}}) }_{joint2} \oplus \underbrace{\mathcal{T}_x(a_{\tiny{2}})}_{link2}  
+$$  
+    对应的Matlab仿真程序：
+    ```
+    import ETS2.*
+    a1 = 1; a2 = 1;
+    E = Rz('q1') * Tx(a1) * Rz('q2') * Tx(a2)
+    E.fkine( [30, 40], 'deg')
+
+    E.plot( [30, 40], 'deg')
+    E.teach
+
+    %关节类型
+    %R：表示铰链结构 P:表示滑杆结构
+    %返回RR
+    E.structure
+    ```
+    这种两关节结构自由度为2，配置空间为：$\mathcal{C} = \mathbb{S}^1 \times \mathbb{S}^1$,可以到达的工作空间为$\mathcal{T} \subset \mathbb{R}^2$，对于工作空间$\mathcal{T} \subset \mathrm{SE}(2)$则无法完全到达。
+
++ 图c的变换公式：
+$$
+\xi_E(q) = \underbrace{\mathcal{R}_z(q_{\tiny{1}}) }_{joint1} \oplus \underbrace{\mathcal{T}_x(a_{\tiny{1}})}_{link1} \oplus \underbrace{\mathcal{T}_x(q_{\tiny{2}}) }_{joint2}
+$$
+    对应的Matlab仿真程序：
+    ```
+    import ETS2.*
+    a1 = 1; 
+    E = Rz('q1') * Tx(a1) * Tx('q2')
+
+    E.plot( [30, 40], 'deg')
+    E.teach
+
+    %关节类型
+    %R：表示铰链结构 P:表示滑杆结构
+    %返回RP
+    E.structure
+    ```
++ 三关节的平面机械臂变换公式：
+$$
+\xi_E(q) = \underbrace{\mathcal{R}_z(q_{\tiny{1}}) }_{joint1} \oplus \underbrace{\mathcal{T}_x(a_{\tiny{1}})}_{link1} \oplus \underbrace{\mathcal{R}_z(q_{\tiny{2}}) }_{joint2} \oplus \underbrace{\mathcal{T}_x(a_{\tiny{2}})}_{link2}  \oplus \underbrace{\mathcal{R}_z(q_{\tiny{3}}) }_{joint3} \oplus \underbrace{\mathcal{T}_x(a_{\tiny{3}})}_{link3} 
+$$
+   该结构的机械臂可以到达任务空间$\mathcal{T} \subset \mathrm{SE}(2)$中的任何点。
+
+
+## 7.1.2 3-Dimensional Robotic Arms
+真正有用的机械臂它的工作空间应该是$\mathcal{T} \subset \mathrm{SE}(3)$，就是说机械臂末端执行器可以到达空间中的任意位置和姿态。  
+
+![pic7_2](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_2.png)
+如上图，使用PUMA560机械臂模型作为仿真对象，MATLAB中调用该模型的方法如下：
+```
+%matlab 2018a
+mdl_puma560
+p560.teach
+```
+对应的正运动学的变换公式为：
+$$
+\xi_E(q) = \mathcal{T}_z(L_{\tiny{1}}) \oplus \mathcal{R}_z(q_{\tiny{1}}) \oplus \mathcal{R}_y(q_{\tiny{2}}) \oplus \mathcal{T}_y(L_{\tiny{2}}) \oplus \mathcal{T}_z(L_{\tiny{3}}) \oplus \mathcal{R}_y(q_{\tiny{3}}) 
+$$
+$$
+\oplus \mathcal{T}_x(L_{\tiny{4}}) \oplus \mathcal{T}_y(L_{\tiny{5}}) \oplus \mathcal{T}_z(L_{\tiny{6}}) \oplus \underbrace{\mathcal{R}_z(q_{\tiny{4}}) \oplus \mathcal{R}_y(q_{\tiny{5}}) \oplus \mathcal{R}_z(q_{\tiny{6}}) }_{wrist}
+$$  
+最后的腕部（wrist）使用欧拉角的ZYZ变换顺序。  
+相关的Matlab程序：
+```
+import ETS3.*
+L1 = 0; L2 = -0.2337; L3 = 0.4318; L4 = 0.0203; L5 = 0.0837; L6 = 0.4318;
+E3 = Tz(L1) * Rz('q1') * Ry('q2') * Ty(L2) * Tz(L3) * Ry('q3')	
+* Tx(L4) * Ty(L5) * Tz(L6) * Rz('q4') * Ry('q5') * Rz('q6');
+
+%正向运动学
+E3.fkine([0 0 0 0 0 0])
+```
+
+
+### 7.1.2.1 Denavit-Hartenberg Parameters
+假设一个机械臂有N个关节，标号为1到N，则其有N+1个连杆，可以标号为0到N。所以关节j连接着连杆j-1和连杆j，同时连杆l连接着关节l和关节l+1。通常连杆0是机械臂的底座，是固定的；连杆N是机械臂的末端执行器。  
+
+D-H参数的定义：
+![pic7_3](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_3.png)
+
+D-H参数法通过定义两个相邻关节坐标轴之间的空间关系来表示机械臂连杆的几何结构。并且D-H参数在定义时，机械臂必须处于一个特殊的配置--the zero-angle configuration(零位)。  
+同时要求坐标系{j}连接在连杆j的远端，坐标系{j}的z轴与j+1关节轴对齐。如下图所示：  
+D-H参数图示：
+![pic7_4](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_4.png)
+
+从连杆坐标系 {j-1}到坐标系{j}的变换为:
+$$
+^{j-1}\xi_j(\theta_j,d_j,a_j,\alpha_j)= \mathcal{R}_z(\theta_{\tiny{j}}) \oplus \mathcal{T}_z(d_{\tiny{j}}) \oplus \mathcal{T}_x(a_{\tiny{j}}) \oplus \mathcal{R}_x(\alpha_{\tiny{j}}) 
+$$
+
+写为齐次矩阵形式：
+$$
+^{j-1}A_j =  \begin{pmatrix}
+            cos\theta_j& -sin\theta_jcos\alpha_j&  sin\theta_jsin\alpha_j& a_jcos\theta_j\\ 
+            sin\theta_j& cos\theta_jcos\alpha_j& -cos\theta_jsin\alpha_j& \alpha_jsin\theta_j\\
+            0& sin\alpha_j& cos\alpha_j& d_j\\
+            0& 0& 0& 1
+            \end{pmatrix} 
+$$  
+
+**Note**:对于旋转关节(revolute joint)，$\theta_j$是随关节转动而变化的，$d_j$是常数;而对于平移型关节(prismatic joint)，$d_j$是变化的，$\theta_j$是固定不变的，且$\alpha_j = 0$。所以使用广义关节坐标系$q_j$统一表示revolute joint情况下的$\theta_j$和prismatic joint情况下的$d_j$。  
+对于N轴机械臂,广义关节坐标$q \in \mathcal{C}$，此处的$\mathcal{C} \in \mathbb{R}^N$就是关节空间或配置空间。
+
+相关Matlab程序：
+```
+%创建一个revolution型关节
+L = Revolute('a', 1)
+
+%q=0.5 进行变换
+L.A(0.5)
+```
+正向运动学是关节坐标的函数，简单来说就是由每个链接的相对姿势的决定的：
+$$
+^0\xi_N = \mathcal{K}(\mathbf{q};\theta,\mathbf{d},\mathbf{a},\alpha, \sigma) = {^0\xi_1} \oplus {^1\xi_2} \cdots {^{N-1}\xi_N}
+$$
+上述公式中连杆0表示机器人的底座，通常$d_1=0$。  
+
+相关Matlab程序：
+```
+%使用SerialLink搭建机械臂模型
+robot = SerialLink( [ Revolute('a', 1) Revolute('a', 1) ], 'name', 'my robot')
+
+%进行正运动学解算
+robot.fkine([30 40], 'deg')
+```
+
+### 7.1.2.2 Product of Exponentials  
+使用指数积表示机械臂正运动学:
+$$
+\xi_E \sim {^0T_E} = e^{[S_1]q_1} \cdots e^{[S_N]q_N} {^0T_E(0)}
+$$
+此处的${^0T_E(0)}$表示末端执行器在关节坐标全为0时的位姿。
+
+### 7.1.2.3 6-Axis Industrial Robot
+Puma560 6轴机器人模型的仿真示例：
+```
+mdl_puma560
+
+%绘制机械臂处于零位（zero angle）的模型图
+p560.plot(qz)
+
+%零位时的正运动学运算
+TE = p560.fkine(qz)
+
+%设置末端工具的位姿
+p560.tool = SE3(0, 0, 0.2);
+
+%设置机械臂底座的参数，默认全为零
+%puma560有一个30-inch高的基座
+p560.base = SE3(0, 0, 30*0.0254);
+
+%再次进行正运动学运算
+p560.fkine(qz)
+```
+
+# 7.2 Inverse Kinematics
+逆运动学:
+$$
+\mathbf{q} = \mathcal{K}^{-1}(\xi)
+$$  
+可以使用两种方法来求解逆运动学：
++ 封闭形式或解析解可以使用几何或代数方法确定。但随着关机数增多，封闭形式的解可能不存在。
++ 迭代数值解
+
+## 7.2.1 2-Dimensional (Planar) Robotic Arms  
+使用一个两关节的平面机械臂进行逆运动学原理的说明。  
+
+### 7.2.1.1 Closed-Form Solution
+求解封闭解的Matlab程序：
+```
+import ETS2.*
+a1 = 1; a2 = 1;
+
+E = Rz('q1') * Tx(a1) * Rz('q2') * Tx(a2)
+syms q1 q2 real
+
+%正运动学求解
+TE = E.fkine( [q1, q2] )
+
+%定义末端执行器的位姿
+syms x y real
+
+%TE.t = (x,y)
+%第一个方程。在符号工具箱中‘=’表示赋值
+% ‘==’表示相等
+e1 = x == TE.t(1)
+
+%第二个方程
+e2 = y == TE.t(2)
+
+%求解方程组
+%得到的解有两组
+[s1,s2] = solve( [e1 e2], [q1 q2] )
+```
+
+### 7.2.1.2 Numerical Solution 数值解  
+可将逆运动学看成是优化问题--使正向运动学的解和目标位姿之间的误差最小化：
+$$
+\mathbf{q}^* = arg \mathop{min}\limits_{q} \left \| \mathcal{K}(\mathbf{q}) \ominus \xi^* \right \|
+$$  
+所以对于2连杆结构的平面机械臂,其误差函数为：
+$$
+E(q) = \left \| [\mathcal{K}(\mathbf{q})]_t - (x^* \, y^*)^T \right \|
+$$  
+使用Matlab进行数值解求解：
+```
+%初始化目标位置
+pstar = [0.6; 0.7];
+
+%数值解，只得到一组解，而解析解有两组
+%q的初始值决定了所得到的解析解
+q = fminsearch( @(q) norm( E.fkine(q).t - pstar ), [0 0] )
+
+%测试求解结果
+E.fkine(q).print
+```
+
+## 7.2.2 3-Dimensional Robotic Arms
+### 7.2.2.1 Closed-Form Solution
+六轴机械臂封闭解存在的必要条件是它是球形腕部结构。使用PUMA560的D-H参数模型进行原理说明（PUMA560是球形腕部结构）。  
+Matlab程序：
+```
+mdl_puma560
+
+%标称关节坐标nominal joint coordinates
+qn
+
+%正向运动学
+T = p560.fkine(qn)
+
+%使用ikine6s求解逆运动学的封闭解
+%ikine6s函数会根据D-F判断是否满足封闭解的条件
+qi = p560.ikine6s(T)
+
+p560.fkine(qi)
+
+%强制使用右手解模式,此时所得结果与qn一致
+%ikine6s不同的求解模式：
+%left or right handed 'l', 'r'
+%elbow up or down 'u', 'd'
+%wrist fl ipped or not fl ipped 'f', 'n'
+qi = p560.ikine6s(T, 'ru')
+
+%逆解不存在
+p560.ikine6s( SE3(3, 0, 0) )
+
+%q5=0出现奇异点现象
+q = [0 pi/4 pi 0.1 0 0.2];
+p560.ikine6s(p560.fkine(q), 'ru')
+q(4)+q(6)
+```
+可以发现使用ikine6s函数求得的逆解和qn不一样，但是qi的正运动学结果和qn一致:
+![pic7_5](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_5.png)  
+事实上有8组关节坐标其正运动学对应的末端执行器的位姿一致。但由于机械结构的限制和障碍物的存在，8组解并不是都能在物理上实现。同时也存在一些不可达位姿。  
+由于奇异点问题，有的位姿也是不可达的，因为轴的对齐使有效自由度减少(万向节锁定问题)。  
+对于PUMA560，当$q_5=0$，时关节4和6对齐。此时只要$q_4+q_5$的值不变，任意$q_4$、$q_5$的值对应的位姿一样。  
+
+### 7.2.2.2 Numerical Solution  
+对于非6关节和球形腕部结构的机械臂，可以使用迭代数值方法求解逆运动学解。Matlab中迭代数值求解函数为`ikine`。    
+Matlab程序：
+```
+%标称关节坐标nominal joint coordinates
+qn
+
+T = p560.fkine(qn)
+qi = p560.ikine(T)
+p560.fkine(qi)
+
+p560.plot(qi)
+
+
+%给定关节角初始值，默认全为0
+qi = p560.ikine(T, 'q0', [0 0 3 0 0 0])
+```
+**Note**:数值法ikine比解析法ikine6s运行慢，但是在解决机械臂奇异点问题和机械臂关节角个数不为6的情况时有很大的优势。  
+
+### 7.2.2.3 Under-Actuated Manipulator欠驱动机械臂
+关节数少于6的机械臂称为欠驱动机械臂，因为其末端执行器在空间中所能到达的位姿存在限制。通常情况下工作空间是$x-y-z-\theta$,即$\mathcal{T} \subset \mathbb{R}^3 \times \mathbb{S}^1$，配置空间是$\mathcal{C} \subset (\mathbb{S}^1)^3 \times \mathbb{R}$。   
+以SCARA Robot为例，这是一个RRPR型4轴机械臂:
+```
+mdl_cobra600
+c600
+
+%注意RPY的单位，我的MATLAB默认是deg
+%书中程序是：
+%T = SE3(0.4, -0.3, 0.2) * SE3.rpy(30, 40, 160, 'deg')
+T = SE3(0.4, -0.3, 0.2) * SE3.rpy(30, 40, 160)
+
+%逆运动学求解，忽略x、y轴的旋转
+q = c600.ikine(T, 'mask', [1 1 1 0 0 1])
+
+Ta = c600.fkine(q);
+Ta.print('xyz')
+trplot(T, 'color', 'b')
+hold on
+trplot(Ta, 'color', 'r')
+```
+![pic7_6](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_6.png) 
+由于该型机械臂末端执行器的姿态只能以z-轴为旋转轴进行旋转，所以目标位姿T是过约束的，T沿x和y轴的旋转是无效的，所以使用ikine数值法求逆解时，使用'mask'参数将沿x和y轴的旋转进行忽略。最终求得的关节角q对应的末端执行器的位姿是满足该机械臂物理约束的，即末端执行器坐标系的z轴是垂直的。  
+
+### 7.2.2.4 Redundant Manipulator冗余机械臂
+关节数大于6的机械臂称为冗余机械臂。虽然理论上拥有6个关节的机械臂就可以到达笛卡尔工作空间的任意期望位姿，但实际上由于关节限制、奇异点等因素的存在，并不能完全实现到达任意位姿。所以添加更多的关节就是解决这个问题的一个办法，但是这又会导致关节坐标的解有无数个。为了解决关节坐标的解无数多的问题，需要引入约束条件，常用的约束是最小范数--返回的关节坐标向量解满足范数值最小。   
+以Baxter robot为例，该机器人有两个机械臂，且每个机械臂有7个关节。
+```
+mdl_baxter
+
+%左臂
+left
+
+TE = SE3(0.8, 0.2, -0.2) * SE3.Ry(pi);
+
+%此时ikine获得的逆解关节坐标向量q满足范数最小
+q = left.ikine(TE)
+
+left.fkine(q).print('xyz')
+left.plot(q)
+```
+
+# 7.3 Trajectories  
+对于机械臂最普遍的需求是可以将末端执行器从一个位姿平滑的移动至另一个位姿。常用的生成轨迹的两种方法是：在配置空间（也即关节空间）直线移动，或者在任务空间（也即笛卡尔空间）直线移动。    
+
+## 7.3.1 Joint-Space Motion 关节空间的运动
+Matlab仿真程序：
+```
+mdl_puma560
+
+T1 = SE3(0.4,  0.2, 0) * SE3.Rx(pi);
+T2 = SE3(0.4, -0.2, 0) * SE3.Rx(pi/2);
+
+q1 = p560.ikine6s(T1);
+q2 = p560.ikine6s(T2);
+
+%50 ms步长，2s内移动到
+t = [0:0.05:2]';
+
+%借助mtraj函数生成轨迹
+%使用tpoly插值
+q = mtraj(@tpoly, q1, q2, t);
+
+%使用lspb
+q = mtraj(@lspb, q1, q2, t);
+
+%或者使用将mtraj和tpoly封装的函数jtraj
+%可获取速度和加速度：
+%[q,qd,qdd] = jtraj(q1, q2, t);
+q = jtraj(q1, q2, t);
+
+%可使用类方法进行轨迹规划
+q = p560.jtraj(T1, T2, t)
+
+%可视化
+p560.plot(q)
+qplot(t, q); %绘制所有关节角的变化
+
+%绘制笛卡尔空间的运动轨迹
+T = p560.fkine(q);
+p = T.transl;
+plot(p(1,:), p(2,:))  %位置变化
+plot(t, T.torpy('xyz')) %姿态变化XYZ roll-pitch-yaw
+```
+![pic7_7](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_7.png)  
+可以发现在关节空间的移动是平滑的。在笛卡尔空间末端执行器在x-y平面的移动轨迹不是直线，所以这是意料之中的，但这样移动可能导致碰撞，即使障碍物不在起始点和目标点之间。  
+
+## 7.3.2 Cartesian Motion 笛卡尔空间的运动  
+Matlab仿真程序：
+```
+%使用ctraj函数
+Ts = ctraj(T1, T2, length(t));
+
+plot(t, Ts.transl);
+plot(t, Ts.torpy('xyz'));
+
+%关节空间的变化
+qc = p560.ikine6s(Ts);
+p560.plot(qc)
+```
+![pic7_8](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_8.png)   
+与关节空间的运动相比：末端执行器在x-y平面沿直线运动，同时roll和pitch角在路径上恒为0度。  
+
+## 7.3.3 Kinematics in Simulink  
+使用simulink进行运动学仿真：`sl_jspace`  
+
+## 7.3.4 Motion through a Singularity  
+探究轨迹通过奇异点的运动：
+```
+mdl_puma560
+
+%z轴指向直接坐标系的x轴
+T1 = SE3(0.5,  0.3, 0.44) * SE3.Ry(pi/2);
+T2 = SE3(0.5, -0.3, 0.44) * SE3.Ry(pi/2);
+t = [0:0.05:2]';
+
+%笛卡尔空间轨迹生成
+Ts = ctraj(T1, T2, length(t));
+
+%用解析解方法逆解算对应的关节角，对应图a
+qc = p560.ikine6s(Ts);
+
+%图d:qc的可操纵性
+m = p560.maniplty(qc);
+```
+![pic7_9](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_9.png)  
+对上面图片的分析：
++ 从图a可以看到在$q_5$=0附近$q_4,q_6$变化剧烈，这是因为$q_5$接近0度时，$q_4,q_6$的旋转轴几乎平齐，发生万向节锁现象（也即奇异点）。关节轴对齐意味着机械臂丢失一个自由度，所以现在有效轴只有5轴（有效轴为5，实际关节角为6，相当于机械臂成为冗余机械臂），我们能确定的是$q_4+q_6$的和，而它们的具体取值有无数种。
++ 图b是使用广义逆运动学方法ikine求解的结果，由于该方法会使用最小范数约束使$q_4,q_6$的范数值最小，同时满足$q_4+q_6$的和正确。
++ 图c是这两个位姿在关节空间的运动，可以发现不存在奇异点问题，这是因为不涉及逆运动学过程。
++ 图d是机械臂可操纵性（Manipulability）图：`m = p560.maniplty(qc)`。可操纵性：机械臂的灵活性，表征其在任意方向上容易移动的能力。是一个标量，可以计算轨迹上每个点的可操纵性值，越高越好。可以看到在奇异点附近可操纵性值接近0。可操纵性和广义逆运动学函数ikine都建立在机械臂Jacobian矩阵的基础上。  
+
+## 7.3.5 Configuration Change
+之前讨论过机械臂左右手工作方式和肘部向上向下工作方式。比如左右手工作方式的图解：
+![pic7_10](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_10.png) 
+图片来自本书对应的公开课所对应的[Configuration change](https://www.bilibili.com/video/av27228968)章节。  
+如果从一个配置点运动至另一个配置点（比如从右手方式运动至左手方式），因为末端执行器对应的笛卡尔空间位姿一样，所以无法在笛卡尔空间进行轨迹规划，只能在关节空间进行轨迹规划。  
+Matlab示例程序：
+```
+T = SE3(0.4, 0.2, 0) * SE3.Rx(pi);
+
+qr = p560.ikine6s(T, 'ru');
+ql = p560.ikine6s(T, 'lu');
+
+%从右手工作方式到左手工作方式的轨迹规划
+q = jtraj(qr, ql, t);
+
+p560.plot(q)
+```
+
+
+# 7.4 Advanced Topics
+## 7.4.1 Joint Angle Offsets  
+零度关节角位姿（zero joint angles）是机械臂设计者任意确定的,甚至可能是不可达的位姿。下图是PUMA560的零度关节角位姿，这样定义零度关节角位姿是为了方便确定标准D-H参数:
+![pic7_11](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_11.png)    
+
+而关节坐标偏移机制的存在可以任意设置零度关节坐标,设关节坐标偏移向量为$q_0$,则有：
+$$
+\xi_E = \mathcal{K}(\mathbf{q}+\mathbf{q_0})
+$$
+$$
+\mathbf{q} = \mathcal{K}^{-1}(\xi_E) -\mathbf{q_0}
+$$   
+Matlab中通过设置`Link`对象的offset属性或者`SerialLink`结构的'offset'选项来赋值。  
+
+## 7.4.2 Determining Denavit-Hartenberg Parameters
+确定D-H参数的经典方法是系统的为每个连杆分配一个坐标系，如PUMA560机械臂D-H参数的确定。但是这种方法设置每个坐标系时存在很强的局限性，因为关节必须绕z轴转动且连杆的移动必须沿着x轴方向，这又对基座和末端执行器的坐标系的放置施加了约束，并最终决定了零角度位姿。所以说确定一个D-H参数对应的连杆坐标系比确定D-H参数本身更难。    
+在Matlab Toolbox的支持下，一个可选的方法是：将机械臂简单描述为从基座到末端执行器的一系列基本的平移和旋转变换，其中有一些基本变换是恒定的，比如平移变换代表连杆的长度或者偏移，还有一些是广义关节坐标的函数。这种方法和之前所说的传统方法相比，对旋转或平移的轴没有进行约束。   
+以PUMA560为例，MATLAB程序：
+```
+%使用string平移和旋转变换序列
+s = 'Tz(L1) Rz(q1) Ry(q2) Ty(L2) Tz(L3) Ry(q3) Tx(L4) Ty(L5)
+Tz(L6) Rz(q4) Ry(q5) Rz(q6)'
+
+%将string输入到字符代数函数
+%该函数将机械臂的运动学结构分解为标准的D-H参数
+dh = DHFactor(s);
+
+%显示各个关节的D-H参数
+dh
+
+%使用得到的D-H参数生成对应的机械臂模型
+%生成名为puma的机械臂模型对应的matlab命令
+cmd = dh.command('puma')
+
+%执行上述生成的命令，生成机器人模型
+robot = eval(cmd)
+```
+可以看到上述程序在描述第二个关节时使用"Ry(q2)"，这在传统方法D-H形式主义中是不允许（D-H形式主义要求旋转必须绕z轴）。
+
+## 7.4.3 Modified Denavit-Hartenberg Parameters 改进型D-H参数  
+改进型D-H参数与普通的D-H参数相比：前者连杆坐标系连接到每个连杆的近端（近端）而不是远端（远端）。这种改进使符号在某些方面更加清晰和整洁。D-H参数的定义直接影响到运动学、Jacobian行列式和动力学算法。  
+改进型D-H参数约定的连杆见变换矩阵为：
+$$
+^{j-1}\xi_j(\alpha_{j-1},a_{j-1},d_j,\theta_j)= \mathcal{R}_x(\alpha_{\tiny{j-1}}) \oplus \mathcal{T}_x(a_{\tiny{j-1}}) \oplus \mathcal{T}_z(d_{\tiny{j}}) \oplus \mathcal{R}_z(\theta_{\tiny{j}}) 
+$$
+改进型D-H参数坐标系定义图示：  
+![pic7_12](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_12.png)  
+
+**Note:** 使用论文中提供的D-H参数建立机器人模型时，首先需要确定该论文使用的是哪一种约定的参数表达方式。一般来说，表头是$\theta_j,d_j,a_j,\alpha_j$的是标准D-H参数形式，表头是$\theta_j,d_j,a_{j-1},\alpha_{j-1}$的是改进型D-H参数。  
+在Matlab中使用`L1 = RevoluteMDH('d', 1)`来建立一个使用改进型D-H（MDH）参数的旋转铰链结构模型，然后就可以进一步建立完整的机械臂模型。  
+**标准D-H参数和改进型D-H参数的联系：**
+设标准D-H参数的表达式为：
+$$
+\underbrace{\mathcal{R}_z(\theta_{\tiny{1}}) \oplus \mathcal{T}_z(d_{\tiny{1}}) \oplus \mathcal{T}_x(a_{\tiny{1}}) \oplus \mathcal{R}_x(\alpha_{\tiny{1}})}_{DH_1} \oplus  \underbrace{\mathcal{R}_z(\theta_{\tiny{2}}) \oplus \mathcal{T}_z(d_{\tiny{2}}) \oplus \mathcal{T}_x(a_{\tiny{2}}) \oplus \mathcal{R}_x(\alpha_{\tiny{2}})}_{DH_2} \cdots 
+$$  
+改进型D-H参数的表达式可由上式重写为：
+$$
+\underbrace{\mathcal{R}_z(\theta_{\tiny{1}}) \oplus \mathcal{T}_z(d_{\tiny{1}})}_{base} \oplus \underbrace{ \mathcal{T}_x(a_{\tiny{1}}) \oplus \mathcal{R}_x(\alpha_{\tiny{1}}) \oplus  \mathcal{R}_z(\theta_{\tiny{2}}) \oplus \mathcal{T}_z(d_{\tiny{2}})}_{MDH_1} \oplus \underbrace{\mathcal{T}_x(a_{\tiny{2}}) \oplus \mathcal{R}_x(\alpha_{\tiny{2}}) \cdots}_{MDH_2} 
+$$  
+其中$MDH_j$的形式与
+$$
+^{j-1}\xi_j(\alpha_{j-1},a_{j-1},d_j,\theta_j)= \mathcal{R}_x(\alpha_{\tiny{j-1}}) \oplus \mathcal{T}_x(a_{\tiny{j-1}}) \oplus \mathcal{T}_z(d_{\tiny{j}}) \oplus \mathcal{R}_z(\theta_{\tiny{j}}) 
+$$
+是等价的，因为沿着同一个轴进行平移和旋转的变换是可以交换的,即满足：
+$$
+R_i(\theta)  \oplus T_i(d) = T_i(d) \oplus R_i(\theta), \, i \in \left \{ x,y,z \right \}
+$$
+
+
+# 7.5 Applications
+## 7.5.1 Writing on a Surface [examples/drawing.m]
+使用[Hershey font](http://paulbourke.net/dataformats/hershey/)作为字体输入数据。  
+Matlab程序：
+```
+%载入hershy字体数据
+load hershey
+
+%载入‘B’的字体数据
+B = hershey{'B'};
+
+%两行数据分别代表x,y轴的点，NaN表示分段点--起笔或落笔点
+B.stroke
+
+%将坐标乘以0.25，限制路径在0.85*0.25cm的范围内，，并添加z轴
+%将Nan点替换为其上一时刻的坐标
+path = [ 0.25*B.stroke; zeros(1,numcols(B.stroke))];
+k = find(isnan(path(1,:)));
+path(:,k) = path(:,k-1); path(3,k) = 0.2;
+
+%使用mstraj进行多段轨迹规划，更多信息help mstraj查看
+traj = mstraj(path(:,2:end)', [0.5 0.5 0.5], [], path(:,1)',	0.02, 0.2);
+
+%得到路径的信息
+about(traj)
+
+%沿此路径移动的时间
+numrows(traj) * 0.02
+
+%将该轨迹可视化
+plot3(traj(:,1), traj(:,2), traj(:,3))
+```
+通过上面的程序得到的只是轨迹的位置序列，为了使用PUMA560绘制该轨迹，需要添加姿态信息，我们设置绘制平面为x-y平面(水平面)，其末端执行的z向矢量(approach vector)为$a=[0,0,-1]$,y向矢量(orientation vector)为$o=[0 1 0]$,同时将绘制的起点设为[0.6,0,0]，对应的Matlab程序为：
+```
+Tp = SE3(0.6, 0, 0) * SE3(traj) * SE3.oa( [0 1 0], [0 0 -1]);
+q = p560.ikine6s(Tp);
+
+%设置显示轨迹
+ p560.plot(q, 'trail',{'r', 'LineWidth', 2})
+```
+此外也可以使用simulink模块进行绘制，步骤如下：
++ 使用`sl_jspace`打开simulink示例模型，将其输入部分替换为**From Workspace**模块，按照该模块的配置要求在工作空间中设置好导入的数据。我们需要导入的是之前生成的轨迹对应的关节坐标序列q，按照**From Workspace**模块配置要求设置新变量：
+  ```
+  qq.time = []
+  qq.signals.values = q
+  qq.signals.dimensions = 6;
+  ```
+
++ 整个simulink模型为：
+  ![pic7_13](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_13.png)
+
++ **From Workspace**模块的具体设置为：
+  ![pic7_14](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_14.png)
+
++ 运行模型。不同的字母绘制时间不同，所以要适当调整仿真时间，仿真结果：
+  ![pic7_15](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_15.png)
+
+
+## 7.5.2 A Simple Walking Robot [examples/walking.m]  
+本章搭建一个行走机器人。行走机器人的腿和机械臂类似，由于脚与地面有点接触且朝向重要，所以三关节串联结构足以满足要求。  
+
+### Kinematics    
+下图是行走机器人的零位示意图：
+![pic7_16](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_16.png)   
+第一个关节负责前后运动，旋转轴是z轴，旋转变换$R_z(q_1)$；第二个关节负责上下运动，旋转轴是x轴，旋转变换是$R_x(q_2)$；第三个关节式膝盖，负责远离或者靠近身体，旋转变换是$R_x(q_3)$。则从臀部至脚趾的变换序列是：
+$$
+\xi = R_z(q_1)R_x(q_2)T_y(L_1)R_x(q_3)T_z(L_2)
+$$  
+使用Matlab建立模型：
+```
+s = 'Rz(q1) Rx(q2) Ty(L1) Rx(q3) Tz(L2)';
+
+%得到标准D-H参数，最后三项为末端Tool朝向变换，无关紧要
+dh = DHFactor(s)
+
+%D-H后三项
+dh.tool
+
+%得到建立模型的MATLAB指令
+dh.command('leg')
+
+%建立模型
+L1 = 0.1; L2 = 0.1;
+leg = eval( dh.command('leg') )
+
+%零位下脚的位置
+transl( leg.fkine([0,0,0]) )
+
+%可视化零位
+leg.plot([0,0,0], 'nobase', 'noshadow', 'notiles')
+set(gca, 'Zdir', 'reverse'); view(137,48);
+```
+
+### Motion of One Leg   
+接下来确定末端执行器--脚的移动路径。考虑行走机器人向前移动的过程：
++ 所有脚以同样的速度向后移动，重置腿的位置--将脚抬起向前移动后放下，重复上述动作
++ 为保持机器人的稳定，需要至少三只脚在地上，所以需要依次重置腿的位置
+ 
+Matlab程序：
+```
+%xf,xb是前后移动（沿x轴）的限制，单位mm
+%y是脚和身体之间的距离（沿y轴）
+%zu,zd是脚上下移动的相对高度（沿z轴）
+xf = 50; xb = -xf; y = 50; zu = 20; zd = 50;
+
+%得到路径
+path = [xf y zd; xb y zd; xb y zu; xf y zu; xf y zd] * 1e-3;
+
+%轨迹规划
+p = mstraj(path, [], [0, 3, 0.25, 0.5, 0.25]', path(1,:), 0.01, 0);
+
+%使用逆运动学解算关节坐标
+qcycle = leg.ikine( SE3(p), 'mask', [1 1 1 0 0 0] );
+
+leg.plot(qcycle, 'loop')
+```
+脚移动时x，z轴的变化，以及四个脚再向前移动过程中x轴方向的位移图像：
+![pic7_17](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_17.png) 
+
+
+### Motion of Four Legs  
+Matlab程序：
+```
+W = 0.1; L = 0.2;
+
+legs(1) = SerialLink(leg, 'name', 'leg1');
+legs(2) = SerialLink(leg, 'name', 'leg2', 'base', SE3(-L, 0, 0));
+legs(3) = SerialLink(leg, 'name', 'leg3', 'base', SE3(-L, -W, 0) * SE3.Rz(pi));
+legs(4) = SerialLink(leg, 'name', 'leg4', 'base', SE3(0, -W, 0) * SE3.Rz(pi));
+
+clf; k = 1;
+while 1
+legs(1).plot( gait(qcycle, k, 0, false) );
+if k == 1, hold on; end
+legs(2).plot( gait(qcycle, k, 100, false) );
+legs(3).plot( gait(qcycle, k, 200, true) );
+legs(4).plot( gait(qcycle, k, 300, true) );
+drawnow
+k = k+1;
+end
+```
+
+完整的Walking程序：
+```
+%walking 
+clear all
+L1 = 0.1; L2 = 0.1;
+
+% create the leg links based on DH parameters
+%                    theta   d     a  alpha  
+links(1) = Link([    0       0    0   pi/2 ], 'standard');
+links(2) = Link([    0       0    L1   0   ], 'standard');
+links(3) = Link([    0       0   -L2   0   ], 'standard');
+
+% now create a robot to represent a single leg
+leg = SerialLink(links, 'name', 'leg', 'offset', [pi/2   0  -pi/2]);
+
+% define the key parameters of the gait trajectory, walking in the
+% x-direction
+xf = 5; xb = -xf;   % forward and backward limits for foot on ground
+y = 5;              % distance of foot from body along y-axis
+zu = 2; zd = 5;     % height of foot when up and down
+% define the rectangular path taken by the foot
+segments = [xf y zd; xb y zd; xb y zu; xf y zu] * 0.01;
+
+% build the gait. the points are:
+%   1 start of walking stroke
+%   2 end of walking stroke
+%   3 end of foot raise
+%   4 foot raised and forward
+%
+% The segments times are :
+%   1->2  3s
+%   2->3  0.5s
+%   3->4  1s
+%   4->1  0.5ss
+%
+% A total of 4s, of which 3s is walking and 1s is reset.  At 0.01s sample
+% time this is exactly 400 steps long.
+%
+% We use a finite acceleration time to get a nice smooth path, which means
+% that the foot never actually goes through any of these points.  This
+% makes setting the initial robot pose and velocity difficult.
+%
+% Intead we create a longer cyclic path: 1, 2, 3, 4, 1, 2, 3, 4. The
+% first 1->2 segment includes the initial ramp up, and the final 3->4
+% has the slow down.  However the middle 2->3->4->1 is smooth cyclic
+% motion so we "cut it out" and use it.
+segments = [0 0 0;segments; segments];
+tseg = [3 0.25 0.5 0.25]';
+tseg = [1;tseg; tseg];
+x = mstraj(segments, [], tseg, segments(1,:), 0.01, 0.1);
+
+% pull out the cycle
+xcycle = x(100:500,:);
+qcycle = leg.ikine( transl(xcycle), 'mask', [1 1 1 0 0 0] );
+
+% dimensions of the robot's rectangular body, width and height, the legs
+% are at each corner.
+W = 0.1; L = 0.2;
+
+% a bit of optimization.  We use a lot of plotting options to 
+% make the animation fast: turn off annotations like wrist axes, ground
+% shadow, joint axes, no smooth shading.  Rather than parse the switches 
+% each cycle we pre-digest them here into a plotopt struct.
+% plotopt = leg.plot({'noraise', 'nobase', 'noshadow', ...
+%     'nowrist', 'nojaxes'});
+% plotopt = leg.plot({'noraise', 'norender', 'nobase', 'noshadow', ...
+%     'nowrist', 'nojaxes', 'ortho'});
+
+plotopt = {'noraise', 'nobase', 'noshadow', 'nowrist', 'nojaxes', 'delay', 0};
+
+% create 4 leg robots.  Each is a clone of the leg robot we built above,
+% has a unique name, and a base transform to represent it's position
+% on the body of the walking robot.
+legs(1) = SerialLink(leg, 'name', 'leg1');
+legs(2) = SerialLink(leg, 'name', 'leg2', 'base', transl(-L, 0, 0));
+legs(3) = SerialLink(leg, 'name', 'leg3', 'base', transl(-L, -W, 0)*trotz(pi));
+legs(4) = SerialLink(leg, 'name', 'leg4', 'base', transl(0, -W, 0)*trotz(pi));
+
+% create a fixed size axis for the robot, and set z positive downward
+clf; axis([-0.3 0.1 -0.2 0.2 -0.15 0.05]); set(gca,'Zdir', 'reverse')
+hold on
+% draw the robot's body
+patch([0 -L -L 0], [0 0 -W -W], [0 0 0 0], ...
+    'FaceColor', 'r', 'FaceAlpha', 0.5)
+% instantiate each robot in the axes
+for i=1:4
+    legs(i).plot(qcycle(1,:), plotopt{:});
+end
+hold off
+
+% walk!
+k = 1;
+%A = Animate('walking');
+%while 1
+for i=1:500
+    legs(1).animate( gait(qcycle, k, 0,   0));
+    legs(2).animate( gait(qcycle, k, 100, 0));
+    legs(3).animate( gait(qcycle, k, 200, 1));
+    legs(4).animate( gait(qcycle, k, 300, 1));
+    drawnow
+    k = k+1;
+    %A.add();
+end
+```
+
+# 8 Manipulator Velocity  
+末端执行器的速度（平移和旋转速度）是各个关节速度合成的结果。本章介绍机械臂末端执行器的空间速度和关节速度之间的关系。关节变化率和末端执行器的速度是通过机械臂雅克比矩阵联系起来，机械臂雅克比矩阵是其配置的函数。  
+
+# 8.1 Manipulator Jacobian
+## 8.1.1 Jacobian in the World Coordinate Frame  
+以平面2关节机械臂为例.
+![pic8_1](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/8_1.png)
+```
+%导入2关节机械臂模型
+mdl_planar2_sym
+syms q1 q2 real
+TE = p2.fkine( [q1 q2] );
+p = TE.t; p = p(1:2)
+
+%求末端执行器位置向量的雅克比矩阵
+J = jacobian(p, [q1 q2])
+```
+所求的雅克比矩阵设为$J(q)$，满足：
+$$
+\frac{dp}{dq}=J(q)
+$$  
+由上述公式得：  
+$$
+\frac{dp}{dt}=J(q)\frac{dq}{dt}
+$$  
+即
+$$
+\dot{p}=J(q)\dot{q}
+$$  
+所以雅克比矩阵将速度从关节坐标（配置空间）映射至末端执行器的笛卡尔坐标空间，同时雅克比矩阵是关节坐标的函数。  
+类似于正向运动学$^0\xi=\mathcal{K}(q)$,我们可以写成：
+$$
+^0v={^0J(q)}\dot{q} 
+$$  
+此处的$^0v$是世界坐标系下的空间速度，即$^0v=(v_x,v_y,v_z,\omega_x,\omega_y,\omega_z) \in \mathbb{R}^6$。  
+MATLAB中可使用**SerialLink**对象的`jacob0`方法求取雅克比矩阵的数值解：`J = p560.jacob0(qn)`。求得的雅克比矩阵维度是$dim \mathcal{T} \times dim \mathcal{C}$,此处是6x6。每一行表示笛卡尔空间自由度，每一列对应一个关节，该关节的单位速度用于合成末端执行器的空间速度。   
+
+## 8.1.2 Jacobian in the End-Effector Coordinate Frame
+通过`jacob0`求得的雅克比矩阵表示在世界坐标系下从关节速度到末端执行器空间速度的映射。而在末端执行器坐标系下的空间速度满足：
+$$
+^Ev= {^EJ_0}(^E\xi_0){^0J(q)}\dot{q}= \underbrace{
+    \begin {pmatrix}
+    ^{E}R_{0}& 0_{3\times3}\\ 
+    0_{3\times3}& ^{E}R_{0}
+    \end{pmatrix}
+    {^0J(q)}
+    }_{}\dot{q} =
+    {^EJ(q)}\dot{q}
+$$  
+Matlab中使用`jacobe`求末端执行器坐标系下的雅克比矩阵:`p560.jacobe(qn)`
+
+## 8.1.3 Analytical Jacobian
+公式
+$$
+^0v={^0J(q)}\dot{q} 
+$$  
+中$^0v$是以平移和角速度向量表示的空间速度，用角速度表示旋转速度不直观，所以常用roll-pitch-yaw角或欧拉角的变化率来表示旋转速度。常用三角速率形式的解析式雅克比来表示旋转速度。  
+以XYZ形式的roll-pitch-yaw角$\Gamma=(\theta_r,\theta_p,\theta_y)$为例，旋转变换为：
+$$
+R=R_x(\theta_r) R_y(\theta_p) R_z(\theta_y) = 
+    \begin {pmatrix}
+    c\theta_p c\theta_r& -c\theta_p s\theta_r& s\theta_p\\
+    c\theta_y s\theta_r+c\theta_r s\theta_p s\theta_y& -s\theta_p s\theta_y s\theta_r+c\theta_y c\theta_r& -c\theta_p s\theta_y\\
+    s\theta_y s\theta_r-c\theta_y c\theta_r s\theta_p& c\theta_y s\theta_p s\theta_r+c\theta_r s\theta_y& c\theta_p c\theta_y 
+    \end{pmatrix}
+$$  
+由上式可得R的微分:
+$$
+\dot{R} = [\omega]_{\times}R
+$$  
+可以以roll-pitch-yaw角形式解出$\omega$：
+$$
+\begin {pmatrix}
+\omega_x\\
+\omega_y\\
+\omega_z
+\end{pmatrix} =\begin {pmatrix}
+s\theta_p\dot{\theta_r}+\dot{\theta_y} \\
+-c\theta_p s\theta_y \dot{\theta_r} + c\theta_y\dot{\theta_p}\\
+c\theta_p c\theta_y \dot{\theta_r} + s\theta_y \dot{\theta_p}
+\end{pmatrix}
+$$  
+可以因式分解为：
+$$
+\omega =\begin {pmatrix}
+            s\theta_p& 0& 1\\
+            -c\theta_p s\theta_y& c\theta_y& 0\\
+            c\theta_p c\theta_y& s\theta_y& 0
+        \end{pmatrix}
+        \begin {pmatrix}
+        \dot{\theta_r}\\
+        \dot{\theta_p}\\
+        \dot{\theta_r}
+        \end{pmatrix}
+$$   
+进一步可以写为：
+$$
+\omega = A(\Gamma)\dot{\Gamma}
+$$  
+其中矩阵A就是雅克比矩阵，表示从XYZ roll-pitch-yaw角到角速度的映射,当$cos\phi=0$或者pitch角$\phi
+=\pm\frac{\pi}{2}$时会出现奇异点。对应的MATLAB实现为：`rpy2jac(0.1, 0.2, 0.3)`。同样可以使用欧拉角形式的雅克比矩阵，对应的MATLAB函数为：`eul2jac`。对于PUMA560的求解为：`p560.jacob0(qn, 'eul')`。   
+
+# 8.2 Jacobian Condition and Manipulability雅克比条件和可操纵性  
+之前讨论了雅克比矩阵是从关节速度到末端执行器笛卡尔空间速度的映射,但它的逆问题有更强的实用性--如何确定关节速度从而使末端执行器按照要求的速度运动，即：
+$$
+\dot{q}=J(q)^{-1}v 
+$$
+其中J是非奇异的方阵。因为雅克比矩阵维度是$dim \mathcal{T} \times dim \mathcal{C}$，而工作空间$\mathcal{T} \subset \mathrm{SE(3)}$,即有6个空间自由度，所以要求机械臂有6个关节。
+
+## 8.2.1 Jacobian Singularities
+$det(J(q))=0$表明此时雅克比矩阵是奇异的，这种情况一般出现在机械臂到达最大可达位置或者一个或多个关节轴对齐导致自由度丢失，比如puma60机械臂在准备位姿时就出现这种情况：`det(p560.jacob0(qr))`,此时雅克比矩阵的秩为5`rank(p560.jacob0(qr))`，利用`jsingu`函数可以分析不满秩矩阵中线性相关的列，即出现对齐现象的关节。   
+奇点出可能会出现末端执行器速度对应的关节速度很大--在奇点处趋向无穷大。以qr位姿为例（q4和q6对齐）：
+```
+%给q5一个较小的非零值，使J阵可逆
+qns = qr; qns(5) = 5 * pi/180
+
+J=p560.jacob0(qns);
+
+%设末端执行器z轴方向0.1m/s运动，求关节速度
+%求得的关节速度非常大
+qd = inv(J)*[0 0 0.1 0 0 0]' ;
+
+%雅克比矩阵的行列式和条件数
+det(J)
+cond(J)
+
+%设末端执行器绕y轴转动
+qd = inv(J)*[0 0 0 0 0.2 0]';
+qd'
+```
+可以发现虽然已经不在奇点，但是关节速度还是很大，此时雅克比矩阵的行列式值很小，也可以说其条件数[(condition number)](!https://en.wikipedia.org/wiki/Condition_number)很高。但对于绕y轴转动的运动，所求的关节速度就很正常。说明这种特殊的关节配置对某些运动有益，但对其他运动则不利。  
+
+
+## <span id="jump">8.2.2 Manipulability可操纵性</span>
+考虑单位广义关节速度$\dot{q}$，满足：
+$$
+\dot{q}^T \dot{q}=1 
+$$
+说明q分布在N维关节速度空间的超球面上。  
+联立
+$$
+\dot{q}=J(q)^{-1}v 
+$$
+可得
+$$
+v^T(J(q)J(q)^T)^{-1}v=1  
+$$
+这是一个dim T-dimensional维末端执行器速度空间中椭球体表面点的分布方程。如果这个椭球接近球形，也就是说它的半径是相同的数量级，那么末端执行器可以达到任意的笛卡尔速度。但是，如果一个或多个半径非常小，则表示该末端执行器在这些小半径相对应的方向上的部分速度是不可达的。   
+使用MATLAB绘制2关节平面机械臂模型的速度椭圆：
+```
+mdl_planar2
+%绘制速度椭圆
+p2.vellipse([30 40], 'deg')
+
+%示教方式
+%运行错误时尝试：p2.teach('callback', @(r,q) r.vellipse(q))
+p2.teach('callback', @(r,q) r.vellipse(q), 'view', 'top')
+```
+
+对于工作空间为$\mathcal{T} \subset \mathrm{SE(3)}$，因为末端执行器的单位速度空间为6维椭球体，无法可视化。但我们可是绘制平移速度或者旋转速度对应的速度椭球体：
+```
+%绘制qns处平移速度椭球体
+%qns位于奇点附近
+J = p560.jacob0(qns);
+J = J(1:3, :);
+plot_ellipse(J*J')
+
+%直接调用函数绘制平移速度椭球体，图a
+p560.vellipse(qns, 'trans');
+
+%绘制平旋转速度椭球体，图b
+p560.vellipse(qns, 'rot')
+```
+![pic8_2](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/8_2.png)
+
+可以发现图b中的椭球体厚度几乎为零，即x轴方向半径非常小，这表明不能绕x轴方向旋转，x轴方向发生自由度丢失。  
+椭球体的形状反映了末端执行器进行某些移动的能力，引入可操纵性(manipulability )这一标量描述椭球体接近球体的程度：
+$$
+m=\sqrt{det(JJ^T)} 
+$$
+使用MATLAB函数查看某一关节坐标对应的可操纵性：
+```
+%准备关节坐标，此处是奇异点
+m = p560.maniplty(qr)
+
+%无输出参数时显示平移和旋转速度椭球体的体积
+p560.maniplty(qr)
+
+%标称关节坐标时(nominal pose)
+p560.maniplty(qn)
+```
+
+在实际情况中，看似机器人的工作空间很大，但是由于关节限制、自身障碍物、奇点、可操纵性减小区域等因素使工作空间大大减少。此处关于可操纵性度量仅仅是从运动学角度进行考虑，进一步度量机械臂的可操纵性还需要考虑质量和惯性因素。
+
+
+# 8.3 Resolved-Rate Motion Control解析速率运动控制
+解析速率运动控制是利用公式
+$$
+\dot{q}=J(q)^{-1}v 
+$$
+将所需的笛卡尔速度映射或解析为关节速度，而不像之前那样需要求逆运动学。首先先假定雅克比矩阵是非奇异方阵，运动控制策略通常以离散时间形式实现：
+$$
+\dot{q}^* \left \langle k \right \rangle = J(q\left \langle k \right \rangle)^{-1} v^*
+$$
+
+$$
+q^*\left \langle k+1 \right \rangle \leftarrow q\left \langle k \right \rangle + \delta_t \dot{q}^*\left \langle k \right \rangle
+$$
+此处的$\delta_t$是采样间隔。第一个公式计算要求的关节速度，关节速度是当前关节配置和期望末端执行器速度的函数，第二个公式执行前向矩形积分得到下一时间步的期望关节角度。   
+工具箱中关于解析速率运动控制算法的simulink模型是`sl_rrmc`:
+![pic8_3](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/8_3.png)
+
+对应的MATLAB程序是：
+```
+r = sim( 'sl_rrmc');
+
+t = r.find('tout');
+q = r.find('yout');
+
+T = p560.fkine(q);
+xyz = transl(T);
+%绘制笛卡尔空间坐标变化
+mplot(t, xyz(:,1:3))
+
+%绘制前三个关节角变化
+mplot(t, q(:,1:3))
+```
+![pic8_4](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/8_4.png)
+
+要求机械臂末端执行器在笛卡尔空间仅沿y轴方向以0.05m/s速度移动，但从图a中可以发现在x轴和轴存在不需要的运动。图b可以发现前三个关节角随时间的变化不是线性的，这反映了手臂动态配置的变化。   
+图a在x轴和z轴发生偏差的原因是我们采用的方法纯粹只基于积分，所以会受到误差累积的影响。可以通过基于期望和实际姿态之间的误差将算法改进为闭环形式来消除这种情况：
+$$
+\dot{q}^* \left \langle k \right \rangle \leftarrow K_pJ(q\left \langle k \right \rangle)^{-1} \Delta(\mathcal{K}(q\left \langle k \right \rangle),\xi^*\left \langle k \right \rangle)
+$$
+此处$K_p$是比例增益，$\Delta(\cdot) \in \mathbb{R}^6$是空间位移，在时间间隔很小的情况下作为期望空间速度使末端执行器趋向期望位姿，期望位姿$\xi^*\left \langle k \right \rangle$是时间的函数。阐述该闭环算法的simulink模型是`sl_rrmc2`，此时实现的是位置闭环。
+![pic8_5](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/8_5.png)
+关节角速度在合适的比例增益作用下变为期望的关节空间速度，将修正笛卡尔空间的累积误差。  
+
+# 8.3.1 Jacobian Singularity雅可比奇点
+当雅克比矩阵$det(J(q))=0$时出现奇点，此时不能直接使用等式
+$$
+\dot{q}=J(q)^{-1}v 
+$$
+
++ 一种解决策略是用阻尼逆(damped inverse)代替逆:
+$$
+\dot{q}=(J(q)+\lambda I)^{-1}v 
+$$
+此处的$\lambda$是一个很小的常量。这种策略会使$\dot{q}$引入误差，并且随着时间的累积可能会对末端执行器的位置造成显著的影响，但在上一节闭环解析速率运动控制方法下会最小化这个误差。  
++ 另一种解决方法是使用雅克比矩阵的伪逆，MATLAB求伪逆的实现为`pinv`  
++ 还有一种方法是删除雅克比矩阵中与其他列线性相关的列，这时是一个欠驱动系统  
+  
+# 8.4 Under- and Over-Actuated Manipulators欠驱动和冗余机械臂  
+之前假设雅克比矩阵都是方阵，对于不是方阵的情况，还是以关节空间和笛卡尔空间速度关系为例：
+$$
+v=J(q)\dot{q}
+$$
+雅克比矩阵是一个6xN矩阵，即$v$是6-vector，关节速度$\dot{q}$是N-vector，以示意图的形式展示N取不同值时的情况：
+![pic8_6](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/8_6.png)
++ N<6时为欠驱动。因为关节数少于6，所以部分笛卡尔空间自由度是不可控的。通过删除$v,J$中的部分元素，可以使雅克比矩阵方阵化。
++ N=6时全驱动
++ N>6是过驱动（冗余）。对于冗余机械臂，我们可以求解一个最小二乘解，或者可以删除雅克比矩阵的部分列使其方阵化--这相当于锁定对应的关节。
+  
+
+## 8.4.1 Jacobian for Under-Actuated Robot  
+以两关节机械臂为例：
+```
+mdl_planar2
+
+%标称关节坐标(nominal pose)
+qn = [1 1];
+
+J = p2.jacob0(qn)
+```
+此时不能使用伪逆来解决雅克比矩阵求逆的问题，因为它试图是机械臂进行不能满足的运动。以x轴期望速度为0.1m/s来说明：
+```
+%求关节角的期望速度
+qd = pinv(J) * [0.1 0 0 0 0 0]'
+
+%再求末端执行器的速度
+xd = J*qd;
+xd'
+```
+可以发现求得的速度xd与期望速度并不相符。所以要明确我们只有两个自由度来控制$v_x,v_y$。将等式
+$$
+v=J(q)\dot{q} 
+$$
+写成分块形式：
+$$
+\begin{pmatrix}
+    v_x\\
+    \lfloor{v_y}\\
+    v_z\\
+    \omega_x\\
+    \omega_y\\
+    \omega_z
+\end{pmatrix} = \begin{pmatrix}
+                \lfloor{J_{xy}}\\
+                J_{0}
+                \end{pmatrix}
+                \begin{pmatrix}
+                \dot{q_1}\\
+                \dot{q_2}
+                \end{pmatrix}
+$$
+取最上面的部分：
+$$
+\begin{pmatrix}
+    v_x\\
+    v_y
+\end{pmatrix} = J_{xy}  \begin{pmatrix}
+                        \dot{q_1}\\
+                        \dot{q_2}
+                        \end{pmatrix}
+$$
+此处$J_{xy}$是2x2矩阵，则有：
+$$
+\begin{pmatrix}
+\dot{q_1}\\
+\dot{q_2}
+\end{pmatrix} = J_{xy}^{-1} \begin{pmatrix}
+                                v_x\\
+                                v_y
+                            \end{pmatrix}
+$$
+对于非奇异的$J_{xy}$可以实现解析速率运动控制：
+```
+Jxy = J(1:2,:);
+%期望速度为x轴方向0.1m/s
+qd = inv(Jxy)* [0.1 0]'
+
+xd = J*qd;
+xd'
+```
+可以发现求得的速度与期望速度一致。
+
+## 8.4.2 Jacobian for Over-Actuated Robot
+对于过驱动机械臂，使用左伪逆(left pseudo-inverse)重写之前的等式得：
+$$
+\dot{q}=J(q)^{+}v 
+$$
+在无限多可能的解中，通过上面的等式可以产生一个$\left \|  \dot{q}\right \|$取最小的解--最小范数解。   
+以Baxter机器人的左机械臂为例，末端执行器在x、y、z轴均以0.2m/s速度移动：
+```
+mdl_baxter
+
+TE = SE3(0.8, 0.2, -0.2) * SE3.Ry(pi);
+q = left.ikine(TE)
+
+%左臂
+J = jacob0(left, q);
+%J是6x7矩阵
+about J
+
+%期望笛卡尔空间速度
+xd = [0.2 0.2 0.2 0 0 0]';
+qd = pinv(J) * xd;
+qd'
+
+rank(J)
+
+%null space
+N = null(J)
+```
+可以发现求得的速度在每个关节都有非零值，共同合成末端执行器的期望速度。J的秩为6，所以其零空间只有一个基向量。  
+当雅克比矩阵是这个零空间向量的线性组合时，将不会使末端执行器运动，验证如下：
+```
+%J * N(:,1)得到由零空间向量线性组合而成的雅克比矩阵
+norm( J * N(:,1))
+```
+得到的值趋近于零，说明末端执行器没有运动。在这个结论的基础上，可以将
+$$
+\dot{q}=J(q)^{+}v 
+$$
+分解为：
+$$
+\dot{q}=\underbrace{J(q)^{+}v}_{end-effector\,motion} + \underbrace{NN^+\dot{q}_{null}}_{null-space\,motion}
+$$
+此处$NN^+ \in \mathbb{R}^{N \times N}$将所需的关节运动投射到零空间中，它不会影响末端执行器在笛卡尔空间的运动，允许两个运动被叠加。  
+Null-space的运动对末端执行器的运动没有影响，通常高冗余机械臂通过Null-space的运动进行避障。  
+考虑到除了期望的笛卡尔速度xd之外，我们希望同时增加关节5的角度以使臂远离某个障碍物：
+```
+%期望关节角度
+qd_null = [0 0 0 0 1 0 0]';
+
+%计算null-space空间的运动
+qp = N * pinv(N) * qd_null;
+qp'
+
+norm( J * qp)
+```
+可以看到在Null-space的运动对末端执行器的位置没有影响，同时其他关节也存在速度，这是所谓的补偿速度。
+
+# 8.5 Force Relationships  
+[旋量理论（Screw Theory）](!https://wenku.baidu.com/view/c1b1c4030a4e767f5acfa1c7aa00b52acec79c43.html)：
++ Twist（运动旋量）：描述刚体可能的瞬时运动
+$$
+T=[\omega_x \, \omega_y \, \omega_z \, v_x \, v_y \, v_z] 
+$$
++ Wrench（力旋量）：描述刚体可能受到的约束力和力矩
+$$
+W=[f_x \, f_y \, f_z \, m_x \, m_y \, m_z] \in \mathbb{R}^6
+$$
+
+## 8.5.1 Transforming Wrenches to Joint Space
+由之前章节内容知机械臂的雅克比矩阵将关节速度变换至末端执行器空间速度。新结论是机械臂雅克比矩阵的转置可以将作用在末端执行器上的力旋量变换为关节受到的力和力矩：
+$$
+\boldsymbol{Q}={^0\boldsymbol{J(q)}^T}\,{^0\boldsymbol{W}}
+$$
+其中$\boldsymbol{W}$是世界坐标系中的力旋量，$\boldsymbol{Q}$是广义关节力矢量，$\boldsymbol{Q}$中的元素是旋转关节(revolute)或平移型关节(prismatic)受到的力或力矩。  
+从末端执行器速度到关节速度的映射由于要使用雅克比矩阵的逆，所以可能存在奇点。而从末端执行器力和力矩到关节力和力矩的映射使用雅克比矩阵的转置，所以不存在奇点问题。利用这个属性可以通过数值方法解决逆运动学问题。  
+如果力旋量定义在末端执行器坐标系下，公式变为：
+$$
+\boldsymbol{Q}={^E\boldsymbol{J(q)}^T}\,{^E\boldsymbol{W}}
+$$
+以PUMA560标称位姿为例：
+![pic8_7](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/8_7.png)
+```
+%在末端执行器世界坐标系y轴方向施加力
+tau = p560.jacob0(qn)' * [0 20 0 0 0 0]';
+tau'
+
+%在末端执行器世界坐标系x轴方向施加力
+tau = p560.jacob0(qn)' * [20 0 0 0 0 0]';
+tau'
+```
+
+## 8.5.2 Force Ellipsoids
+在[8.2.2 Manipulability可操纵性](#jump)章节介绍了速度椭圆和椭圆体--描述了末端执行器在不同方向运动能力的强弱，这种方法同样可以用来分析末端执行器上的力和力矩(即力旋量)。  
+设单位形式的广义坐标力表示为：
+$$
+\boldsymbol{Q}^T {\boldsymbol{Q}}=1
+$$
+代入公式：
+$$
+\boldsymbol{Q}={^0\boldsymbol{J(q)}^T}\,{^0\boldsymbol{W}}
+$$
+得：
+$$
+\boldsymbol{W}^T(\boldsymbol{J(q)}\boldsymbol{J(q)}^T)\boldsymbol{W} = 1 
+$$
+这是一些列分布在末端执行器力旋量空间中6维椭球体表面的点的方程。可以绘制处之前引入的平面机械臂的椭圆：
+```
+mdl_planar2
+
+%绘制力椭圆
+p2.fellipse([30 40], 'deg')
+
+%使用交互方式绘制
+%运行错误时使用：p2.teach('callback', @(r,q) r.fellipse(q))
+p2.teach(qn, 'callback', @(r,q) r.fellipse(q), 'view', 'top')
+```
+与之前相似的结论:这个力椭圆接近正圆时，即半径数量级接近时可以实现任意的力旋量;如果一个或多个半径非常小，则表明末端执行器不能沿着对应于那些小半径的轴施加力或力矩。  
+力和速度椭圆体提供了关于手臂的配置对特定任务适合程度的补充信息。  
+
+# 8.6 Inverse Kinematics: a General Numerical Approach
+在**7.2.2.1章节**介绍了解析形式的逆运动学求解，但这种方法仅针对6关节且拥有球形腕部结构的机械臂。对于其他结构的机械臂，更常用的方法是数值解法。本章介绍一种通用的数值解法：基于正向运动学和雅克比矩阵的转置。由于不存在奇点问题，这种方法可以针对任意配置的机械臂进行计算。  
+
+## 8.6.1 Numerical Inverse Kinematics  
+下图是数值逆运动学算法的原理图：
+![pic8_8](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/8_8.png)
+$\xi_{\Delta}$是实际位姿$\xi_E$和期望位姿$\xi_E^*$间的差值,可以描述为空间位移：
+$$
+^E\boldsymbol{\Delta} = \Delta(\xi_E,\xi_E^*)=(\boldsymbol{t},\hat{\boldsymbol{v}}\theta) \in \mathbb{R}^6
+$$
+此处当前位姿是通过正向运动学计算的：$\xi_E=\mathcal{K}(q)$.  
+可以想象末端执行器的当前位姿和期望位姿之间有一个特殊的弹簧，在弹簧提供的拉力和力矩即力旋量（wrench）的作用下使末端执行器朝着期望位姿产生空间位移：
+$$
+^E\boldsymbol{W} = \gamma \, {^E\boldsymbol{\Delta}}
+$$
+根据**8.5.1章节**，利用雅克比矩阵的转置可以求得广义关节力：
+$$
+\boldsymbol{Q}={^E\boldsymbol{J(q)}^T}\,{^E\boldsymbol{W}}
+$$
+我们假设这个虚拟机器人没有关节电机只有粘滞阻尼器，所以关节速度将与施加的力成比例：
+$$
+\dot{\boldsymbol{q}}=\boldsymbol{Q}/B
+$$
+此处B是关节阻尼系数，假设所有关节都相同。联立上面的等式可以得：
+$$
+\dot{\boldsymbol{q}}=\frac{1}{B} \boldsymbol{J(q)}^T \Delta(\mathcal{K}(\boldsymbol{q}),\xi_E^*)
+$$
+利用上面公式可以得到关节速度，在该关节速度的驱动下，使正向运动学的解朝着末端执行器的期望位姿运动，该过程可以迭代进行：
+$$
+\delta_q\left \langle k \right \rangle = \alpha \boldsymbol{J}{(\boldsymbol{q}\left \langle k \right \rangle)}^T \Delta(\mathcal{K}(\boldsymbol{q}\left \langle k \right \rangle),\xi_E^*)
+$$
+$$
+\boldsymbol{q}\left \langle k+1 \right \rangle \leftarrow \boldsymbol{q}\left \langle k \right \rangle + \delta_q\left \langle k \right \rangle
+$$
+直到$\left \| {\delta_q\left \langle k \right \rangle} \right \|$足够小时停止迭代。  
+该算法基于雅克比矩阵的转置，所以对于雅克比矩阵为奇异或非方阵的情况都能工作。但在实践中该算法收敛速度慢，对$\alpha$的选择非常敏感。实际使用中，我们可以将其表示为世界坐标系中的最小二乘问题，并最小化价值函数：
+$$
+E= \boldsymbol{\Delta}^T\boldsymbol{M}\boldsymbol{\Delta}
+$$
+其中$\boldsymbol{M}=diag(m) \in \mathbb{R}^{6 \times 6}$, $m$是**7.2.2.3章节**介绍的mask向量。所以更新公式变为：
+$$
+\delta_q\left \langle k \right \rangle =(\boldsymbol{J}{(\boldsymbol{q}\left \langle k \right \rangle)}^T \boldsymbol{M} \boldsymbol{J}{(\boldsymbol{q}\left \langle k \right \rangle)})^{-1}  \boldsymbol{J}{(\boldsymbol{q}\left \langle k \right \rangle)}^T \boldsymbol{M} \Delta(\mathcal{K}(\boldsymbol{q}\left \langle k \right \rangle),\xi_E^*)
+$$
+上面的公式虽然收敛很快，但是可能存在奇点，所以引入阻尼常数$\lambda$确保这一项的逆一直存在:
+$$
+\delta_q\left \langle k \right \rangle =(\boldsymbol{J}{(\boldsymbol{q}\left \langle k \right \rangle)}^T \boldsymbol{M} \boldsymbol{J}{(\boldsymbol{q}\left \langle k \right \rangle)} + \lambda \boldsymbol{I}_{N \times N})^{-1}  \boldsymbol{J}{(\boldsymbol{q}\left \langle k \right \rangle)}^T \boldsymbol{M} \Delta(\mathcal{K}(\boldsymbol{q}\left \langle k \right \rangle),\xi_E^*)
+$$
+一种有效选择$\lambda$的方法是检查随着迭代进行$\left \| {\delta_q\left \langle k \right \rangle} \right \|$是否在减小，若其减小则减小$\lambda$的值，否则增大$\lambda$的值。这种自适应阻尼因子的策略称为Levenberg-Marquardt优化算法。   
+上述介绍的算法在MATLAB Robotics Toolbox中的实现是`ikine`函数，并且在实践中表现很好。和所有的优化算法一样需要给定一个初始值，`ikine`函数可以通过`q0`显式给定初始值，也可以通过`search`选项对初始值进行暴力搜索，雅克比矩阵的转置方法也可以通过`transpose`选项进行设置。
+
+
+# 8.7 Advanced Topics
+## 8.7.1 Computing the Manipulator Jacobian Using Twists
+通过运动旋量(Twists)计算雅克比矩阵：
+$$
+^0{\boldsymbol{J}}^v = (S_1 Ad(e^{[S_1]q_1})S_2 \cdots Ad(e^{[S_1]q_1} \cdots e^{[S_{N-1}]q_{N-1}})S_N)
+$$
+$$
+^E{\boldsymbol{J}}^v=Ad({^E\xi_0}){^0\boldsymbol{J}^v}
+$$
+此处$Ad(\cdot)$表示伴随矩阵。
+$$
+^0{\boldsymbol{J}}=\begin{pmatrix}
+                    I_{3\times3}& -[^0t_e]_{\times}\\ 
+                    0_{3\times3}& I_{3\times3}
+                    \end{pmatrix} ^0{\boldsymbol{J}}^v
+$$
+
+
+# 9 Dynamics and Control
+末端执行器的运动由每个连杆的运动组合而成，而连杆最终由关节受到的力和力矩驱动。  
+
+# 9.1 Independent Joint Control
+机器人传动系统包括致动器或马达，以及将其连接到连杆的传动装置（联轴器等）。机器人关节控制的常用方法是将每个关节或轴视为一个
+独立控制系统，这个独立的控制系统尽力以一定的精度跟踪关节角度轨迹。但是由于重力、速度和加速度耦合以及作用在关节上的摩擦等各种扰动力矩使这变得复杂。常用双闭环控制，外环为位置环控制并得到期望的关节速度，内环为速度环，使外环得到的期望关节速度得到实现。
+
+## 9.1.1 Actuators
+绝大多数机器人都是由旋转电动机驱动。 大型工业机器人通常使用无刷伺服电机，而一些实验室的机器人则使用有刷直流电机或步进电机。此外对于更大负载的机械臂，通常使用电动液压阀--电液驱动来液压驱动。  
+电机模型图：
+![pic9_1](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_1.png)
+电机可以实行电压或者电流控制。假设上图中使用电机驱动或放大器提供的电流控制电机，电流$i_m$满足：
+$$
+i_m = K_a u
+$$
+电流与施加的电压成线性关系，$K_a$是以$AV^{-1}$为单位的放大器的跨导。电机产生的转矩与电流成正比：
+$$
+\tau_m = K_m i_m
+$$
+此处$K_m$是以$NmA^{-1}$为单位的电机扭矩常数。转动惯量$J_m$，转动速度$\omega$，摩擦力$B_m$。
+
+## 9.1.2 Friction
+电机的净扭矩是$\tau^{'}$是：
+$$
+\tau^{'} = \tau_m - \tau_f
+$$
+此处摩擦扭矩$\tau_f$是速度的函数：
+$$
+\tau_f = B\omega + \tau_c
+$$
+其中斜率B > 0是粘性摩擦系数(viscous friction coefficient)，偏移量$\tau_c$是库仑摩擦力，$\tau_c$由下面的非线性函数建模：
+$$
+\tau_c = 
+\begin{cases} 
+\tau_c^{+} & \omega > 0 \\
+0 & \omega = 0\\
+\tau_c^{-} & \omega < 0
+\end{cases}
+$$
+
+总的摩擦扭矩是旋转速度的函数，图像如下：
+![pic9_2](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_2.png)
+其中灰色的区域表示在低速情况下的静摩擦力，在转动之前需要克服静摩擦力。一旦机器开始转动，静摩擦力迅速减少，粘性摩擦力占主导地位。
+
+## 9.1.3 Effect of the Link Mass
+电机与连杆通常以下图的方式连接：
+![pic9_3](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_3.png)
+连杆对电机有两个明显的重要影响：增加了额外的惯性，且由于臂的重量而增加了扭矩，并且都随着关节的配置而变化。  
+以下图中的两关节机械臂为例：
+![pic9_4](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_4.png)
+第一个连杆直接连接在第一个关节上，连杆1的质心处将受到额外的惯性$m_1r_1^2$，电机同时会承受来自蓝色连杆的惯性--决定于$q_2$的值。
+连杆1的重力作用于质心处，将对关节1的电机产生一个与$cosq_1$成正比的扭矩。  
+以上这些作用力在实际情况中更复杂，可以使用MATLAB工具箱求取施加在每个关节的扭矩--这个扭矩是关节位置、速度和加速度的函数。
+```
+mdl_twolink_sym
+syms q1 q2 q1d q2d q1dd q2dd real
+tau = twolink.rne([q1 q2], [q1d q2d], [q1dd q2dd]);
+```
+结果是一个2维符号向量,一个关节对应一个，推导过程如下：
+$$
+\tau_1 = M_{11}(q_{2})\ddot{q}_1+\underbrace{M_{12}(q_2)\ddot{q}_2+C_1(q_2)\dot{q}_1\dot{q}_2+C_2(q_2)\dot{q}_2^2+g(q_1,q_2)}_{disturbance}
+$$
+
+$$
+M_{11} = m_1(a_1^2+2a_1c_1+c_1^2)+m_2(a_1^2+(a_2+c_2)^2+(2a_1a_2+2a_1c_2)cosq_2)
+$$
+
+$$
+M_{12} = m_2(a_2+c_2)(a_2+c_2+a_1cosq_2)
+$$
+
+$$
+C_1 = -2a_1m_2(a_2+c_2)sinq_2
+$$
+
+$$
+C_2 = -a_1m_2(a_2+c_2)sinq_2
+$$
+
+$$
+g = (a_1m_1+a_1m_2+c_1m_1)cosq_1+(a_2m_2+c_2m_2)cos(q_1+q_2)
+$$
+关节运动在一系列机械连杆中的作用是很大的，任何关节的运动都受到所有其他关节的运动的影响，所以对于多关节机器人而言情况非常复杂。
+
+## 9.1.4 Gearbox变速器(齿轮箱)
+电动机是高转速低扭矩，所以通常需要加装减速齿轮箱降低转速增大扭矩.典型机器人关节的完整传动系统示意图如下：
+![pic9_5](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_5.png)
+从图中可以看到两种惯性分量，一种来自电机本身的旋转部分--转子,其值$J_m$在制造商的数据表中会提供；另一种是可变负载惯量$J_l$，是被驱动的连杆和所有关联连杆的总惯量。
+
+## 9.1.5 Modeling the Robot Joint机器人关节建模
+完整的电机驱动器包括用于产生扭矩的电机、齿轮箱放大扭矩并减少负载的影响、编码器提供位置和速度的反馈：
+![pic9_6](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_6.png)
+综合之前的各种方程，我们可以在电机轴上写出扭矩平衡方程：
+$$
+K_mK_au-B^{'}\omega-\tau_c^{'}(\omega)-\frac{\tau_d(q)}{G}=J^{'}\dot{\omega}
+$$
+此处的$B^{'},\tau_c^{'},J^{'}$分别是由于电机、变速箱、轴承和负载引起的有效总粘性摩擦、库仑摩擦和惯性:
+$$
+B^{'} = B_m+\frac{B_l}{G^2}, \tau_c^{'} = \tau_{c,m}^{'} + \frac{\tau_{c,l}^{'}}{G}, J^{'}=J_m+\frac{J_l}{G^2}
+$$
+为了分析电机轴上的扭矩平衡方程的动力学特性，首先需要线性化,可以通过将所有添加常数设置为零实现:
+$$
+J^{'}\dot{\omega}+B^{'}\omega = K_mK_au
+$$
+然后使用拉普拉斯变换:
+$$
+sJ^{'}\Omega(s) + B^{'}\Omega(s) = K_mK_aU(s)
+$$
+其中$\Omega(s),U(s)$是时间域信号$\omega(t),u(t)$对应的拉普拉斯变换。写成传递函数的形式：
+$$
+\frac{\Omega(s)}{U(s)}=\frac{K_mK_a}{J^{'}s+B^{'}}
+$$
+将电机速度与控制输入相关联，传递函数具有单极点：$s=-B^{'}/J^{'}$。
+我们使用Puma560机械臂的关节2为例,关节2的参数如下表：
+![pic9_7](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_7.png)
+在没有其他信息的情况下，我们将采用$B^{'}=B_m$。关节2电动机所承受的连杆惯性$M_{22}$是配置的函数，变化如下图：
+![pic9_8](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_8.png)
+$M_{22}$的变化范围在3.66~5.21$kg\cdot m^2$,使用均值作为惯性值，值为4.43$kg\cdot m^2$,所以有效惯量为：
+$$
+\begin{aligned}
+J^{'} &=& J_m + \frac{1}{G^2}M_{22} \\
+&=& 200 \times 10^{-6} + \frac{4.43}{(107.815)^2} \\
+&=& 200 \times 10^{-6} + 380 \times 10^{-6}
+&=& 580 \times 10^{-6} kg\,m^2
+\end{aligned}
+$$
+可以发现变速箱电机侧的连杆惯性与电机本身的惯性相当。  
+Matlab工具箱可以自动生成适用于控制系统设计的动力学模型：
+`tf = p560.jointdynamics(qn);`
+得到一系列每个关节在位姿$qn$下的LTI模型，第二个关节的模型为：`tf(2)`，得到系统的传递函数模型后就可以绘制出相应的阶跃相应函数。
+
+
+## 9.1.6 Velocity Control Loop速度环控制
+常用的电机位置控制方法是双闭环控制：外环位置环，得到使位置误差最小的期望速度；内环速度环，实现外环期望速度的控制。
+MATLAB中simulink的速度环控制模型：
+![pic9_9](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_9.png)
+MATLAB速度环控制实验：`vloop_test`
+对于电机模型，单比例控制(P)存在静差的问题，常用的三中解决策略：
++ 增大比例系数
++ 引入积分，使用PI控制器
++ 使用扭矩前馈控制
+  
+## 9.1.7 Position Control Loop
+MATLAB中simulink的位置环控制模型：
+![pic9_10](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_10.png)
+MATLAB速度环控制实验：`ploop_test`
+
+## 9.1.8 Independent Joint Control Summary
++ 机器人关节控制的常用方法是双闭环控制。
++ 由于重力和其他动态耦合效应引起的扰动转矩会影响速度环的性能，正如受控设备参数的变化反过来又导致位置跟踪误差一样。
++ 齿轮传动将扰动转矩的大小降低$1/G$，惯性和摩擦力的变化降低$1 / G^2$，但代价是增加成本、重量、摩擦与机械噪音。
++ 实践中，控制系统使用前馈和反馈控制相结合。
++ 前馈用于插入可以计算的信号，在这种情况下是关节速度，在前面的情况下是重力扭矩。
++ 反馈控制补偿所有剩余的误差源。
++ 使用前馈可以减少反馈增益，因为大部分需求信号现在都来自前馈。
+
+
+# 9.2 Rigid-Body Equations of Motion
+考虑电机驱动serial-link型机械臂的第$j^{th}$个旋转关节，则电机施加的扭矩使向外的连杆$j$旋转加速的同时在向内的连杆$j-1$上施加反作用扭矩。重力对向外的连杆$j$到$N$施加作用，同时旋转连杆互相施加陀螺力(gyroscopic forces)。电机承受的惯量是外向连杆的配置的函数。  
+单个连杆的情况非常复杂，但将所有连杆看成一个整体，结果可以优雅简洁地写成一组矩阵形式的耦合微分方程：
+$$
+\boldsymbol{Q}= \boldsymbol{M(q)\ddot{q}} + \boldsymbol{C(q,\dot{q})\dot{q}} +\boldsymbol{G(q)} + \boldsymbol{J(q)^TW}
+$$
+此处的$\boldsymbol{q},\boldsymbol{\dot{q}},\boldsymbol{\ddot{q}}$分别是广义关节坐标、广义关节速度、广义关节加速度的向量形式。$\boldsymbol{M}$是关节空间的惯量矩阵，$\boldsymbol{C}$是科里奥利和向心耦合矩阵，$\boldsymbol{F}$是摩擦力，$\boldsymbol{G}$是重力载荷，$\boldsymbol{Q}$是广义坐标$\boldsymbol{q}$下执行器承受的广义力。最后一项是由末端执行器的力旋量$\boldsymbol{W}$产生的关节力，$\boldsymbol{J}$是机械臂雅克比矩阵。**该方程描述了机械臂刚体动力学并被称为逆动力学--给定姿态、速度和加速度，计算所需的关节力或扭矩**。  
+上述方程可以使用任何经典动力学方法推导出来，如牛顿第二定律和欧拉运动方程，或基于拉格朗日能量法。对上述方程一种非常有效的计算方法是递归Newton-Euler算法，它从机械臂基座开始向外计算，增加每个关节的速度和加速度，以确定每个连杆的速度和加速度，然后从工具向基座计算，得到作用在每个连杆上的力和力矩，从而计算出关节扭矩，上述过程写成函数形式：
+$$
+\boldsymbol{Q} = \mathcal{D}^{-1}(\boldsymbol{q},\boldsymbol{\dot{q}},\boldsymbol{\ddot{q}})
+$$
+递归Newton-Euler算法在MATLAB工具箱中的实现是`rne`函数：
+```
+mdl_puma560
+%qd和qdd均为零
+Q = p560.rne(qn, qz, qz)
+
+%设置受到的重力为零
+Q = p560.rne(qn, qz, qz, 'gravity', [0 0 0])
+```
+和其他工具箱中的方法一样，`rne`方法也可以对轨迹进行操作：
+```
+q = jtraj(qz, qr, 10)
+Q = p560.rne(q, 0*q, 0*q)
+```
+得到的Q的每一行表示广义力，对应q的每一行。  
+假设如下情况:机械臂正在移动，当前处于标称位姿(nominal pose)，关节1以1$rad \, s^{-1}$运动，并且所有关节的加速度为零。然后在没有重力的情况下，获得所需的关节扭矩:
+`p560.rne(qn, [1 0 0 0 0 0], qz, 'gravity', [0 0 0])`
+是非零的。这是因为：关节1上的扭矩是克服与运动相反的摩擦所需的扭矩。关节2,3和4上施加扭矩为了抵抗陀螺效应（向心力和科里奥利力）--称为速度耦合力矩，因为一个关节的旋转速度已经在其他几个关节上产生扭矩。  
+矩阵$\boldsymbol{M},\boldsymbol{C},\boldsymbol{F},\boldsymbol{G}$的元素是连杆动力学参数$(\theta_j,d_j,a_j,\alpha_j)$和惯量参数的复杂函数，每个连杆有10个独立的惯量参数：连杆质量$m_j$; 质心(COM)相对于连杆坐标系的坐标$r_j$; 关节惯量等。使用如下命令可以查看机械臂连杆的参数：
+`p560.links(1).dyn`
+返回值为：
+>Revolute(std): theta=q, d=0, a=0, alpha=1.5708, offset=0
+m = 0
+r = 0 0 0
+I = | 0 0 0 |
+| 0 0.35 0 |
+| 0 0 0 |
+Jm = 0.0002
+Bm = 0.00148
+Tc = 0.395 (+) -0.435 (-)
+G = -62.61
+qlim = -2.792527 to 2.792527
+
+这些返回值依次代表：运动学参数、连杆质量、质心(COM)位置、连杆惯性矩阵、电机惯量、电机摩擦、库仑摩擦、减速比和关节角度限制。
+
+## 9.2.1 Gravity Term重力项
+$$
+\boldsymbol{Q}= \boldsymbol{M(q)\ddot{q}} + \boldsymbol{C(q,\dot{q})\dot{q}} +  \boldsymbol{G(q)} + \boldsymbol{J(q)^TW}
+$$
+讨论上述方程中的重力项，因为重力项通常是该方程的主导项，在机械臂静止或者缓慢移动时仍然存在。所以一些机器人使用平衡配重或弹簧来减少电机需要克服的重力扭矩--这样可以使电机更小，从而降低成本。但会增大惯量。  
+在MATLAB中，之前使用`rne`方法，将广义关节速度和加速度设置为零，即机械臂静止,从而计算出关节的重力载荷，更方便的方法是使用`gravload`函数：
+`gravload = p560.gravload(qn)`
+并且**SerialLink**对象包含了初始化为地球坐标系下的默认的重力加速度向量：
+`p560.gravity'`
+不同位姿下各个关节受到的重力载荷差别是比较大的：
+```
+Q = p560.gravload(qs)
+Q = p560.gravload(qr)
+```
+使用如下程序可以做出PUMA560机械臂关节2，3角度变化时受到的重力负载的变化：
+```
+[Q2,Q3] = meshgrid(-pi:0.1:pi, -pi:0.1:pi);
+ for i=1:numcols(Q2),
+ for j=1:numcols(Q3);
+ g = p560.gravload([0 Q2(i,j) Q3(i,j) 0 0 0]);
+ g2(i,j) = g(2);
+ g3(i,j) = g(3);
+ end
+ end
+ surfl (Q2, Q3, g2); 
+ figure
+ surfl (Q2, Q3, g3);
+```
+结果如下图：
+![pic9_11](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_11.png)
+这种分析确定了电机所需的扭矩值，对机械臂的设计十分重要。  
+
+## 9.2.2 Inertia Matrix惯量矩阵
+$$
+\boldsymbol{Q}= \boldsymbol{M(q)\ddot{q}}+ \boldsymbol{C(q,\dot{q})\dot{q}} + \boldsymbol{G(q)} + \boldsymbol{J(q)^TW}
+$$
+关节空间的惯量定义为正值，因此$\boldsymbol{M(q)}$是对称矩阵，且是机械臂配置的函数:`M = p560.inertia(qn)`
+>M =
+3.6594 -0.4044 0.1006 -0.0025 0.0000 -0.0000
+-0.4044 4.4137 0.3509 0.0000 0.0024 0.0000
+0.1006 0.3509 0.9378 0.0000 0.0015 0.0000
+-0.0025 0.0000 0.0000 0.1925 0.0000 0.0000
+0.0000 0.0024 0.0015 0.0000 0.1713 0.0000
+-0.0000 0.0000 0.0000 0.0000 0.0000 0.1941
+
+对角线元素$\boldsymbol{M_{jj}}$是关节$j$所受的惯量，即$Q_j=\boldsymbol{M_{jj}} \ddot{q}_j$。非对角线元素$M_{ij}=M_{ji}, i\ne j$是惯性的乘积，表示关节$j$到关节$i$上的广义力的加速度的耦合。  
+使用类似上一节的方法绘制PUMA560机械臂关节2，3角度变化时受到的惯量的变化：
+```
+ [Q2,Q3] = meshgrid(-pi:0.1:pi, -pi:0.1:pi);
+ for i=1:numcols(Q2)
+ for j=1:numcols(Q3)
+ M = p560.inertia([0 Q2(i,j) Q3(i,j) 0 0 0]);
+ M11(i,j) = M(1,1);
+ M12(i,j) = M(1,2);
+ end
+ end
+ surfl (Q2, Q3, M11); 
+ figure
+ surfl (Q2, Q3, M12);
+```
+结果如下图：
+![pic9_12](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_12.png)
+同时关节2的惯量作为关节3的角度的函数$M_{22}(q_3)$的图像为：
+![pic9_13](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_13.png)
+上述分析对于机械臂设计很重要，因为电机固定最大转矩后，惯量决定了加速度的上限，进而影响路径跟随的精度。  
+
+**Tips:** 上述绘图程序运行时间比较长，这是因为`rne`算法使用的是"slowRNE"类型的实现，就是说使用的是matlab实现的算法。可以通过`p560`查看到"slowRNE"的信息。  
+我们可以使用mex编译`rne`算法的C语言实现--"fastRNE"版本。具体的方法参照:`C:\Users\userID\Documents\MATLAB\Add-Ons\Toolboxes\Robotics Toolbox for MATLAB\code\robot\mex`路径下的**README**文件进行操作（userID每个人不同）。在"fastRNE"版本下，上述绘图程序运行速度明显提高很多。
+
+## 9.2.3 Coriolis Matrix科里奥利矩阵
+$$
+\boldsymbol{Q}=  \boldsymbol{M(q)\ddot{q}} + \boldsymbol{C(q,\dot{q})\dot{q}} + \boldsymbol{G(q)} + \boldsymbol{J(q)^TW}
+$$
+科里奥利矩阵$\boldsymbol{C}$是关节坐标和关节速度的函数。向心力距与$\dot{q}_j^2$成比例，科里奥利力矩与$\dot{q}_i\dot{q}_j$成比例。以标称位姿关节3（肘关节）以1 $rad \, s^{-1}$运动为例:
+```
+qd = [0 0 1 0 0 0];
+
+%Coriolis matrix
+C = p560.coriolis(qn, qd)
+```
+>C =
+0.8992 -0.2380 -0.2380 0.0005 -0.0375 0.0000
+-0.0000 0.9106 0.9106 0 -0.0036 0
+0.0000 0.0000 -0.0000 0 -0.0799 0
+-0.0559 0.0000 0.0000 -0.0000 0.0000 -0.0000
+-0.0000 0.0799 0.0799 -0.0000 0 0
+0.0000 0 0 0.0000 0 0
+
+科里奥利矩阵非对角线元素$C_{i,j}$表示关节$j$速度与作用于关节$i$的广义力的耦合。比如$C_{2,3}=0.9106$表示关节3速度与关节2上的扭矩的耦合--肘部的旋转会对肩部施加扭矩。由于科里奥利矩阵的元素表示从速度到关节力的耦合，因此它们与粘性摩擦或阻尼有相同的尺寸，但是符号可正可负。  
+由一个关节运动对其他关节产生的力矩可以计算为：
+`C*qd'`
+
+## 9.2.4 Friction
+$$
+\boldsymbol{Q}=  \boldsymbol{M(q)\ddot{q}} +  \boldsymbol{C(q,\dot{q})\dot{q}}  + \boldsymbol{F(\dot{q})}+ \boldsymbol{G(q)} + \boldsymbol{J(q)^TW}
+$$
+对于大部分电机驱动的机器人来说，摩擦力是重力之后的下一个最主要的关节力。工具箱中是摩擦力模型是通过`Link`对象实现的。  
+
+## 9.2.5 Effect of Payload有效载荷的影响
+任何一个机械臂都有一个最大有效载荷，这个值会受到两个动态效应的影响：
++ 首先，机器人末端的质量会增加关节电机的惯性，从而降低加速度和动态性能。
++ 第二，质量会产生一个所有关节都需要支撑的重力。在最坏的情况下增加的重力扭矩分量可能超过一个或多个电动机的额定值。然而，即使没有超过额定值，也没有可用于加速的扭矩，这再次降低了动态性能。
+以PUMA560机械臂为例，给其添加2.5kg的有效载荷，这是其最大有效载荷，通过以下程序对比与不加载荷时在标称位姿下的惯量差别：
+```
+mld_puma560
+
+%不加载荷的惯量
+M = p560.inertia(qn)
+
+%添加载荷的惯量
+p560.payload(2.5, [0 0 0.1]);
+M_loaded = p560.inertia(qn);
+
+%两种情况间的差别
+M_loaded ./ M
+
+%卸掉载荷
+p560.payload(0)
+```
+
+## 9.2.6 Base Force
+运动的机械臂会在它的底座上施加一个力旋量(Wrench)--即机械臂的重力和手臂移动时的反作用力和扭矩。力旋量(wrench)的求取：
+```
+[Q,Wb] = p560.rne(qn, qz, qz);
+
+%wrench
+Wb'
+```
+$Wb^{'}$的值为：
+>ans =
+0 -0.0000 230.0445 -48.4024 -31.6399 -0.0000
+
+其中垂直方向的力为230.0445N，这是机械臂的总重量，对应于机械臂的总质量为：
+`sum([p560.links.m])`
+在机器人没有刚性基座的情况下，对基座的受力分析很重要，比如水下航行器、移动小车等平台。
+
+## 9.2.7 Dynamic Manipulability动力学下的可操纵性
+在之前的章节基于运动学讨论过机械臂的可操纵性的度量：
++ 8.2.2章节讨论过可操作性的运动学度量--在笛卡尔空间不同方向上能达到的速度情况
++ 在8.5.2章节通过力椭圆描述机械臂在笛卡尔空间不同方向上能达到的加速度的情况
+
+以上的讨论都是基于机械臂的运动学参数，而非动力学参数。利用和之前相似的分析方法，基于动力学分析机械臂的可操作性。  
+考虑具有单位范数形式的广义关节力：
+$$
+\boldsymbol{Q}^T \boldsymbol{Q} = 1 
+$$
+对于机械臂刚体运动学方程：
+$$
+\boldsymbol{Q}= \boldsymbol{M(q)\ddot{q}} + \boldsymbol{C(q,\dot{q})\dot{q}} +\boldsymbol{F(\dot{q})} + \boldsymbol{G(q)} + \boldsymbol{J(q)^TW}
+$$
+在忽略重力并假设$\dot{q}=0$时：
+$$
+\boldsymbol{Q}= \boldsymbol{M(q)\ddot{q}}
+$$
+
+之前章节基于雅克比矩阵有如下方程：
+$$
+\boldsymbol{v} = \boldsymbol{J(q)} \boldsymbol{\dot{q}}
+$$
+可得：
+$$
+\boldsymbol{\dot{v}} = \boldsymbol{J(q)} \boldsymbol{\ddot{q}}
+$$
+联立以上公式可得：
+$$
+\boldsymbol{\dot{v}}^{\tiny{T}} (\boldsymbol{JM^{-1}M^{-T}}J^T)^{-1} \boldsymbol{\dot{v}} = 1
+$$
+更简洁的写法：
+$$
+\boldsymbol{\dot{v}}^{\tiny{T}} \boldsymbol{M}_x^{-1} \boldsymbol{\dot{v}} = 1
+$$
+这是笛卡尔加速度空间中的超椭球的方程。以标称位姿为例，考虑它的平动加速度：
+```
+mdl_puma560
+J = p560.jacob0(qn);
+M = p560.inertia(qn);
+Mx = (J * inv(M) * inv(M)' * J');
+
+%平动加速度
+Mx = Mx(1:3, 1:3);
+
+%三维椭球
+plot_ellipse( Mx )
+```
+对应的图像为：
+![pic9_14](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_14.png)
+这个椭球的主轴方向就是机械臂在当前配置下能达到的最大加速度的方向,椭球的半径是矩阵特征值得平方根，也是所能达到的最大加速度：
+`sqrt(eig(Mx))`
+由Asada提出的标量形式的动力学可操纵性度量:`p560.maniplty(qn, 'asada')`
+
+# 9.3 Forward Dynamics
+从机械臂关节受到的力或扭矩得到机械臂的运动的过程称为正向动力学或积分动力学。将机械臂刚体运动学方程变形为：
+$$
+\boldsymbol{\ddot{q}} = \boldsymbol{M^{-1}(q)}  \left(\boldsymbol{Q} - \boldsymbol{C(q,\dot{q})\dot{q}} - \boldsymbol{F(\dot{q})} - \boldsymbol{G(q)} - \boldsymbol{J(q)^TW} \right) 
+$$
+其中$M$总是可逆的，上述方程可以通过`SerialLink`对象中的`accel`方法计算，需要给定关节坐标、关节速度和关节所受的力：
+`qdd = p560.accel(q, qd, Q)`
+
+这个函数也封装在Simulink的`Robot`模块中。  
+下面使用Simulink模型进行正向动力学演示（该仿真忽略了库伦摩擦）：
+```
+sl_ztorque
+r = sim('sl_ztorque');
+t = r.fi nd('tout');
+p560.plot(q)
+
+%绘制前三个关节角的变化
+plot(t, q(:,1:3))
+```
+对应的simulink模型是：
+![pic9_15](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_15.png)
+
+前三个关节角的变化图：
+![pic9_16](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_16.png)
+
+从Simuliink模型看到输入的广义力向量为0，即机械臂的初始状态是：在零位位姿下只受到重力作用。在这种受力情况下的运动。  
+
+**Note：** 
++ 如果不使用simulink模型进行正向动力学仿真，可以使用`fdyn`方法进行正向动力学解算。
++ 使用如下方法可以设置机械臂的摩擦力为零（即将库仑和粘性摩擦系数设为零）：
+  + `p560_nf = p560.nofriction();`
+  + `p560_nf = p560.nofriction('all');`
+
+# 9.4 Rigid-Body Dynamics Compensation刚体动力学补偿
+在9.1章节讨论了独立关节控制的挑战，并介绍了使用前馈控制补偿重力扰动，对于惯量的变化和一些耦合力矩没有明确处理，而是留给反馈控制器处理。但是根据机械臂刚体动力学方程：
+$$
+\boldsymbol{Q}= \boldsymbol{M(q)\ddot{q}} + \boldsymbol{C(q,\dot{q})\dot{q}} +\boldsymbol{F(\dot{q})} + \boldsymbol{G(q)} + \boldsymbol{J(q)^TW}
+$$
+在已知关节角度、关节速度和加速度以及连杆的惯性参数时，可以计算出惯量和耦合力矩。可以使用基于模型的方法将这些力矩结合到控制律中，常用的基于模型的方法有：前馈控制(feedforward control)和计算力矩控制(computed torque control)。
+
+## 9.4.1 Feedforward Control
+使用`sl_fforward`可以打开PUMA560的力矩前馈控制simulink模型：
+![pic9_17](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_17.png)
+
+对应的数学模型是：
+$$
+\begin{aligned}
+\boldsymbol{Q}^* &= \underbrace{ \boldsymbol{M(q^*)\ddot{q^*}} + \boldsymbol{C(q^*,\dot{q^*})\dot{q^*}} +\boldsymbol{F(\dot{q^*})} + \boldsymbol{G(q^*)}}_{feedforward} +  \underbrace{\left \{  \boldsymbol{K_v(\dot{q^*} - \dot{q^{\sharp}})} + \boldsymbol{K_p(q^* - q^{\sharp})} \right \}}_{feedback}  \\
+&= \mathcal{D}^{-1}(\boldsymbol{q^*,\dot{q}^*,\ddot{q}^*}) + \left \{ \boldsymbol{K_v(\dot{q^*} - \dot{q^{\sharp}})} + \boldsymbol{K_p(q^* - q^{\sharp})} \right \}
+\end{aligned}
+$$
+公式中的$\boldsymbol{K_p,K_v}$分别是位置和速度增益矩阵，$\mathcal{D}^{-1}(\cdot)$表示逆动力学函数。其中前馈项提供期望机械臂状态$(q^*,\dot{q^*},\ddot{q^*})$的关节力矩，反馈项补偿由惯性参数、未建模力或外部干扰的不确定性引起的任何误差。
+
+
+## 9.4.2 Computed Torque Control
+计算力矩控制的simulink模型如下图：
+![pic9_18](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_18.png)
+
+对应的数学模型是：
+$$
+\begin{aligned}
+\boldsymbol{Q}^* &= \boldsymbol{M(q)} \left \{ \ddot{q^*} + \boldsymbol{K_v(\dot{q^*} - \dot{q^{\sharp}})} +  \boldsymbol{K_p(q^* - q^{\sharp})} \right \} + \boldsymbol{C(q^*,\dot{q^*})\dot{q^*}} + \boldsymbol{F(\dot{q^*})} + \boldsymbol{G(q^*)}  \\
+&= \mathcal{D}^{-1} \left( \boldsymbol{q^*,\dot{q}^*, (\ddot{q}^* + K_v(\dot{q^*} - \dot{q^{\sharp}}) + K_p(q^* - q^{\sharp}} ) )  \right)
+\end{aligned}
+$$
+
+## 9.4.3 Operational Space Control
+机械臂刚体动力学方程：
+$$
+\boldsymbol{Q}= \boldsymbol{M(q)\ddot{q}} + \boldsymbol{C(q,\dot{q})\dot{q}} +\boldsymbol{F(\dot{q})} + \boldsymbol{G(q)} + \boldsymbol{J(q)^TW}
+$$
+在关节坐标，即配置空间下描述了关节位置、速度、加速度和所受的力和力矩之间的关系。也可以将末端执行器的动力学关系在笛卡尔操作空间进行描述，将末端执行器看为一个有惯量的刚体，执行器、绕动力和力矩作用在其上。可以将机械臂刚体动力学方程重写至操作空间：
+$$
+\boldsymbol{\Lambda(x) \ddot{x}} + \boldsymbol{\mu(x,\dot{x})\dot{x}} + \boldsymbol{p(x)} = \boldsymbol{W}
+$$
+此处$\boldsymbol{x} \in \mathbb{R}^6$是机械臂的笛卡尔位姿；$\Lambda$是末端执行器惯量，受到陀螺力、科里奥利力$\mu$、重力载荷$p$以及施加的力旋量$\boldsymbol{W}$的影响。有如下关系：
+$$
+\begin{aligned}
+\boldsymbol{\Lambda(x)} &= \boldsymbol{J(q)^{-T}J(q)J(q)^{-1}} \\
+\boldsymbol{\mu(x,\dot{x})} &= \boldsymbol{J(q)^{-T}C(q,\dot{q}) - \Lambda(q)\dot{J}(q)\dot{q}}  \\
+\boldsymbol{p(x)} &= \boldsymbol{J(q)^{-T}g(q)}
+\end{aligned}
+$$
+Matlab中`sl_opspace`打开操作空间控制的simulink仿真模型，该模型实现机械臂擦桌子的动作，主要是位置控制和力控制：
+![pic9_19](https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_19.png)
+
+
+# 9.5 Applications
+## 9.5.1 Series-Elastic Actuator (SEA)串联弹性驱动器
+串联弹性驱动器是在驱动元件和被控对象之间增加弹性元件．基本特征是驱动元件借助于弹性元件隔离碰撞冲击，同时驱动元件惯性量不会直接表现在被控对象端，驱动元件与被控对象的运动通过耦合控制实现．
+Matlab对应的simulink仿真模型：`sl_sea`
+
+
+
