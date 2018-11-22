@@ -463,7 +463,7 @@
 <h2 id="7-数据输出"><a href="#7-数据输出" class="headerlink" title="7.数据输出"></a>7.数据输出</h2><p>完成分配过程后，将要输出的数据按照比赛输出数据的要求进行格式化处理,此功能的实现方法在<a href="https://github.com/doctorsrn/hw_competition/blob/master/src/ecs/OutputFile.py" target="_blank" rel="noopener">OutputFile</a>类中。</p>
 <h2 id="8-数据可视化"><a href="#8-数据可视化" class="headerlink" title="8.数据可视化"></a>8.数据可视化</h2><p>比赛要求不能使用第三方库，但是在观察数据特征和拟合结果时，可以使用matplotlib进行数据可视化，在提交代码的时候注释掉可视化的代码即可。本工程有两处可视化数据的地方，一处在<a href="https://github.com/doctorsrn/hw_competition/blob/master/src/ecs/predictor.py" target="_blank" rel="noopener">predictor.py</a>中调用<code>data_visualize(train_data)</code>函数,将训练数据以日期格式为横轴绘图。另一处在<a href="https://github.com/doctorsrn/hw_competition/blob/master/src/ecs/predictor.py" target="_blank" rel="noopener">predictor.py</a>中的<code>predict_func</code>函数中调用如下函数:  </p>
 <blockquote>
-<p>draw<em>predict(x</em>, y<em>, x1</em>, y1<em>, type</em>=’’,title=’Data Visualization’)`  </p>
+<p>draw_predict(x_, y_, x1_, y1_, type_=’’,title=’Data Visualization’)`  </p>
 </blockquote>
 
       
@@ -636,7 +636,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -658,7 +658,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

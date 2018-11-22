@@ -617,13 +617,13 @@ R_{z}(\theta) = \begin{pmatrix}
 <li>Eulerian type: XYX, XZX, YXY, YZY, ZXZ, or ZYZ</li>
 <li>Cardanian type: XYZ, XZY, YZX, YXZ, ZXY, or ZYX</li>
 </ul>
-<h4 id="欧拉角"><a href="#欧拉角" class="headerlink" title="欧拉角"></a>欧拉角</h4><p>比如ZYZ序列：$R=R<em>{z}(\phi)R</em>{y}(\theta)R_{z}(\psi)$<br>其对应的欧拉角为：$\Gamma=(\phi,\theta,\psi)$<br>例如欧拉角$\Gamma=(0.1,0.2,0.3)$，其对应的ZYZ旋转矩阵为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">R = rotz(0.1) * roty(0.2) * rotz(0.3);</span><br><span class="line"></span><br><span class="line">%更便捷的求法</span><br><span class="line">R = eul2r(0.1, 0.2, 0.3)</span><br></pre></td></tr></table></figure></p>
+<h4 id="欧拉角"><a href="#欧拉角" class="headerlink" title="欧拉角"></a>欧拉角</h4><p>比如ZYZ序列：$R=R_{z}(\phi)R_{y}(\theta)R_{z}(\psi)$<br>其对应的欧拉角为：$\Gamma=(\phi,\theta,\psi)$<br>例如欧拉角$\Gamma=(0.1,0.2,0.3)$，其对应的ZYZ旋转矩阵为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">R = rotz(0.1) * roty(0.2) * rotz(0.3);</span><br><span class="line"></span><br><span class="line">%更便捷的求法</span><br><span class="line">R = eul2r(0.1, 0.2, 0.3)</span><br></pre></td></tr></table></figure></p>
 <p>逆问题从旋转矩阵求欧拉角：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gamma = tr2eul(R)</span><br></pre></td></tr></table></figure></p>
 <p><strong>注意</strong>:当$\theta$角为负时，从旋转矩阵求出的欧拉角将和之前的值不一样，$\theta$将变为正值，$\phi,\psi$都将不同。这是因为从旋转矩阵到欧拉角的映射是不唯一的，且Matlab ToolBox中的函数总是返回正的$\theta$角。</p>
 <h4 id="万向角"><a href="#万向角" class="headerlink" title="万向角"></a>万向角</h4><p>另一种常用的角度是Cardan angles(万向节角): roll, pitch and yaw.<br>常用序列为：ZYX or XYZ</p>
 <ul>
-<li>ZYX: $R=R<em>{z}(\theta</em>{y})R<em>{y}(\theta</em>{p})R<em>{x}(\theta</em>{r})$, 常用于船舶、汽车、航行器的姿态描述, X轴指向前进方向</li>
-<li>XYZ: $R=R<em>{X}(\theta</em>{y})R<em>{y}(\theta</em>{p})R<em>{Z}(\theta</em>{r})$，常用于机械臂末端执行器，Z轴指向前方，X轴指向上或者下</li>
+<li>ZYX: $R=R_{z}(\theta_{y})R_{y}(\theta_{p})R_{x}(\theta_{r})$, 常用于船舶、汽车、航行器的姿态描述, X轴指向前进方向</li>
+<li>XYZ: $R=R_{X}(\theta_{y})R_{y}(\theta_{p})R_{Z}(\theta_{r})$，常用于机械臂末端执行器，Z轴指向前方，X轴指向上或者下</li>
 </ul>
 <p>Matlab Toolbox默认ZYX序列，可使用’xyz’参数进行设置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">R = rpy2r(0.1, 0.2, 0.3)</span><br><span class="line"></span><br><span class="line">%逆操作</span><br><span class="line">gamma = tr2rpy(R)</span><br><span class="line"></span><br><span class="line">%xyz序列</span><br><span class="line">R = rpy2r(0.1, 0.2, 0.3, &apos;xyz&apos;)</span><br><span class="line">gamma = tr2rpy(R, &apos;xyz&apos;)</span><br></pre></td></tr></table></figure></p>
 <h3 id="2-2-1-3-Singularities-and-Gimbal-Lock-奇异点现象和万向节锁"><a href="#2-2-1-3-Singularities-and-Gimbal-Lock-奇异点现象和万向节锁" class="headerlink" title="2.2.1.3 Singularities and Gimbal Lock 奇异点现象和万向节锁"></a>2.2.1.3 Singularities and Gimbal Lock 奇异点现象和万向节锁</h3><p><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/2_4.png" alt="pic2_4"><br>当两个连续轴对齐时，欧拉角和万向节角的表示方法都会出现奇异点现象，即只能表示两个轴的姿态，第三个轴的姿态无法表示，出现自由度丢失的情况。对于ZYZ形式的欧拉角，当$\theta = k\pi, k\in \mathbb{Z}$时出现奇异点；对于万向节角，当pitch角$\theta_{p}=\pm(2k+1)\frac{\pi}{2}$时出现奇异点。</p>
@@ -961,7 +961,7 @@ E(q) = \left \| [\mathcal{K}(\mathbf{q})]_t - (x^* \, y^*)^T \right \|</script><
 <h2 id="7-4-3-Modified-Denavit-Hartenberg-Parameters-改进型D-H参数"><a href="#7-4-3-Modified-Denavit-Hartenberg-Parameters-改进型D-H参数" class="headerlink" title="7.4.3 Modified Denavit-Hartenberg Parameters 改进型D-H参数"></a>7.4.3 Modified Denavit-Hartenberg Parameters 改进型D-H参数</h2><p>改进型D-H参数与普通的D-H参数相比：前者连杆坐标系连接到每个连杆的近端（近端）而不是远端（远端）。这种改进使符号在某些方面更加清晰和整洁。D-H参数的定义直接影响到运动学、Jacobian行列式和动力学算法。<br>改进型D-H参数约定的连杆见变换矩阵为：</p>
 <script type="math/tex; mode=display">
 ^{j-1}\xi_j(\alpha_{j-1},a_{j-1},d_j,\theta_j)= \mathcal{R}_x(\alpha_{\tiny{j-1}}) \oplus \mathcal{T}_x(a_{\tiny{j-1}}) \oplus \mathcal{T}_z(d_{\tiny{j}}) \oplus \mathcal{R}_z(\theta_{\tiny{j}})</script><p>改进型D-H参数坐标系定义图示：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/7_12.png" alt="pic7_12">  </p>
-<p><strong>Note:</strong> 使用论文中提供的D-H参数建立机器人模型时，首先需要确定该论文使用的是哪一种约定的参数表达方式。一般来说，表头是$\theta<em>j,d_j,a_j,\alpha_j$的是标准D-H参数形式，表头是$\theta_j,d_j,a</em>{j-1},\alpha_{j-1}$的是改进型D-H参数。<br>在Matlab中使用<code>L1 = RevoluteMDH(&#39;d&#39;, 1)</code>来建立一个使用改进型D-H（MDH）参数的旋转铰链结构模型，然后就可以进一步建立完整的机械臂模型。<br><strong>标准D-H参数和改进型D-H参数的联系：</strong><br>设标准D-H参数的表达式为：</p>
+<p><strong>Note:</strong> 使用论文中提供的D-H参数建立机器人模型时，首先需要确定该论文使用的是哪一种约定的参数表达方式。一般来说，表头是$\theta_j,d_j,a_j,\alpha_j$的是标准D-H参数形式，表头是$\theta_j,d_j,a_{j-1},\alpha_{j-1}$的是改进型D-H参数。<br>在Matlab中使用<code>L1 = RevoluteMDH(&#39;d&#39;, 1)</code>来建立一个使用改进型D-H（MDH）参数的旋转铰链结构模型，然后就可以进一步建立完整的机械臂模型。<br><strong>标准D-H参数和改进型D-H参数的联系：</strong><br>设标准D-H参数的表达式为：</p>
 <script type="math/tex; mode=display">
 \underbrace{\mathcal{R}_z(\theta_{\tiny{1}}) \oplus \mathcal{T}_z(d_{\tiny{1}}) \oplus \mathcal{T}_x(a_{\tiny{1}}) \oplus \mathcal{R}_x(\alpha_{\tiny{1}})}_{DH_1} \oplus  \underbrace{\mathcal{R}_z(\theta_{\tiny{2}}) \oplus \mathcal{T}_z(d_{\tiny{2}}) \oplus \mathcal{T}_x(a_{\tiny{2}}) \oplus \mathcal{R}_x(\alpha_{\tiny{2}})}_{DH_2} \cdots</script><p>改进型D-H参数的表达式可由上式重写为：</p>
 <script type="math/tex; mode=display">
@@ -1233,7 +1233,7 @@ J^{'}\dot{\omega}+B^{'}\omega = K_mK_au</script><p>然后使用拉普拉斯变�
 <script type="math/tex; mode=display">
 sJ^{'}\Omega(s) + B^{'}\Omega(s) = K_mK_aU(s)</script><p>其中$\Omega(s),U(s)$是时间域信号$\omega(t),u(t)$对应的拉普拉斯变换。写成传递函数的形式：</p>
 <script type="math/tex; mode=display">
-\frac{\Omega(s)}{U(s)}=\frac{K_mK_a}{J^{'}s+B^{'}}</script><p>将电机速度与控制输入相关联，传递函数具有单极点：$s=-B^{‘}/J^{‘}$。<br>我们使用Puma560机械臂的关节2为例,关节2的参数如下表：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_7.png" alt="pic9_7"><br>在没有其他信息的情况下，我们将采用$B^{‘}=B<em>m$。关节2电动机所承受的连杆惯性$M</em>{22}$是配置的函数，变化如下图：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_8.png" alt="pic9_8"><br>$M_{22}$的变化范围在3.66~5.21$kg\cdot m^2$,使用均值作为惯性值，值为4.43$kg\cdot m^2$,所以有效惯量为：</p>
+\frac{\Omega(s)}{U(s)}=\frac{K_mK_a}{J^{'}s+B^{'}}</script><p>将电机速度与控制输入相关联，传递函数具有单极点：$s=-B^{‘}/J^{‘}$。<br>我们使用Puma560机械臂的关节2为例,关节2的参数如下表：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_7.png" alt="pic9_7"><br>在没有其他信息的情况下，我们将采用$B^{‘}=B_m$。关节2电动机所承受的连杆惯性$M_{22}$是配置的函数，变化如下图：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_8.png" alt="pic9_8"><br>$M_{22}$的变化范围在3.66~5.21$kg\cdot m^2$,使用均值作为惯性值，值为4.43$kg\cdot m^2$,所以有效惯量为：</p>
 <script type="math/tex; mode=display">
 \begin{aligned}
 J^{'} &=& J_m + \frac{1}{G^2}M_{22} \\
@@ -1277,7 +1277,7 @@ J^{'} &=& J_m + \frac{1}{G^2}M_{22} \\
 <blockquote>
 <p>M =<br>3.6594 -0.4044 0.1006 -0.0025 0.0000 -0.0000<br>-0.4044 4.4137 0.3509 0.0000 0.0024 0.0000<br>0.1006 0.3509 0.9378 0.0000 0.0015 0.0000<br>-0.0025 0.0000 0.0000 0.1925 0.0000 0.0000<br>0.0000 0.0024 0.0015 0.0000 0.1713 0.0000<br>-0.0000 0.0000 0.0000 0.0000 0.0000 0.1941</p>
 </blockquote>
-<p>对角线元素$\boldsymbol{M<em>{jj}}$是关节$j$所受的惯量，即$Q_j=\boldsymbol{M</em>{jj}} \ddot{q}<em>j$。非对角线元素$M</em>{ij}=M_{ji}, i\ne j$是惯性的乘积，表示关节$j$到关节$i$上的广义力的加速度的耦合。<br>使用类似上一节的方法绘制PUMA560机械臂关节2，3角度变化时受到的惯量的变化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[Q2,Q3] = meshgrid(-pi:0.1:pi, -pi:0.1:pi);</span><br><span class="line">for i=1:numcols(Q2)</span><br><span class="line">for j=1:numcols(Q3)</span><br><span class="line">M = p560.inertia([0 Q2(i,j) Q3(i,j) 0 0 0]);</span><br><span class="line">M11(i,j) = M(1,1);</span><br><span class="line">M12(i,j) = M(1,2);</span><br><span class="line">end</span><br><span class="line">end</span><br><span class="line">surfl (Q2, Q3, M11); </span><br><span class="line">figure</span><br><span class="line">surfl (Q2, Q3, M12);</span><br></pre></td></tr></table></figure></p>
+<p>对角线元素$\boldsymbol{M_{jj}}$是关节$j$所受的惯量，即$Q_j=\boldsymbol{M_{jj}} \ddot{q}_j$。非对角线元素$M_{ij}=M_{ji}, i\ne j$是惯性的乘积，表示关节$j$到关节$i$上的广义力的加速度的耦合。<br>使用类似上一节的方法绘制PUMA560机械臂关节2，3角度变化时受到的惯量的变化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[Q2,Q3] = meshgrid(-pi:0.1:pi, -pi:0.1:pi);</span><br><span class="line">for i=1:numcols(Q2)</span><br><span class="line">for j=1:numcols(Q3)</span><br><span class="line">M = p560.inertia([0 Q2(i,j) Q3(i,j) 0 0 0]);</span><br><span class="line">M11(i,j) = M(1,1);</span><br><span class="line">M12(i,j) = M(1,2);</span><br><span class="line">end</span><br><span class="line">end</span><br><span class="line">surfl (Q2, Q3, M11); </span><br><span class="line">figure</span><br><span class="line">surfl (Q2, Q3, M12);</span><br></pre></td></tr></table></figure></p>
 <p>结果如下图：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_12.png" alt="pic9_12"><br>同时关节2的惯量作为关节3的角度的函数$M_{22}(q_3)$的图像为：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_rvc/9_13.png" alt="pic9_13"><br>上述分析对于机械臂设计很重要，因为电机固定最大转矩后，惯量决定了加速度的上限，进而影响路径跟随的精度。  </p>
 <p><strong>Tips:</strong> 上述绘图程序运行时间比较长，这是因为<code>rne</code>算法使用的是”slowRNE”类型的实现，就是说使用的是matlab实现的算法。可以通过<code>p560</code>查看到”slowRNE”的信息。<br>我们可以使用mex编译<code>rne</code>算法的C语言实现—“fastRNE”版本。具体的方法参照:<code>C:\Users\userID\Documents\MATLAB\Add-Ons\Toolboxes\Robotics Toolbox for MATLAB\code\robot\mex</code>路径下的<strong>README</strong>文件进行操作（userID每个人不同）。在”fastRNE”版本下，上述绘图程序运行速度明显提高很多。</p>
 <h2 id="9-2-3-Coriolis-Matrix科里奥利矩阵"><a href="#9-2-3-Coriolis-Matrix科里奥利矩阵" class="headerlink" title="9.2.3 Coriolis Matrix科里奥利矩阵"></a>9.2.3 Coriolis Matrix科里奥利矩阵</h2><script type="math/tex; mode=display">
@@ -1285,7 +1285,7 @@ J^{'} &=& J_m + \frac{1}{G^2}M_{22} \\
 <blockquote>
 <p>C =<br>0.8992 -0.2380 -0.2380 0.0005 -0.0375 0.0000<br>-0.0000 0.9106 0.9106 0 -0.0036 0<br>0.0000 0.0000 -0.0000 0 -0.0799 0<br>-0.0559 0.0000 0.0000 -0.0000 0.0000 -0.0000<br>-0.0000 0.0799 0.0799 -0.0000 0 0<br>0.0000 0 0 0.0000 0 0</p>
 </blockquote>
-<p>科里奥利矩阵非对角线元素$C<em>{i,j}$表示关节$j$速度与作用于关节$i$的广义力的耦合。比如$C</em>{2,3}=0.9106$表示关节3速度与关节2上的扭矩的耦合—肘部的旋转会对肩部施加扭矩。由于科里奥利矩阵的元素表示从速度到关节力的耦合，因此它们与粘性摩擦或阻尼有相同的尺寸，但是符号可正可负。<br>由一个关节运动对其他关节产生的力矩可以计算为：<br><code>C*qd&#39;</code></p>
+<p>科里奥利矩阵非对角线元素$C_{i,j}$表示关节$j$速度与作用于关节$i$的广义力的耦合。比如$C_{2,3}=0.9106$表示关节3速度与关节2上的扭矩的耦合—肘部的旋转会对肩部施加扭矩。由于科里奥利矩阵的元素表示从速度到关节力的耦合，因此它们与粘性摩擦或阻尼有相同的尺寸，但是符号可正可负。<br>由一个关节运动对其他关节产生的力矩可以计算为：<br><code>C*qd&#39;</code></p>
 <h2 id="9-2-4-Friction"><a href="#9-2-4-Friction" class="headerlink" title="9.2.4 Friction"></a>9.2.4 Friction</h2><script type="math/tex; mode=display">
 \boldsymbol{Q}=  \boldsymbol{M(q)\ddot{q}} +  \boldsymbol{C(q,\dot{q})\dot{q}}  + \boldsymbol{F(\dot{q})}+ \boldsymbol{G(q)} + \boldsymbol{J(q)^TW}</script><p>对于大部分电机驱动的机器人来说，摩擦力是重力之后的下一个最主要的关节力。工具箱中是摩擦力模型是通过<code>Link</code>对象实现的。  </p>
 <h2 id="9-2-5-Effect-of-Payload有效载荷的影响"><a href="#9-2-5-Effect-of-Payload有效载荷的影响" class="headerlink" title="9.2.5 Effect of Payload有效载荷的影响"></a>9.2.5 Effect of Payload有效载荷的影响</h2><p>任何一个机械臂都有一个最大有效载荷，这个值会受到两个动态效应的影响：</p>
@@ -1538,7 +1538,7 @@ J^{'} &=& J_m + \frac{1}{G^2}M_{22} \\
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1560,7 +1560,7 @@ J^{'} &=& J_m + \frac{1}{G^2}M_{22} \\
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

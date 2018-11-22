@@ -77,7 +77,7 @@
 
 
 
-  <meta name="keywords" content="ros,moveit,docker,">
+  <meta name="keywords" content="docker,ros,moveit,">
 
 
 
@@ -89,7 +89,7 @@
 
 
 <meta name="description" content="使用Docker版本的moveit最近打算学习使用一下moveit，在安装moveit时发现官网提供docker版本，之前对docker有一些浅显的了解，苦于没有应用场景，这次就尝试使用docker版的moveit练练手。在折腾了两天之后，完成支持gui的moveit的docker环境配置，主要内容包括两部分：  docker的安装和简单使用，以及nvidia-docker的安装 docker对m">
-<meta name="keywords" content="ros,moveit,docker">
+<meta name="keywords" content="docker,ros,moveit">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Moveit Docker的安装与配置过程">
 <meta property="og:url" content="http://doctorsrn.cn/2018/10/14/moveit_docker_guide/index.html">
@@ -458,7 +458,7 @@
 <p>可能会遇到的问题：</p>
 <ul>
 <li><code>docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi</code>出现如下错误：<blockquote>
-<p>docker: Error response from daemon: OCI runtime create failed: container_linux.go:348: starting container process caused “process_linux.go:402: container init caused \”process_linux.go:385: running prestart hook 1 caused \\”error running hook: exit status 1, stdout: , stderr: exec command: [/usr/bin/nvidia-container-cli —load-kmods configure —ldconfig=@/sbin/ldconfig.real —device=all —compute —utility —require=cuda&gt;=10.0 brand=tesla,driver&gt;=384,driver&lt;385 —pid=8170 /var/lib/docker/overlay2/47e939b1bbc070d3ce4ec0920318a08c0cafb13d80d1716dd42251547bc6e64e/merged]\\nnvidia-container-cli: requirement error: unsatisfied condition: brand = tesla\\n\\”\””: unknown.</p>
+<p>docker: Error response from daemon: OCI runtime create failed: container_linux.go:348: starting container process caused “process_linux.go:402: container init caused \”process_linux.go:385: running prestart hook 1 caused \\\”error running hook: exit status 1, stdout: , stderr: exec command: [/usr/bin/nvidia-container-cli —load-kmods configure —ldconfig=@/sbin/ldconfig.real —device=all —compute —utility —require=cuda&gt;=10.0 brand=tesla,driver&gt;=384,driver&lt;385 —pid=8170 /var/lib/docker/overlay2/47e939b1bbc070d3ce4ec0920318a08c0cafb13d80d1716dd42251547bc6e64e/merged]\\\\nnvidia-container-cli: requirement error: unsatisfied condition: brand = tesla\\\\n\\\”\””: unknown.</p>
 </blockquote>
 </li>
 </ul>
@@ -606,11 +606,11 @@
       
         <div class="post-tags">
           
+            <a href="/tags/docker/" rel="tag"><i class="fa fa-tag"></i> docker</a>
+          
             <a href="/tags/ros/" rel="tag"><i class="fa fa-tag"></i> ros</a>
           
             <a href="/tags/moveit/" rel="tag"><i class="fa fa-tag"></i> moveit</a>
-          
-            <a href="/tags/docker/" rel="tag"><i class="fa fa-tag"></i> docker</a>
           
         </div>
       
@@ -647,6 +647,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/22/reading_note_for_mpnet/" rel="prev" title="Motion Planning Networks">
+                Motion Planning Networks <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -728,7 +732,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -750,7 +754,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
