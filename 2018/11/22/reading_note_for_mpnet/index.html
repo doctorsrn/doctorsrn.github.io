@@ -408,7 +408,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  4,254 字
+                  4,296 字
                 </span>
               
 
@@ -461,38 +461,38 @@
 <li>显卡：1060 6G</li>
 </ul>
 <a id="more"></a>
-<h1 id="Paper-Motion-Planning-Networks-arxiv，github"><a href="#Paper-Motion-Planning-Networks-arxiv，github" class="headerlink" title="Paper: Motion Planning Networks(arxiv，github)"></a>Paper: Motion Planning Networks(<a href="https://arxiv.org/abs/1806.05767" target="_blank" rel="noopener">arxiv</a>，<a href="https://github.com/ahq1993/MPNet" target="_blank" rel="noopener">github</a>)</h1><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>随着运动规划维度的增加，RRT<em>、A</em>、D*等算法效率都将降低，本文提出了一种不论障碍物形状，端对端生成无碰撞路径的网络—Motion Planning Networks，简称MPNet<br>MPNet包含如下结构：</p>
+<h1 id="1-Paper-Motion-Planning-Networks-arxiv，github"><a href="#1-Paper-Motion-Planning-Networks-arxiv，github" class="headerlink" title="1.Paper: Motion Planning Networks(arxiv，github)"></a>1.Paper: Motion Planning Networks(<a href="https://arxiv.org/abs/1806.05767" target="_blank" rel="noopener">arxiv</a>，<a href="https://github.com/ahq1993/MPNet" target="_blank" rel="noopener">github</a>)</h1><h2 id="1-1-摘要"><a href="#1-1-摘要" class="headerlink" title="1.1 摘要"></a>1.1 摘要</h2><p>随着运动规划维度的增加，RRT<em>、A</em>、D*等算法效率都将降低，本文提出了一种不论障碍物形状，端对端生成无碰撞路径的网络—Motion Planning Networks，简称MPNet<br>MPNet包含如下结构：</p>
 <ul>
 <li>一个Contractive Autoencoder（收缩式自动编码器，CAE），对工作空间进行编码</li>
 <li>一个前馈神经网络，该神经网络使用编码的工作空间、起始和目标点配置，端对端生成可行的运动轨迹，供机器人进行跟踪</li>
 </ul>
 <p>作者测试了质点、刚体、7自由度机械臂在2D和3D环境下的规划问题，结果表明MPNet效率很高，且泛化能力很强。MPNet的运算时间始终小于1秒，明显低于现有的最先进的运动规划算法。此外，在一个场景训练的MPNet，可以借助少量数据通过迁移学习，快速适应新场景。   </p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>机器人运动规划意义重大，应用广泛。开发了很多计算效率高的基于采样的规划算法—RRT，RRT<em>，P-RRT</em>。<br>本文提出了一种基于深度神经网络(DNN)的迭代运动规划算法—MPNet。<br>MPNet由两部分构成：</p>
+<h2 id="1-2-简介"><a href="#1-2-简介" class="headerlink" title="1.2 简介"></a>1.2 简介</h2><p>机器人运动规划意义重大，应用广泛。开发了很多计算效率高的基于采样的规划算法—RRT，RRT<em>，P-RRT</em>。<br>本文提出了一种基于深度神经网络(DNN)的迭代运动规划算法—MPNet。<br>MPNet由两部分构成：</p>
 <ul>
 <li>障碍物空间编码器——Contractive Autoencoder：将障碍物点云编码至低维隐空间（latent space）</li>
 <li>路径规划器——前馈神经网络：在给定t时刻机器人的配置、目标点配置和障碍物编码后的隐空间时，预测t+1时刻机器人的配置</li>
 </ul>
 <p>经过训练后，MPNet可以与新的双向迭代算法结合使用，来生成可行的轨迹。</p>
-<h2 id="神经网络在Motion-Planning相关工作"><a href="#神经网络在Motion-Planning相关工作" class="headerlink" title="神经网络在Motion Planning相关工作"></a>神经网络在Motion Planning相关工作</h2><ul>
+<h2 id="1-3-神经网络在Motion-Planning相关工作"><a href="#1-3-神经网络在Motion-Planning相关工作" class="headerlink" title="1.3 神经网络在Motion Planning相关工作"></a>1.3 神经网络在Motion Planning相关工作</h2><ul>
 <li>Hopfield网络</li>
 <li>Deep Reinforcement Learning</li>
 <li>Lightning Framework</li>
 </ul>
-<h2 id="问题定义"><a href="#问题定义" class="headerlink" title="问题定义"></a>问题定义</h2><p>设$Q$表示长度为$N(N \in \mathbb{N})$的的有序表，序列$\{ q_i = Q(i) \}_{i \in \mathbb{N}}$表示从$i \in \mathbb{N}$到$Q$中第$i$个元素的映射。并且论文中$Q(end)$和$Q.length()$分别表示集合$Q$的最后一个元元素和集合中元素的个数。<br>设$X \subset \mathbb{R}^d$表示给定的状态空间，$d$是状态空间的维数，且$d \geq 2$，障碍物空间和非障碍物空间分别定义为$X_{obs} \subset X$, $X_{free} = X \backslash X_{obs}$。设初始状态为$x_{init} \in X_{free}$，目标区域为$X_{goal} \subset X_{free}$<br>设有序表$\tau$表示一条非负和非零长度的路径。如果路径$\tau$连接起$x_{init}$和$x \in X_{goal}$，则该路径是可行路径，即$\tau(0) = x_{init}$,$\tau(end) \in X_{goal}$且都位于非障碍物空间$X_{free}$中。<br>基于上述定义，运动规划问题描述为：给定三元组$\{ X,X_{free},X_{obs} \}$，出事状态点$x_{init}$和目标区域$X_{goal} \subset X_{free}$，找到一条可行路径$\tau \in X_{free}$满足$\tau(0) = x_{init}$, $\tau(end) \in X_{goal}$。</p>
-<h2 id="MPNet"><a href="#MPNet" class="headerlink" title="MPNet"></a>MPNet</h2><p>MPNet是一个基于神经网络的运动规划器，由两个阶段组成。第一阶段对应于神经模型的离线训练。 第二个对应于在线路径生成。<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_4.png" alt="pic1_4"></p>
-<h3 id="离线训练"><a href="#离线训练" class="headerlink" title="离线训练"></a>离线训练</h3><p>两个神经网络模型：</p>
+<h2 id="1-4-问题定义"><a href="#1-4-问题定义" class="headerlink" title="1.4 问题定义"></a>1.4 问题定义</h2><p>设$Q$表示长度为$N(N \in \mathbb{N})$的的有序表，序列$\{ q_i = Q(i) \}_{i \in \mathbb{N}}$表示从$i \in \mathbb{N}$到$Q$中第$i$个元素的映射。并且论文中$Q(end)$和$Q.length()$分别表示集合$Q$的最后一个元元素和集合中元素的个数。<br>设$X \subset \mathbb{R}^d$表示给定的状态空间，$d$是状态空间的维数，且$d \geq 2$，障碍物空间和非障碍物空间分别定义为$X_{obs} \subset X$, $X_{free} = X \backslash X_{obs}$。设初始状态为$x_{init} \in X_{free}$，目标区域为$X_{goal} \subset X_{free}$<br>设有序表$\tau$表示一条非负和非零长度的路径。如果路径$\tau$连接起$x_{init}$和$x \in X_{goal}$，则该路径是可行路径，即$\tau(0) = x_{init}$,$\tau(end) \in X_{goal}$且都位于非障碍物空间$X_{free}$中。<br>基于上述定义，运动规划问题描述为：给定三元组$\{ X,X_{free},X_{obs} \}$，出事状态点$x_{init}$和目标区域$X_{goal} \subset X_{free}$，找到一条可行路径$\tau \in X_{free}$满足$\tau(0) = x_{init}$, $\tau(end) \in X_{goal}$。</p>
+<h2 id="1-5-MPNet"><a href="#1-5-MPNet" class="headerlink" title="1.5 MPNet"></a>1.5 MPNet</h2><p>MPNet是一个基于神经网络的运动规划器，由两个阶段组成。第一阶段对应于神经模型的离线训练。 第二个对应于在线路径生成。<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_4.png" alt="pic1_4"></p>
+<h3 id="1-5-1-离线训练"><a href="#1-5-1-离线训练" class="headerlink" title="1.5.1 离线训练"></a>1.5.1 离线训练</h3><p>两个神经网络模型：</p>
 <ul>
 <li>Contractive AutoEncoder (CAE)</li>
 <li>Deep Multi-Layer Perceptron(DMLP)深度多层感知器</li>
 </ul>
 <p>1) Contractive AutoEncoder (CAE)<br>   将障碍物空间$X_{obs}$编码至特征空间$Z \in \mathbb{R}^m$，编码函数，解码函数，编码器目标函数<br>2) Deep Multi-Layer Perceptron(DMLP)<br>   给定$Z,x_t,x_T$，预测下一时刻状态$\hat{x}_{t+1} \in X_{free}$<br>   使用RRT*算法在不同环境下生成的可行路径数据来训练DMLP，路径的形式是元组$\tau^* = \{ x_0, x_1, \cdots, x_T\}$。<br>   目标函数是误差均方差函数（MSE）</p>
-<h3 id="在线路径规划"><a href="#在线路径规划" class="headerlink" title="在线路径规划"></a>在线路径规划</h3><p>提出了一种启发式增量双向路径生成算法，生成连接起始状态和目标状态的端到端可行路径，路径生成算法：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_1.png" alt="pic1_1"><br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_2.png" alt="pic1_2"><br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_3.png" alt="pic1_3"></p>
+<h3 id="1-5-2-在线路径规划"><a href="#1-5-2-在线路径规划" class="headerlink" title="1.5.2 在线路径规划"></a>1.5.2 在线路径规划</h3><p>提出了一种启发式增量双向路径生成算法，生成连接起始状态和目标状态的端到端可行路径，路径生成算法：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_1.png" alt="pic1_1"><br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_2.png" alt="pic1_2"><br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_3.png" alt="pic1_3"></p>
 <p>1) Obstacles Encoder $f(x_{obs})$<br>   离线阶段训练的CAE<br>2) DMPL<br>   离线阶段训练的DMPL<br>3) Lazy States Contraction (LSC)<br>   冗余点收缩。在给定路径$\tau$时，对路径进行优化，将未连接但可以直接相连的路径点进行连接。<br>4) Steering<br>   steerTo函数在给定两个状态点$x_1,x_2$作为输入下，检查由两个状态点连接成的路径是否位于无障碍物空间。障碍物检测的路径点可以写成：$\tau(\delta) = (1-\delta)x_1 + \delta x_2, \delta \in [0,1]$.<br>5) isFeasible<br>   给定路径$\tau = \{ x_0, x_1, \cdots, x_T\}$，判断该路径是否可行<br>6) Neural Planner<br>   一种基于DMLP的启发式双向增量路径生成方法，即图中的算法2<br>7) Replanning<br>   图中的算法3.给定路径$\tau = \{ x_0, x_1, \cdots, x_T\}$，若检查出该路径中存在连续两点是不可连接的，使用下面的方法重新对这两点进行规划：</p>
 <ul>
 <li>Neural Replanning</li>
 <li>Hybrid Replanning</li>
 </ul>
-<h2 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h2><p>1) 数据集的生成<br>   将一些四边形方块作为障碍物随机放置在40x40或者40x40x40的区域中成为工作空间，分别用来生成2维或3维的数据集。障碍物放置位置不同，就会生成不同的工作空间。<br>   <strong>起始点和终止点的生成：</strong> 在工作空间的无障碍物空间中随机采样$n$个($n \in \mathbb{N}$)状态点组成一个表，再从该表中随机取出一对状态点组成起始点和终止点对。<br>   <strong>路径生成：</strong> 利用RRT*算法生成起始点和终止点之间的可行路径，用于训练和测试。</p>
+<h2 id="1-6-实现细节"><a href="#1-6-实现细节" class="headerlink" title="1.6 实现细节"></a>1.6 实现细节</h2><p>1) 数据集的生成<br>   将一些四边形方块作为障碍物随机放置在40x40或者40x40x40的区域中成为工作空间，分别用来生成2维或3维的数据集。障碍物放置位置不同，就会生成不同的工作空间。<br>   <strong>起始点和终止点的生成：</strong> 在工作空间的无障碍物空间中随机采样$n$个($n \in \mathbb{N}$)状态点组成一个表，再从该表中随机取出一对状态点组成起始点和终止点对。<br>   <strong>路径生成：</strong> 利用RRT*算法生成起始点和终止点之间的可行路径，用于训练和测试。</p>
 <p>   具体细节：针对s2D、c2D、c3D情况，均生成110个不同的工作空间，在每个工作空间中再使用RRT*算法生成5000个无障碍物路径。<br>   训练集：取100个工作空间，将每个空间中4000个路径作为训练集。<br>   测试集：有两种：第一种，取训练集100个工作空间，将每个空间中未用于训练的200个路径作为测试集；第二种，取10个未用于训练的工作空间，将每个工作空间中2000个未用于训练的路径作为测试集。<br>   对于Baxter的训练，使用简单环境，不包含障碍物，即不需要障碍物编码，直接使用50000个可行路径训练DMLP模型。</p>
 <p>2) 模型结构</p>
 <ul>
@@ -516,18 +516,18 @@
 </li>
 </ul>
 <p>3) 超参数的设置<br>   使用Adagrad优化器,学习率0.1,Dropout参数为0.5,动量项参数为0.001。用于训练的CAE模型的工作空间有30000个。</p>
-<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>MPNet计算时间的平均值小于1s,与Informed-RRT*和BIT*算法相比,MPNet速度分别是它们的40和20倍。</p>
-<h2 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h2><p>1) Dropout导致的随机性<br>   对于DL，在测试阶段或者在线执行阶段，通常做法是关闭Dropout。但是Dropout对路径在线生成s是有利的，因为Dropout显著提升了本模型的性能。<br>   出现上述情况的原因分析：DMLP在重规划阶段，由Dropout引入的随机性使DMPL可以生成与之前不同的路径，下图就说明了这种特征：<br>   <img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_5.png" alt="pic1_5"><br>   同样的起点和终点，DMLP生成了多条不同的路径，这种能力有助于路径重规划的成功，因此添加Dropout对MPNet的性能是有利的。</p>
+<h2 id="1-7-实验结果"><a href="#1-7-实验结果" class="headerlink" title="1.7 实验结果"></a>1.7 实验结果</h2><p>MPNet计算时间的平均值小于1s,与Informed-RRT*和BIT*算法相比,MPNet速度分别是它们的40和20倍。</p>
+<h2 id="1-8-讨论"><a href="#1-8-讨论" class="headerlink" title="1.8 讨论"></a>1.8 讨论</h2><p>1) Dropout导致的随机性<br>   对于DL，在测试阶段或者在线执行阶段，通常做法是关闭Dropout。但是Dropout对路径在线生成s是有利的，因为Dropout显著提升了本模型的性能。<br>   出现上述情况的原因分析：DMLP在重规划阶段，由Dropout引入的随机性使DMPL可以生成与之前不同的路径，下图就说明了这种特征：<br>   <img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_5.png" alt="pic1_5"><br>   同样的起点和终点，DMLP生成了多条不同的路径，这种能力有助于路径重规划的成功，因此添加Dropout对MPNet的性能是有利的。</p>
 <p>2) 迁移学习<br>   <img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic1_6.png" alt="pic1_6"></p>
 <p>3) 完备性<br>   因为MPNet先使用DMPL进行规划得到粗略的路径，若该路径不可行则调用重规划方法。所以MPNet的完备性取决于重规划方法是否完备，而重规划方法采用了混合经典规划方法，所以进一步可得MPNet的完备性取决于所采用的经典方法的完备性。如果经典方法采用A*算法，则MPNet是完备的；因为本文采用的是RRT*算法，所以MPNet是概率完备的。</p>
 <p>4) 计算复杂度<br>   。。。</p>
-<h2 id="结论和未来工作"><a href="#结论和未来工作" class="headerlink" title="结论和未来工作"></a>结论和未来工作</h2><p>未来工作：</p>
+<h2 id="1-9-结论和未来工作"><a href="#1-9-结论和未来工作" class="headerlink" title="1.9 结论和未来工作"></a>1.9 结论和未来工作</h2><p>未来工作：</p>
 <ul>
 <li>将MPNet应用于动态环境，因为其有良好的泛化能力</li>
 <li>增加对工作空间编码的神经注意(neural attention)</li>
 </ul>
-<h1 id="代码实现和复现"><a href="#代码实现和复现" class="headerlink" title="代码实现和复现"></a>代码实现和复现</h1><p>论文作者开源的代码可在<a href="https://github.com/ahq1993/MPNet" target="_blank" rel="noopener">github</a>上下载，开源代码使用python2和pytorch实现，没有提供训练好的模型。</p>
-<h2 id="搭建本地开发环境"><a href="#搭建本地开发环境" class="headerlink" title="搭建本地开发环境"></a>搭建本地开发环境</h2><p>开源代码使用pytorch实现，使用Docker快速搭建pytorch环境，当然也可以通过其他方式安装pytorch环境。<br>Docker的使用，包括安装、gui的支持等可以参考另一篇博客:<a href="http://doctorsrn.cn/2018/10/14/moveit_docker_guide/">Moveit Docker的安装与配置过程</a><br>使用Docker建立pytorch环境，步骤如下：</p>
+<h1 id="2-代码实现和复现"><a href="#2-代码实现和复现" class="headerlink" title="2.代码实现和复现"></a>2.代码实现和复现</h1><p>论文作者开源的代码可在<a href="https://github.com/ahq1993/MPNet" target="_blank" rel="noopener">github</a>上下载，开源代码使用python2和pytorch实现，没有提供训练好的模型。</p>
+<h2 id="2-1-搭建本地开发环境"><a href="#2-1-搭建本地开发环境" class="headerlink" title="2.1 搭建本地开发环境"></a>2.1 搭建本地开发环境</h2><p>开源代码使用pytorch实现，使用Docker快速搭建pytorch环境，当然也可以通过其他方式安装pytorch环境。<br>Docker的使用，包括安装、gui的支持等可以参考另一篇博客:<a href="http://doctorsrn.cn/2018/10/14/moveit_docker_guide/">Moveit Docker的安装与配置过程</a><br>使用Docker建立pytorch环境，步骤如下：</p>
 <ul>
 <li>拉取pytorch官方Docker镜像：<code>docker pull pytorch/pytorch:latest</code><br>pytorch镜像略大，需要等一会才能下载完，下载结束后通过<code>docker image ls</code>可以看到下载完成的镜像</li>
 <li><p>创建pytorch镜像的Docker容器：</p>
@@ -537,25 +537,25 @@
 <li>进入容器后安装matplotlib库：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">apt-get updata</span><br><span class="line">pip install matplotlib -i https://pypi.douban.com/simple </span><br><span class="line">apt-get install python3-tk</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h2 id="对开源代码进行一些修改"><a href="#对开源代码进行一些修改" class="headerlink" title="对开源代码进行一些修改"></a>对开源代码进行一些修改</h2><p>本次主要测试MPNet部分代码，对训练数据集生成部分的代码之后在测试。由于MPNet代码使用python2编写，docker建立的环境是python3，所以要做一些修改，主要有下面的一些修改：</p>
+<h2 id="2-2-对开源代码进行一些修改"><a href="#2-2-对开源代码进行一些修改" class="headerlink" title="2.2 对开源代码进行一些修改"></a>2.2 对开源代码进行一些修改</h2><p>本次主要测试MPNet部分代码，对训练数据集生成部分的代码之后在测试。由于MPNet代码使用python2编写，docker建立的环境是python3，所以要做一些修改，主要有下面的一些修改：</p>
 <ul>
 <li>修改print函数： 使用python的<code>2to3</code>函数进行修改： <code>2to3 -w  python_file</code></li>
 <li>修改整除符号<code>/</code>为<code>//</code></li>
 <li>修改包含zip函数的部分，比如data_loader.py中的<code>data=zip(dataset,targets)</code>，修改为<code>data=list(zip(dataset,targets))</code></li>
 </ul>
 <p>以上修改主要是因为python2和python3之间的差异导致的。<br>此外要注释掉某些python文件中的<code>import nltk</code>语句，这条语句导入的库并没有用上，docker容器中也没有安装这个库，所以注释掉。</p>
-<h2 id="训练模型"><a href="#训练模型" class="headerlink" title="训练模型"></a>训练模型</h2><p>MPNet主要有两部分构成：</p>
+<h2 id="2-3-训练模型"><a href="#2-3-训练模型" class="headerlink" title="2.3 训练模型"></a>2.3 训练模型</h2><p>MPNet主要有两部分构成：</p>
 <ul>
 <li>Contractive AutoEncoder (CAE)<br> 对应CAE.py</li>
 <li>Deep Multi-Layer Perceptron(DMLP)<br>训练函数为train.py</li>
 </ul>
 <p>所以要分别训练两个模型。主要针对2维情况下MPNet的工作进行测试，训练用的数据集使用论文作者分享的<a href="https://drive.google.com/open?id=1oADJ85qxb3WKHXE4Bj6lwio-soGOktRa" target="_blank" rel="noopener">simple2D数据集</a>，当然你也可以通过数据集生成代码自己去生成训练集，包括3维空间的规划，这是之后的工作。<br>将simple2D数据集下载到本地，并解压。这是本机的文件结构图：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic2_1.png" alt="pic2_1"><br>目录中除了原始文件，其他文件有些是<code>2to3</code>生成的，有些是训练生成的模型文件。其中<code>data/dataset</code>目录是解压数据集后的目录。</p>
-<h3 id="训练CAE"><a href="#训练CAE" class="headerlink" title="训练CAE"></a>训练CAE</h3><p>按照上面的数据集修改<code>MPNet/AE/data_loader.py</code>中的数据路径,也可以修改<code>CAE.py</code>中的训练参数，然后开始训练CAE模型：<br><code>python MPNET/AE/CAE.py</code><br>这一步训练耗时较短，大概15分钟。</p>
-<h3 id="训练DMLP模型"><a href="#训练DMLP模型" class="headerlink" title="训练DMLP模型"></a>训练DMLP模型</h3><p>修改<code>MPNet/data_loader.py</code>中的数据路径和上一步生成的CAE模型数据的路径，也可以修改<code>train.py</code>中的训练参数，然后开始训练DMLP模型：<br><code>python MPNET/train.py</code><br>这一步耗时较久，训练300个epoch在本机需要13个小时。在300个epoch后，手动终止了训练。</p>
-<h3 id="测试MPNet的效果"><a href="#测试MPNet的效果" class="headerlink" title="测试MPNet的效果"></a>测试MPNet的效果</h3><p>完成上面两步训练后就可以测试MPNet的效果了，修改<code>neuralplanner.py</code>中模型的路径参数。由于原代码中没有可视化函数，自己写了一个2维情况的可视化函数，主要是绘制出障碍物点云、RRT*生成的路径和MPNet生成的路径。可视化函数内容为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">def visualize_function(i, j, g_path, a_path, a_path_length):</span><br><span class="line">	&apos;&apos;&apos;</span><br><span class="line">	i: i-th obstacle</span><br><span class="line">	j: j-th path generated by rrt*</span><br><span class="line">	g_path: path generated by mpnet</span><br><span class="line">	a_path_length: actual path length</span><br><span class="line">	&apos;&apos;&apos;</span><br><span class="line">	dataPath = &apos;/workspace/data&apos;</span><br><span class="line"></span><br><span class="line">    #绘制障碍物点云图</span><br><span class="line">	temp=np.fromfile(dataPath+&apos;/dataset/obs_cloud/obc&apos;+str(i)+&apos;.dat&apos;) #len=2800</span><br><span class="line">	ob = temp.reshape(len(temp)//2,2) </span><br><span class="line">	#plt.plot([x[0] for x in ob], [x[1] for x in ob])</span><br><span class="line">	plt.scatter([x[0] for x in ob], [x[1] for x in ob])</span><br><span class="line"></span><br><span class="line">	#绘制生成的路径</span><br><span class="line">	plt.plot([p[0] for p in g_path], [p[1] for p in g_path],color=&apos;red&apos;,linewidth=2.5,linestyle=&apos;-&apos;)</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">	#绘制实际路径</span><br><span class="line">	plt.plot([a_path[a][0] for a in range(a_path_length)],</span><br><span class="line">	[a_path[a][1] for a in range(a_path_length)])</span><br><span class="line">	</span><br><span class="line">	plt.show()</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-3-1-训练CAE"><a href="#2-3-1-训练CAE" class="headerlink" title="2.3.1 训练CAE"></a>2.3.1 训练CAE</h3><p>按照上面的数据集修改<code>MPNet/AE/data_loader.py</code>中的数据路径,也可以修改<code>CAE.py</code>中的训练参数，然后开始训练CAE模型：<br><code>python MPNET/AE/CAE.py</code><br>这一步训练耗时较短，大概15分钟。</p>
+<h3 id="2-3-2-训练DMLP模型"><a href="#2-3-2-训练DMLP模型" class="headerlink" title="2.3.2 训练DMLP模型"></a>2.3.2 训练DMLP模型</h3><p>修改<code>MPNet/data_loader.py</code>中的数据路径和上一步生成的CAE模型数据的路径，也可以修改<code>train.py</code>中的训练参数，然后开始训练DMLP模型：<br><code>python MPNET/train.py</code><br>这一步耗时较久，训练300个epoch在本机需要13个小时。在300个epoch后，手动终止了训练。</p>
+<h3 id="2-3-3-测试MPNet的效果"><a href="#2-3-3-测试MPNet的效果" class="headerlink" title="2.3.3 测试MPNet的效果"></a>2.3.3 测试MPNet的效果</h3><p>完成上面两步训练后就可以测试MPNet的效果了，修改<code>neuralplanner.py</code>中模型的路径参数。由于原代码中没有可视化函数，自己写了一个2维情况的可视化函数，主要是绘制出障碍物点云、RRT*生成的路径和MPNet生成的路径。可视化函数内容为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">def visualize_function(i, j, g_path, a_path, a_path_length):</span><br><span class="line">	&apos;&apos;&apos;</span><br><span class="line">	i: i-th obstacle</span><br><span class="line">	j: j-th path generated by rrt*</span><br><span class="line">	g_path: path generated by mpnet</span><br><span class="line">	a_path_length: actual path length</span><br><span class="line">	&apos;&apos;&apos;</span><br><span class="line">	dataPath = &apos;/workspace/data&apos;</span><br><span class="line"></span><br><span class="line">    #绘制障碍物点云图</span><br><span class="line">	temp=np.fromfile(dataPath+&apos;/dataset/obs_cloud/obc&apos;+str(i)+&apos;.dat&apos;) #len=2800</span><br><span class="line">	ob = temp.reshape(len(temp)//2,2) </span><br><span class="line">	#plt.plot([x[0] for x in ob], [x[1] for x in ob])</span><br><span class="line">	plt.scatter([x[0] for x in ob], [x[1] for x in ob])</span><br><span class="line"></span><br><span class="line">	#绘制生成的路径</span><br><span class="line">	plt.plot([p[0] for p in g_path], [p[1] for p in g_path],color=&apos;red&apos;,linewidth=2.5,linestyle=&apos;-&apos;)</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">	#绘制实际路径</span><br><span class="line">	plt.plot([a_path[a][0] for a in range(a_path_length)],</span><br><span class="line">	[a_path[a][1] for a in range(a_path_length)])</span><br><span class="line">	</span><br><span class="line">	plt.show()</span><br></pre></td></tr></table></figure></p>
 <p>下面是测试显示的效果图：<br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic2_2.png" alt="pic2_2"><br><img src="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_mpnet/pic2_3.png" alt="pic2_3"><br>图中蓝色块是障碍物点云，蓝色路径是原始RRT*算法生成的路劲，红色路径是MPNet生成路劲，可以看到效果还不错，更多数据之后再测试。</p>
 <p>以上修改后的代码可以参看上传到github的代码。</p>
-<h1 id="调试遇到的bug汇总"><a href="#调试遇到的bug汇总" class="headerlink" title="调试遇到的bug汇总"></a>调试遇到的bug汇总</h1><p>1) mpnet的python代码使用Tab缩进，如果自己修改代码使用空格缩进，混用空格和Tab缩进会导致python代码运行出现如下错误：</p>
+<h1 id="3-调试遇到的bug汇总"><a href="#3-调试遇到的bug汇总" class="headerlink" title="3.调试遇到的bug汇总"></a>3.调试遇到的bug汇总</h1><p>1) mpnet的python代码使用Tab缩进，如果自己修改代码使用空格缩进，混用空格和Tab缩进会导致python代码运行出现如下错误：</p>
 <blockquote>
 <p>IndentationError: unindent does not match any outer indentation level</p>
 </blockquote>
@@ -656,6 +656,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/08/01/sort_algorithm/" rel="prev" title="十大排序算法练习">
+                十大排序算法练习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -736,7 +740,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -747,7 +751,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -758,7 +762,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -801,7 +805,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#内容说明"><span class="nav-number">1.</span> <span class="nav-text">内容说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Paper-Motion-Planning-Networks-arxiv，github"><span class="nav-number">2.</span> <span class="nav-text">Paper: Motion Planning Networks(arxiv，github)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-number">2.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">2.2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#神经网络在Motion-Planning相关工作"><span class="nav-number">2.3.</span> <span class="nav-text">神经网络在Motion Planning相关工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题定义"><span class="nav-number">2.4.</span> <span class="nav-text">问题定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MPNet"><span class="nav-number">2.5.</span> <span class="nav-text">MPNet</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#离线训练"><span class="nav-number">2.5.1.</span> <span class="nav-text">离线训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在线路径规划"><span class="nav-number">2.5.2.</span> <span class="nav-text">在线路径规划</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现细节"><span class="nav-number">2.6.</span> <span class="nav-text">实现细节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验结果"><span class="nav-number">2.7.</span> <span class="nav-text">实验结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#讨论"><span class="nav-number">2.8.</span> <span class="nav-text">讨论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论和未来工作"><span class="nav-number">2.9.</span> <span class="nav-text">结论和未来工作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码实现和复现"><span class="nav-number">3.</span> <span class="nav-text">代码实现和复现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建本地开发环境"><span class="nav-number">3.1.</span> <span class="nav-text">搭建本地开发环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对开源代码进行一些修改"><span class="nav-number">3.2.</span> <span class="nav-text">对开源代码进行一些修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#训练模型"><span class="nav-number">3.3.</span> <span class="nav-text">训练模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#训练CAE"><span class="nav-number">3.3.1.</span> <span class="nav-text">训练CAE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练DMLP模型"><span class="nav-number">3.3.2.</span> <span class="nav-text">训练DMLP模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试MPNet的效果"><span class="nav-number">3.3.3.</span> <span class="nav-text">测试MPNet的效果</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调试遇到的bug汇总"><span class="nav-number">4.</span> <span class="nav-text">调试遇到的bug汇总</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#end-of-file"><span class="nav-number">5.</span> <span class="nav-text">end of file</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#内容说明"><span class="nav-text">内容说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Paper-Motion-Planning-Networks-arxiv，github"><span class="nav-text">1.Paper: Motion Planning Networks(arxiv，github)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-摘要"><span class="nav-text">1.1 摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-简介"><span class="nav-text">1.2 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-神经网络在Motion-Planning相关工作"><span class="nav-text">1.3 神经网络在Motion Planning相关工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-问题定义"><span class="nav-text">1.4 问题定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-MPNet"><span class="nav-text">1.5 MPNet</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-1-离线训练"><span class="nav-text">1.5.1 离线训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-2-在线路径规划"><span class="nav-text">1.5.2 在线路径规划</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-6-实现细节"><span class="nav-text">1.6 实现细节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-7-实验结果"><span class="nav-text">1.7 实验结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-8-讨论"><span class="nav-text">1.8 讨论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-9-结论和未来工作"><span class="nav-text">1.9 结论和未来工作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-代码实现和复现"><span class="nav-text">2.代码实现和复现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-搭建本地开发环境"><span class="nav-text">2.1 搭建本地开发环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-对开源代码进行一些修改"><span class="nav-text">2.2 对开源代码进行一些修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-训练模型"><span class="nav-text">2.3 训练模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-训练CAE"><span class="nav-text">2.3.1 训练CAE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-训练DMLP模型"><span class="nav-text">2.3.2 训练DMLP模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-测试MPNet的效果"><span class="nav-text">2.3.3 测试MPNet的效果</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-调试遇到的bug汇总"><span class="nav-text">3.调试遇到的bug汇总</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#end-of-file"><span class="nav-text">end of file</span></a></li></ol></div>
             
 
           </div>

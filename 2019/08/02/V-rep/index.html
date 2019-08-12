@@ -77,7 +77,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="python,robotics,simulation,v-rep,lua,deep reinforcement learning,">
 
 
 
@@ -88,16 +88,45 @@
 
 
 
-<meta name="description" content="Just see the blog.I love my girlfriend.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://doctorsrn.cn/index.html">
+<meta name="description" content="前言这篇博客主要是记录自己学习和使用机器人仿真软件V-rep过程中的一些知识点和踩的坑。首先从下面两个问题展开：  常用的机器人仿真软件有哪些？为什么选择V-rep？目前常用的机器人物理仿真软件有Gazebo、V-rep、Webots等，这三款都是开源软件，自己使用过前两种，Gazebo配合ROS使用功能十分强大，但是要在Linux系统下使用，会有些不方便；V-rep是一个跨平台的仿真软件，在wi">
+<meta name="keywords" content="python,robotics,simulation,v-rep,lua,deep reinforcement learning">
+<meta property="og:type" content="article">
+<meta property="og:title" content="V-rep机器人仿真软件使用的学习笔记">
+<meta property="og:url" content="http://doctorsrn.cn/2019/08/02/V-rep/index.html">
 <meta property="og:site_name" content="Hello World">
-<meta property="og:description" content="Just see the blog.I love my girlfriend.">
+<meta property="og:description" content="前言这篇博客主要是记录自己学习和使用机器人仿真软件V-rep过程中的一些知识点和踩的坑。首先从下面两个问题展开：  常用的机器人仿真软件有哪些？为什么选择V-rep？目前常用的机器人物理仿真软件有Gazebo、V-rep、Webots等，这三款都是开源软件，自己使用过前两种，Gazebo配合ROS使用功能十分强大，但是要在Linux系统下使用，会有些不方便；V-rep是一个跨平台的仿真软件，在wi">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_0.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_9.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_7.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_8.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_10.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_5.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_6.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_12.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_13.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_11.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_14.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_15.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_16.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_17.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_18.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_19.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_20.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_21.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_22.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_23.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_24.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_25.png">
+<meta property="og:updated_time" content="2019-08-03T15:40:22.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="Just see the blog.I love my girlfriend.">
+<meta name="twitter:title" content="V-rep机器人仿真软件使用的学习笔记">
+<meta name="twitter:description" content="前言这篇博客主要是记录自己学习和使用机器人仿真软件V-rep过程中的一些知识点和踩的坑。首先从下面两个问题展开：  常用的机器人仿真软件有哪些？为什么选择V-rep？目前常用的机器人物理仿真软件有Gazebo、V-rep、Webots等，这三款都是开源软件，自己使用过前两种，Gazebo配合ROS使用功能十分强大，但是要在Linux系统下使用，会有些不方便；V-rep是一个跨平台的仿真软件，在wi">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/picture_blog/pics_vrep/pics1_0.png">
 
 
 
@@ -127,13 +156,13 @@
 
 
 
-  <link rel="canonical" href="http://doctorsrn.cn/">
+  <link rel="canonical" href="http://doctorsrn.cn/2019/08/02/V-rep/">
 
 
 
 
 
-  <title>Hello World</title>
+  <title>V-rep机器人仿真软件使用的学习笔记 | Hello World</title>
   
 
 
@@ -162,8 +191,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left 
-  page-home">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
@@ -266,235 +294,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://doctorsrn.cn/2019/08/08/CodingInterviewChinese2/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="SamLiu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/050.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hello World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/08/CodingInterviewChinese2/" itemprop="url">《剑指offer》 刷题记录</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-08T23:34:22+08:00">
-                2019-08-08
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2019-08-18T23:41:22+08:00">
-                2019-08-18
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/interview/" itemprop="url" rel="index">
-                    <span itemprop="name">interview</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/08/08/CodingInterviewChinese2/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/08/CodingInterviewChinese2/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/08/08/CodingInterviewChinese2/" class="leancloud_visitors" data-flag-title="《剑指offer》 刷题记录">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  29,722 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  146 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="《剑指offer》-刷题记录"><a href="#《剑指offer》-刷题记录" class="headerlink" title="《剑指offer》 刷题记录"></a>《剑指offer》 刷题记录</h1><p>最近使用Python把《剑指offer》刷了一遍，自己能第一时间有想法的题目就直接写，没有思路的题目就看懂书上的思路和参考其他开源的实现后再自己写一遍。主要以<a href="https://www.nowcoder.com/ta/coding-interviews" target="_blank" rel="noopener">牛客网《剑指offer》</a>作为在线评测网站，有些题目牛客网没有的再找其他网站进行在线评测，主要使用的其他网站有：</p>
-<ul>
-<li><a href="https://www.acwing.com/problem/" target="_blank" rel="noopener">AcWing</a></li>
-<li><a href="https://www.lintcode.com/problem" target="_blank" rel="noopener">LintCode</a></li>
-</ul>
-<p>刷题过程主要参考的开源实现有：</p>
-<ul>
-<li><a href="https://github.com/Lazy-Pig/CodingInterviewChinese2" target="_blank" rel="noopener">https://github.com/Lazy-Pig/CodingInterviewChinese2</a></li>
-<li><a href="https://github.com/apachecn/Interview/tree/master/docs/Algorithm/%E5%89%91%E6%8C%87offer/Python" target="_blank" rel="noopener">https://github.com/apachecn/Interview/tree/master/docs/Algorithm/%E5%89%91%E6%8C%87offer/Python</a></li>
-</ul>
-<p>本博客对应的<a href="https://nbviewer.jupyter.org/github/doctorsrn/coding-and-interview/blob/master/CodingInterviewChinese2.ipynb" target="_blank" rel="noopener">代码仓库</a>在此。</p>
-<p>今年企业缩招，找工作的行情不容乐观，秋招路漫漫啊。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/08/CodingInterviewChinese2/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-    
-    <div>
-     
-    </div>     
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
 
   
 
@@ -524,9 +326,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/02/V-rep/" itemprop="url">V-rep机器人仿真软件使用的学习笔记</a></h1>
+          <h1 class="post-title" itemprop="name headline">V-rep机器人仿真软件使用的学习笔记</h1>
         
 
         <div class="post-meta">
@@ -662,9 +462,7 @@
       
 
       
-        
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这篇博客主要是记录自己学习和使用机器人仿真软件<a href="http://www.v-rep.eu/" target="_blank" rel="noopener">V-rep</a>过程中的一些知识点和踩的坑。首先从下面两个问题展开：</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这篇博客主要是记录自己学习和使用机器人仿真软件<a href="http://www.v-rep.eu/" target="_blank" rel="noopener">V-rep</a>过程中的一些知识点和踩的坑。首先从下面两个问题展开：</p>
 <ul>
 <li>常用的机器人仿真软件有哪些？为什么选择V-rep？<br>目前常用的机器人物理仿真软件有<a href="http://gazebosim.org/" target="_blank" rel="noopener">Gazebo</a>、<a href="http://www.v-rep.eu/" target="_blank" rel="noopener">V-rep</a>、<a href="https://www.cyberbotics.com/" target="_blank" rel="noopener">Webots</a>等，这三款都是开源软件，自己使用过前两种，Gazebo配合ROS使用功能十分强大，但是要在Linux系统下使用，会有些不方便；V-rep是一个跨平台的仿真软件，在windows和Linux下都可以很稳定的运行，而且软件体积较小。考虑到要在windows下使用仿真软件，以及V-rep方便的Python API接口和易用性，最终选择使用V-rep。</li>
 <li>V-rep在自己项目的应用情况？<br>自己使用V-rep主要用来进行<strong>机械臂</strong>规划和控制方面算法的验证和仿真实验，主要用于以下两个方面：<ul>
@@ -1002,8 +800,6 @@
 <h1 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h1><h2 id="1-贝塞尔曲线的解释"><a href="#1-贝塞尔曲线的解释" class="headerlink" title="1. 贝塞尔曲线的解释"></a>1. 贝塞尔曲线的解释</h2><p>1) <a href="http://www.html-js.com/article/1628" target="_blank" rel="noopener">讲解</a><br>2) <a href="http://myst729.github.io/bezier-curve/" target="_blank" rel="noopener">在线仿真</a><br>3) <a href="https://www.xuanfengge.com/cubic-bezier-bezier-css3-animation-tools.html" target="_blank" rel="noopener">前端应用</a></p>
 <h2 id="2-3维绘图软件"><a href="#2-3维绘图软件" class="headerlink" title="2. 3维绘图软件"></a>2. 3维绘图软件</h2><p><a href="https://www.autodesk.com.cn/products/inventor/overview" target="_blank" rel="noopener">inventor</a>：Autodesk公司出品，可以用来绘制机械臂3维模型。</p>
 
-          
-        
       
     </div>
     
@@ -1011,6 +807,13 @@
     
     
     <div>
+     
+       <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------The End<i class="fa fa-paw"></i>Thanks for reading!-------------</div>
+    
+</div>
+
      
     </div>     
 
@@ -1020,915 +823,86 @@
     
 
     
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    SamLiu
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://doctorsrn.cn/2019/08/02/V-rep/" title="V-rep机器人仿真软件使用的学习笔记">http://doctorsrn.cn/2019/08/02/V-rep/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://doctorsrn.cn/2019/08/01/sort_algorithm/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="SamLiu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/050.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hello World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/01/sort_algorithm/" itemprop="url">十大排序算法练习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-01T20:30:22+08:00">
-                2019-08-01
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2019-08-01T23:40:22+08:00">
-                2019-08-01
-              </time>
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/interview/" itemprop="url" rel="index">
-                    <span itemprop="name">interview</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
           
-
+            <a href="/tags/robotics/" rel="tag"><i class="fa fa-tag"></i> robotics</a>
           
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/08/01/sort_algorithm/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/01/sort_algorithm/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
+            <a href="/tags/simulation/" rel="tag"><i class="fa fa-tag"></i> simulation</a>
           
-
+            <a href="/tags/v-rep/" rel="tag"><i class="fa fa-tag"></i> v-rep</a>
           
+            <a href="/tags/lua/" rel="tag"><i class="fa fa-tag"></i> lua</a>
           
-             <span id="/2019/08/01/sort_algorithm/" class="leancloud_visitors" data-flag-title="十大排序算法练习">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
+            <a href="/tags/deep-reinforcement-learning/" rel="tag"><i class="fa fa-tag"></i> deep reinforcement learning</a>
           
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4,020 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  20 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
+      
+        <div class="post-widgets">
         
-          <h1 id="十大排序算法练习"><a href="#十大排序算法练习" class="headerlink" title="十大排序算法练习"></a>十大排序算法练习</h1><p>使用Python实现常用的十大排序算法：<br>1.插入排序insert sort<br>2.希尔排序shell sort<br>3.简单选择排序select sort<br>4.冒泡排序bubble sort<br>5.快速排序quick sort<br>6.堆排序HeapSort<br>7.归并排序mergesort<br>8.计数排序countingSort<br>9.桶排序bucketSort<br>10.基数排序radixSort</p>
-<p>参考实现：</p>
-<ul>
-<li><a href="http://www.cnblogs.com/kadycui/p/9771695.html" target="_blank" rel="noopener">http://www.cnblogs.com/kadycui/p/9771695.html</a>  </li>
-<li><a href="https://mp.weixin.qq.com/s?__biz=MzI0ODcxODk5OA==&amp;mid=2247504216&amp;idx=5&amp;sn=8506d0520420a0f67575f680c9bbe4f6&amp;chksm=e99ee2a1dee96bb730780449395e2b40811c7a46e0082c6ed139d64bbb6189458263d031191b&amp;mpshare=1&amp;scene=1&amp;srcid=&amp;key=b8eee84f54924e7c42b897e183c9f5d1eece34ed1b74ba0ff550764187fb59e90d49b3fe7204a92b1b805b480ea1ed3e50af04705a4ae7de635725da3e42d24754b56f5594932e411ea4aee42933a2d6&amp;ascene=1&amp;uin=Mjc2MTkzODE0MA%3D%3D&amp;devicetype=Windows+8&amp;version=62060739&amp;lang=zh_CN&amp;pass_ticket=uONyKlXV%2Fdx4qiWrFb5MGWC7hFc%2B%2B9qqKyrYYWm3I0RoRy%2FfKXpWdNmqgrp8paIh" target="_blank" rel="noopener">微信分享</a></li>
-</ul>
-<p>博客中代码对应的仓库—<a href="https://nbviewer.jupyter.org/github/doctorsrn/coding-and-interview/blob/master/sort_algorithm.ipynb" target="_blank" rel="noopener">sort_algorithm.ipynb</a>，以及用于排序程序测试的代码—<a href="https://github.com/doctorsrn/coding-and-interview/blob/master/Practice/sort.py" target="_blank" rel="noopener">sort.py</a>.</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/01/sort_algorithm/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
           </div>
-          <!--/noindex-->
         
-      
-    </div>
-    
-    
-    
-    
-    <div>
-     
-    </div>     
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://doctorsrn.cn/2018/11/22/reading_note_for_mpnet/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="SamLiu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/050.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hello World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/22/reading_note_for_mpnet/" itemprop="url">Motion Planning Networks</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-22T16:52:22+08:00">
-                2018-11-22
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2018-11-27T23:44:22+08:00">
-                2018-11-27
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/robotics/" itemprop="url" rel="index">
-                    <span itemprop="name">robotics</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/11/22/reading_note_for_mpnet/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/11/22/reading_note_for_mpnet/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/11/22/reading_note_for_mpnet/" class="leancloud_visitors" data-flag-title="Motion Planning Networks">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4,296 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  17 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
       
 
       
-        
-          <h1 id="内容说明"><a href="#内容说明" class="headerlink" title="内容说明"></a>内容说明</h1><p>主要介绍一篇使用深度学习方法去实现Motion Planning的论文，并将作者开源的实现代码在本地进行复现，复现过程中涉及到Docker的使用，Colaboratory和Kaggle Kernel环境的使用等内容。主要内容包括两部分:</p>
-<ul>
-<li>介绍论文<a href="https://arxiv.org/abs/1806.05767" target="_blank" rel="noopener">Motion Planning Networks</a>的主要内容</li>
-<li>在本地Docker pytorch环境中利用作者的开源代码和提供的Simple 2D情况的数据集，训练模型，并测试模型在2维情况下Motion Planning的效果，此外该部分还包括如下内容:<ul>
-<li>Docker容器中GUI程序的运行</li>
-<li>在Google Colaboratory环境中训练该模型</li>
-<li>在Kaggle Kernel环境中训练该模型</li>
-</ul>
-</li>
-</ul>
-<p>测试主机的环境是： </p>
-<ul>
-<li>系统：Ubuntu16.04</li>
-<li>显卡：1060 6G</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/11/22/reading_note_for_mpnet/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/01/sort_algorithm/" rel="next" title="十大排序算法练习">
+                <i class="fa fa-chevron-left"></i> 十大排序算法练习
+              </a>
+            
           </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-    
-    <div>
-     
-    </div>     
 
+          <span class="post-nav-divider"></span>
 
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://doctorsrn.cn/2018/10/14/moveit_docker_guide/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="SamLiu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/050.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hello World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/14/moveit_docker_guide/" itemprop="url">Moveit Docker的安装与配置过程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+          <div class="post-nav-prev post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-14T16:52:22+08:00">
-                2018-10-14
-              </time>
+              <a href="/2019/08/08/CodingInterviewChinese2/" rel="prev" title="《剑指offer》 刷题记录">
+                《剑指offer》 刷题记录 <i class="fa fa-chevron-right"></i>
+              </a>
             
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2018-10-18T23:44:22+08:00">
-                2018-10-18
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/ros/" itemprop="url" rel="index">
-                    <span itemprop="name">ros</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/10/14/moveit_docker_guide/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/10/14/moveit_docker_guide/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/10/14/moveit_docker_guide/" class="leancloud_visitors" data-flag-title="Moveit Docker的安装与配置过程">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,744 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  18 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="使用Docker版本的moveit"><a href="#使用Docker版本的moveit" class="headerlink" title="使用Docker版本的moveit"></a>使用Docker版本的moveit</h1><p>最近打算学习使用一下moveit，在安装moveit时发现官网提供docker版本，之前对docker有一些浅显的了解，苦于没有应用场景，这次就尝试使用docker版的moveit练练手。在折腾了两天之后，完成支持gui的moveit的docker环境配置，主要内容包括两部分：</p>
-<ul>
-<li>docker的安装和简单使用，以及nvidia-docker的安装</li>
-<li>docker对moveit gui的支持</li>
-</ul>
-<p>测试主机的环境是： </p>
-<ul>
-<li>系统：Ubuntu16.04</li>
-<li>显卡：1060 6G</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/14/moveit_docker_guide/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
           </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-    
-    <div>
-     
-    </div>     
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://doctorsrn.cn/2018/10/08/reading_note_rvc/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="SamLiu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/050.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hello World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/08/reading_note_rvc/" itemprop="url">Robotics, Vision and Control, Second Edition读书笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-08T23:34:22+08:00">
-                2018-10-08
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2018-10-23T01:41:22+08:00">
-                2018-10-23
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/robotics/" itemprop="url" rel="index">
-                    <span itemprop="name">robotics</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/10/08/reading_note_rvc/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/10/08/reading_note_rvc/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/10/08/reading_note_rvc/" class="leancloud_visitors" data-flag-title="Robotics, Vision and Control, Second Edition读书笔记">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  22,776 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  94 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <h1 id="Reading-Note"><a href="#Reading-Note" class="headerlink" title="Reading Note"></a>Reading Note</h1><p><strong>Book:</strong> <a href="https://link.springer.com/book/10.1007/978-3-642-20144-8" target="_blank" rel="noopener">Robotics, Vision and Control, Second Edition</a><br><strong>Author:</strong> <a href="http://petercorke.com/wordpress/" target="_blank" rel="noopener">Peter Corke</a><br><strong>公开课:</strong> <a href="https://robotacademy.net.au/" target="_blank" rel="noopener">The open online robotics education resource</a></p>
-<p>摘录</p>
-<blockquote>
-<ul>
-<li>Robots are data-driven machines. They acquire data, process it and take action based on it.  </li>
-<li>instant gratification: 及时行乐  </li>
-<li>Robot definition: a goal oriented machine that can sense, plan and act.  </li>
-<li>Further Reading: The Handbook of Robotics (Siciliano and Khatib 2016)</li>
-</ul>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/08/reading_note_rvc/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-    
-    <div>
-     
-    </div>     
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -1938,633 +912,11 @@
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://doctorsrn.cn/2018/04/22/hw/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="SamLiu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/050.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hello World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/22/hw/" itemprop="url">华为软件精英挑战赛</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-22T00:05:22+08:00">
-                2018-04-22
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2018-04-23T12:05:22+08:00">
-                2018-04-23
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/python/" itemprop="url" rel="index">
-                    <span itemprop="name">python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/04/22/hw/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/04/22/hw/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/04/22/hw/" class="leancloud_visitors" data-flag-title="华为软件精英挑战赛">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,116 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  4 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="华为软件精英挑战赛"><a href="#华为软件精英挑战赛" class="headerlink" title="华为软件精英挑战赛"></a>华为软件精英挑战赛</h1><h2 id="1-摘要"><a href="#1-摘要" class="headerlink" title="1. 摘要"></a>1. 摘要</h2><p>本文主要介绍2018华为软件精英挑战赛的一个简单实现，不注重算法得分高低，只注重完成数据从输入、预处理、算法实现和数据输出过程的实现，所以本文并没有太多参考价值。<br>PS:<br>本文实现的<a href="https://github.com/doctorsrn/hw_competition" target="_blank" rel="noopener">代码仓库链接</a><br><a href="http://codecraft.devcloud.huaweicloud.com/home/detail" target="_blank" rel="noopener">2018华为软件精英挑战赛介绍</a><br>如果上述赛题介绍链接失效，请转至<a href="https://github.com/doctorsrn/hw_competition/tree/master/Introduction_to_competition" target="_blank" rel="noopener">本地网页文件</a></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/04/22/hw/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+    <div class="post-spread">
       
     </div>
-    
-    
-    
-    
-    <div>
-     
-    </div>     
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://doctorsrn.cn/2018/02/06/first-blog/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="SamLiu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/050.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hello World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/06/first-blog/" itemprop="url">First blog</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-06T00:05:22+08:00">
-                2018-02-06
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2018-04-23T22:04:04+08:00">
-                2018-04-23
-              </time>
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Life/" itemprop="url" rel="index">
-                    <span itemprop="name">Life</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/06/first-blog/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/06/first-blog/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/06/first-blog/" class="leancloud_visitors" data-flag-title="First blog">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  6 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>It’s time to go home!<br>:)</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-    
-    <div>
-     
-    </div>     
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://doctorsrn.cn/2018/01/06/hello-world/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="SamLiu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://raw.githubusercontent.com/doctorsrn/git_test/master/050.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hello World">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/06/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-06T00:05:22+08:00">
-                2018-01-06
-              </time>
-            
-
-            
-              <span class="post-meta-divider">|</span>
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2018-10-23T23:29:33+08:00">
-                2018-10-23
-              </time>
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/01/06/hello-world/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/01/06/hello-world/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/01/06/hello-world/" class="leancloud_visitors" data-flag-title="Hello World">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  78 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-    
-    <div>
-     
-    </div>     
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
 
 
           </div>
@@ -2572,6 +924,13 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -2592,8 +951,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -2665,6 +1033,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一、V-rep-基本知识"><span class="nav-text">一、V-rep 基本知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Tutorials-Building-a-clean-model-tutorial"><span class="nav-text">1.Tutorials: Building a clean model tutorial</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-Building-the-visible-shapes"><span class="nav-text">1.1 Building the visible shapes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-Building-the-joints"><span class="nav-text">1.2 Building the joints</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-Building-the-dynamic-shapes"><span class="nav-text">1.3 Building the dynamic shapes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-Model-definition"><span class="nav-text">1.4 Model definition</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-关于V-rep内置Lua脚本的学习"><span class="nav-text">2.关于V-rep内置Lua脚本的学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-main-script"><span class="nav-text">2.1 main script</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-child-scripts"><span class="nav-text">2.2 child scripts</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-non-threaded-child-scripts"><span class="nav-text">2.2.1 non-threaded child scripts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-threaded-child-scripts"><span class="nav-text">2.2.2 threaded child scripts</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-Script-simulation-parameters"><span class="nav-text">2.3 Script simulation parameters</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-Customization-scripts"><span class="nav-text">2.4 Customization scripts</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-Callback-functions"><span class="nav-text">2.5 Callback functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-Script-dialog"><span class="nav-text">2.5 Script dialog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-Script-execution-order"><span class="nav-text">2.6 Script execution order</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-遇到的Vrep中Python-Api函数—-gt-属于client端的远程API函数"><span class="nav-text">3.遇到的Vrep中Python Api函数—&gt;属于client端的远程API函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-遇到的Vrep中Lua-Api函数—-gt-属于server端的常规API函数，在Regular-API目录下查找API文档"><span class="nav-text">4.遇到的Vrep中Lua Api函数—&gt;属于server端的常规API函数，在Regular API目录下查找API文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Vrep中子脚本线程执行"><span class="nav-text">5.Vrep中子脚本线程执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-Vrep中路径规划的两种情况"><span class="nav-text">6.Vrep中路径规划的两种情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-关于Vrep自带模型的D-H参数获取的办法"><span class="nav-text">7.关于Vrep自带模型的D-H参数获取的办法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-远程API-工作方式分析-官方文档"><span class="nav-text">8.远程API)工作方式分析(官方文档)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-Vrep中关节不同的属性"><span class="nav-text">9.Vrep中关节不同的属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-Vrep中仿真过程不同状态的介绍"><span class="nav-text">10.Vrep中仿真过程不同状态的介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-参考网站"><span class="nav-text">11.参考网站</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、V-rep进阶知识点"><span class="nav-text">二、V-rep进阶知识点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-vrep使用b0RemoteApi工作模式"><span class="nav-text">1. vrep使用b0RemoteApi工作模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-0-Vrep-b0RemoteApi工作模式解析"><span class="nav-text">1.0 Vrep b0RemoteApi工作模式解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-vrep-b0RemoteApi工作模式下API之间的关系："><span class="nav-text">1.1 vrep b0RemoteApi工作模式下API之间的关系：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-vrep中吸盘工具suction-pad的使用"><span class="nav-text">2. vrep中吸盘工具suction pad的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-vrep中力-力矩传感器（force-sensor）的使用"><span class="nav-text">3. vrep中力/力矩传感器（force sensor）的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Vrep中不同物理仿真引擎的使用"><span class="nav-text">4. Vrep中不同物理仿真引擎的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-使用Vrep控制实物机器人的思路"><span class="nav-text">5. 使用Vrep控制实物机器人的思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-使用Reflexxes-Motion-Library（在线运动轨迹生成库）进行轨迹规划"><span class="nav-text">6. 使用Reflexxes Motion Library（在线运动轨迹生成库）进行轨迹规划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-vrep不同类型的刚体表示，作用不同"><span class="nav-text">7.vrep不同类型的刚体表示，作用不同</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、V-rep在机械臂仿真中遇到的一些问题"><span class="nav-text">三、V-rep在机械臂仿真中遇到的一些问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-vrep机械臂散架问题"><span class="nav-text">1.vrep机械臂散架问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Vrep逆运动学解算，使用sim-getConfigForTipPose函数输出结果为nil的问题"><span class="nav-text">2.Vrep逆运动学解算，使用sim.getConfigForTipPose函数输出结果为nil的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Vrep-b0通讯模式报错"><span class="nav-text">3.Vrep b0通讯模式报错</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Vrep动力学仿真的注意事项"><span class="nav-text">4.Vrep动力学仿真的注意事项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-关于sim-setJointPosition和sim-setJointTargetPosition的使用"><span class="nav-text">5.关于sim.setJointPosition和sim.setJointTargetPosition的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-机械臂运动至目标点存在漂移的问题"><span class="nav-text">6.机械臂运动至目标点存在漂移的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-vrep同步模式的基本知识"><span class="nav-text">7.vrep同步模式的基本知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-vrep机械臂末端抖动的问题"><span class="nav-text">8.vrep机械臂末端抖动的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-vrep存在有的逆解路径无法到达的问题"><span class="nav-text">9.vrep存在有的逆解路径无法到达的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-初始仿真时物体属性设置的一些tricks"><span class="nav-text">10.初始仿真时物体属性设置的一些tricks</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、基于V-rep模仿OpenAI-Gym搭建V-rep强化学习环境"><span class="nav-text">四、基于V-rep模仿OpenAI Gym搭建V-rep强化学习环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-遵照OpenGym环境的格式搭建V-rep强化学习环境"><span class="nav-text">1.遵照OpenGym环境的格式搭建V-rep强化学习环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-windows下tensorboard使用"><span class="nav-text">2.windows下tensorboard使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-加速Vrep仿真的方法"><span class="nav-text">3.加速Vrep仿真的方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#附录"><span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-贝塞尔曲线的解释"><span class="nav-text">1. 贝塞尔曲线的解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3维绘图软件"><span class="nav-text">2. 3维绘图软件</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -2818,6 +1202,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
@@ -3039,31 +1427,11 @@
       new needShareButton('#needsharebutton-postbottom', pbOptions);
     
     
-  </script>
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   
 
   
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-        }
-      });
-    </script>
-
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
